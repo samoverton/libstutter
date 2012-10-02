@@ -3,8 +3,8 @@
 
 using namespace std;
 
-int f(Coroutine& co, void* ptr) {
-	
+int f(Coroutine& co, void* ptr)
+{
 	co.yield(0);
 	co.yield(1);
 	return 42;
