@@ -1,4 +1,5 @@
-#include "coroutine.hpp"
+#include "coroutine.h"
+#include <iostream>
 
 using namespace std;
 
@@ -12,20 +13,12 @@ int f(Coroutine& co, void* ptr) {
 int
 main(int argc, char *argv[])
 {
-	Switcher switcher;
-	Coroutine co(switcher, f, (void*)0x1234);
+	Coroutine co(f, (void*)0x1234);
 
-	cout << "resume: " << co.resume() << endl;
-	cout << "state = " << co.state() << endl;
-
-	cout << "resume: " << co.resume() << endl;
-	cout << "state = " << co.state() << endl;
-
-	cout << "resume: " << co.resume() << endl;
-	cout << "state = " << co.state() << endl;
-	
-	cout << "resume: " << co.resume() << endl;
-	cout << "state = " << co.state() << endl;
+	for (int i = 0; i < 4; ++i) {
+		cout << "runnable = " << (co.state() != Coroutine::DONE) << endl;
+		cout << "resume: " << co.resume() << endl << endl;
+	}
 
 	return 0;
 }
