@@ -4,7 +4,7 @@
 
 using namespace std;
 
-static void
+void
 entry_point(void *ptr)
 {
 	Coroutine *co = reinterpret_cast<Coroutine*>(ptr);
@@ -13,10 +13,8 @@ entry_point(void *ptr)
 
 ////////////////////////////////////////////////////////////
 
-Coroutine::Coroutine(function<int (Coroutine&, void*)> fun, void *ptr)
-		: m_fun(fun)
-		, m_ptr(ptr)
-		, m_state(INIT)
+Coroutine::Coroutine()
+		: m_state(INIT)
 		, m_stack(0)
 {
 	// create new context based on current one:
@@ -40,7 +38,7 @@ Coroutine::state() const
 void
 Coroutine::run()
 {
-	int v = m_fun(*this, m_ptr);
+	int v = exec();
 	m_state = DONE;
 	yield(v);
 }

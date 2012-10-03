@@ -6,7 +6,7 @@
 
 class Coroutine {
 public:
-	Coroutine(std::function<int (Coroutine&, void*)> fun, void *ptr);
+	Coroutine();
 	~Coroutine();
 
 	typedef enum {
@@ -16,10 +16,12 @@ public:
 	} State;
 
 	State state() const;
-
-	void run();
 	int resume();
+
+protected:
+	virtual int exec() = 0;
 	void yield(int value);
+	void run();
 
 private:
 	void create_stack();
@@ -30,9 +32,6 @@ private:
 	};
 
 private:
-	std::function<int (Coroutine&, void*)> m_fun;
-	void *m_ptr;
-
 	int   m_value;
 	State m_state;
 
@@ -40,8 +39,9 @@ private:
 	Switcher m_switcher;
 	ucontext_t m_ctx;
 	char *m_stack;
-};
 
+friend void entry_point(void*);
+};
 
 
 #endif // COROUTINE_H

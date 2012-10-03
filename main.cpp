@@ -4,24 +4,27 @@
 
 using namespace std;
 
-int f(Coroutine& co, void* ptr)
+class NumberGenerator : public Coroutine
 {
-	co.yield(0);
-	co.yield(1);
-	return 42;
-}
+	virtual int exec()
+	{
+		yield(0);
+		yield(1);
+		return 42;
+	}
+};
 
 int
 main(int argc, char *argv[])
 {
-	// Coroutine co(f, (void*)0x1234);
-	// for (int i = 0; i < 4; ++i) {
-	// 	cout << "runnable = " << (co.state() != Coroutine::DONE) << endl;
-	// 	cout << "resume: " << co.resume() << endl << endl;
-	// }
+	NumberGenerator g;
+	for (int i = 0; i < 4; ++i) {
+		cout << "runnable = " << (g.state() != Coroutine::DONE) << endl;
+		cout << "resume: " << g.resume() << endl << endl;
+	}
 
-	Server s("127.0.0.1", 8888);
-	s.start();
+	// Server s("127.0.0.1", 8888);
+	// s.start();
 
 	return 0;
 }
