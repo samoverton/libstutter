@@ -1,7 +1,9 @@
 OUT=test
 
-OBJS=main.o coroutine.o server.o
+HTTP_PARSER_OBJS=http-parser/http_parser.o
+OBJS=main.o coroutine.o server.o http_client.o $(HTTP_PARSER_OBJS)
 CXXFLAGS=-std=c++0x -ggdb -O0
+LDFLAGS=-levent
 
 all: $(OUT)
 
@@ -12,6 +14,9 @@ $(OUT): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
 %.o: %.cpp
+	$(CXX) $(CXXFLAGS) -o $@ -c $<
+
+%.o: %.c
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
 clean:

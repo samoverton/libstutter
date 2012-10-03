@@ -1,4 +1,5 @@
 #include "coroutine.h"
+#include "server.h"
 #include <iostream>
 
 using namespace std;
@@ -13,12 +14,14 @@ int f(Coroutine& co, void* ptr)
 int
 main(int argc, char *argv[])
 {
-	Coroutine co(f, (void*)0x1234);
+	// Coroutine co(f, (void*)0x1234);
+	// for (int i = 0; i < 4; ++i) {
+	// 	cout << "runnable = " << (co.state() != Coroutine::DONE) << endl;
+	// 	cout << "resume: " << co.resume() << endl << endl;
+	// }
 
-	for (int i = 0; i < 4; ++i) {
-		cout << "runnable = " << (co.state() != Coroutine::DONE) << endl;
-		cout << "resume: " << co.resume() << endl << endl;
-	}
+	Server s("127.0.0.1", 8888);
+	s.start();
 
 	return 0;
 }
