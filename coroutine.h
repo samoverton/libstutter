@@ -9,12 +9,7 @@ public:
 	Coroutine();
 	~Coroutine();
 
-	typedef enum {
-		INIT,
-		RUNNING,
-		DONE
-	} State;
-
+	typedef enum {INIT, RUNNING, DONE} State;
 	State state() const;
 	int resume();
 

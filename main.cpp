@@ -17,14 +17,14 @@ class NumberGenerator : public Coroutine
 int
 main(int argc, char *argv[])
 {
-	NumberGenerator g;
-	for (int i = 0; i < 4; ++i) {
-		cout << "runnable = " << (g.state() != Coroutine::DONE) << endl;
-		cout << "resume: " << g.resume() << endl << endl;
-	}
+	// NumberGenerator g;
+	// for (int i = 0; i < 4; ++i) {
+	// 	cout << "runnable = " << (g.state() != Coroutine::DONE) << endl;
+	// 	cout << "resume: " << g.resume() << endl << endl;
+	// }
 
-	// Server s("127.0.0.1", 8888);
-	// s.start();
+	Server s("127.0.0.1", 8888);
+	s.start();
 
 	return 0;
 }

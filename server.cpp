@@ -1,5 +1,4 @@
 #include "server.h"
-#include "http_client.h"
 #include <iostream>
 
 #include <unistd.h>
@@ -62,7 +61,7 @@ Server::setup_socket() const
 	}
 
 	/* bind */
-	ret = bind(fd, (struct sockaddr*)&addr, sizeof(addr));
+	ret = ::bind(fd, (struct sockaddr*)&addr, sizeof(addr));
 	if (0 != ret) {
 		/* syslog(LOG_ERR, "Bind error: %m\n"); */
 		return -1;
@@ -79,15 +78,55 @@ Server::setup_socket() const
 	return fd;
 }
 
-static void
-_on_possible_accept(int fd, short event, void *ptr) {
+void
+Server::resume_client(HttpClient *c)
+{
+	HttpClient::Need n = (HttpClient::Need)c->resume();
+	switch(n) {
+		case HttpClient::Need::READ:
+			register_client(c, EV_READ);
+			break;
 
+		case HttpClient::Need::WRITE:
+			register_client(c, EV_WRITE);
+			break;
+
+		case HttpClient::Need::HALT:
+			delete c;
+	}
+}
+
+void
+_on_client_event(int fd, short event, void *ptr)
+{
+	HttpClient *c = reinterpret_cast<HttpClient*>(ptr);
+	Server &s = c->server();
+
+	s.resume_client(c);
+}
+
+void
+Server::register_client(HttpClient *c, short event)
+{
+	struct event *ev = c->event();
+	event_set(ev, c->fd(), event, _on_client_event, c);
+	event_base_set(m_base, ev);
+	event_add(ev, 0); // TODO: check return code
+}
+
+void
+_on_possible_accept(int fd, short event, void *ptr)
+{
+	Server *s = reinterpret_cast<Server*>(ptr);
+
+	// accept fd and create client
 	struct sockaddr_in addr;
 	socklen_t addr_sz = sizeof(addr);
 	int client_fd = accept(fd, (struct sockaddr*)&addr, &addr_sz);
+	HttpClient *c = new HttpClient(*s, client_fd);
 
-	cout << "accepted fd " << client_fd << endl;
-	HttpClient c(client_fd);
+	// resume
+	s->resume_client(c);
 }
 
 void
