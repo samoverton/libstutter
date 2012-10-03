@@ -5,6 +5,8 @@
 #include <iostream>
 using namespace std;
 
+#define READ_BUFFER_SIZE 4096
+
 HttpClient::HttpClient(Server &server, int fd)
 	: m_server(server)
 	, m_fd(fd)
@@ -17,14 +19,14 @@ HttpClient::~HttpClient()
 	close(m_fd);
 }
 
+/* http-parser callbacks */
+
 int
 _http_on_url_cb(http_parser *p, const char *at, size_t sz)
 {
-	/*
-	cout << "URL fragment: [";
-	cout.write(at, sz);
-	cout << "]" << endl;
-	*/
+	HttpClient *c = reinterpret_cast<HttpClient*>(p->data);
+	c->m_url.append(at, sz);
+
 	return 0;
 }
 
@@ -37,6 +39,43 @@ _http_on_message_complete_cb(http_parser *p)
 	c->reply();
 
 	return 0;
+}
+
+int
+_http_on_header_field_cb(http_parser *p, const char *at, size_t sz)
+{
+	HttpClient *c = reinterpret_cast<HttpClient*>(p->data);
+	c->save_last_header();
+	c->m_header_key.append(at, sz);
+	return 0;
+}
+
+int
+_http_on_header_value_cb(http_parser *p, const char *at, size_t sz)
+{
+	HttpClient *c = reinterpret_cast<HttpClient*>(p->data);
+	c->m_header_val.append(at, sz);
+	c->m_header_gotval = true;
+	return 0;
+}
+
+int
+_http_on_headers_complete_cb(http_parser *p)
+{
+	HttpClient *c = reinterpret_cast<HttpClient*>(p->data);
+	c->save_last_header();
+	return 0;
+}
+
+void
+HttpClient::save_last_header()
+{
+	if (m_header_gotval) {
+		m_headers.insert(make_pair(m_header_key, m_header_val));
+		m_header_key.clear();
+		m_header_val.clear();
+		m_header_gotval = false;
+	}
 }
 
 void
@@ -74,6 +113,16 @@ HttpClient::configure_http_parser()
 	memset(&m_parserconf, 0, sizeof(m_parserconf));
 	m_parserconf.on_url = _http_on_url_cb;
 	m_parserconf.on_message_complete = _http_on_message_complete_cb;
+	m_parserconf.on_header_field = _http_on_header_field_cb;
+	m_parserconf.on_header_value = _http_on_header_value_cb;
+	m_parserconf.on_headers_complete = _http_on_headers_complete_cb;
+
+	// http data
+	m_url.clear();
+	m_header_key.clear();
+	m_header_val.clear();
+	m_headers.clear();
+	m_header_gotval = false;
 }
 
 int
@@ -95,7 +144,7 @@ HttpClient::exec()
 {
 	while(true)
 	{
-		char buffer[4096];
+		char buffer[READ_BUFFER_SIZE];
 		int recvd = safe_read(buffer, sizeof(buffer));
 		if (recvd <= 0)
 			return (int)Need::HALT;
