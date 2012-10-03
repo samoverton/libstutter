@@ -92,7 +92,9 @@ Server::resume_client(HttpClient *c)
 			break;
 
 		case HttpClient::Need::HALT:
+			cout << "delete client " << c->fd() << endl;
 			delete c;
+			break;
 	}
 }
 

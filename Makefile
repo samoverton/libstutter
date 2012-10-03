@@ -2,7 +2,7 @@ OUT=test
 
 HTTP_PARSER_OBJS=http-parser/http_parser.o
 OBJS=main.o coroutine.o server.o http_client.o $(HTTP_PARSER_OBJS)
-CXXFLAGS=-std=c++0x -ggdb -O0
+CXXFLAGS=-std=c++0x -ggdb -O3
 LDFLAGS=-levent
 
 all: $(OUT)
