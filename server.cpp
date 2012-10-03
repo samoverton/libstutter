@@ -1,4 +1,5 @@
 #include "server.h"
+#include "http_client.h"
 #include <iostream>
 
 #include <unistd.h>
@@ -86,6 +87,7 @@ _on_possible_accept(int fd, short event, void *ptr) {
 	int client_fd = accept(fd, (struct sockaddr*)&addr, &addr_sz);
 
 	cout << "accepted fd " << client_fd << endl;
+	HttpClient c(client_fd);
 }
 
 void
