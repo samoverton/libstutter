@@ -92,7 +92,7 @@ Server::resume_connection(HttpConnection *c)
 			break;
 
 		case HttpConnection::Need::HALT:
-			cout << "delete connection " << c->fd() << endl;
+			cout << "delete connection " << c << endl;
 			delete c;
 			break;
 	}
@@ -111,7 +111,7 @@ void
 Server::register_connection(HttpConnection *c, short event)
 {
 	struct event *ev = c->event();
-	event_set(ev, c->fd(), event, _on_connection_event, c);
+	event_set(ev, c->watched_fd(), event, _on_connection_event, c);
 	event_base_set(m_base, ev);
 	event_add(ev, 0); // TODO: check return code
 }

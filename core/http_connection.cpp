@@ -10,6 +10,7 @@ using namespace std;
 HttpConnection::HttpConnection(Server &server, int fd)
 	: m_server(server)
 	, m_fd(fd)
+	, m_watched_fd(fd)
 	, m_request(*this)
 	, m_reply(*this)
 {
@@ -127,6 +128,7 @@ HttpConnection::configure_http_parser()
 int
 HttpConnection::safe_read(char *p, size_t sz)
 {
+	m_watched_fd = m_fd;
 	yield((int)Need::READ);
 	return read(m_fd, p, sz);
 }
@@ -134,6 +136,7 @@ HttpConnection::safe_read(char *p, size_t sz)
 int
 HttpConnection::safe_write(const char *p, size_t sz)
 {
+	m_watched_fd = m_fd;
 	yield((int)Need::WRITE);
 	return write(m_fd, p, sz);
 }
@@ -159,7 +162,7 @@ HttpConnection::exec()
 }
 
 int
-HttpConnection::fd() const
+HttpConnection::watched_fd() const
 {
 	return m_fd;
 }

@@ -19,7 +19,7 @@ public:
 	virtual ~HttpConnection();
 	virtual int exec();
 
-	int fd() const;
+	int watched_fd() const;
 	struct event *event();
 	Server &server();
 
@@ -41,6 +41,7 @@ private:
 private:
 	Server &m_server;
 	int m_fd;
+	int m_watched_fd;
 	struct event m_ev;
 
 	HttpRequest m_request;
