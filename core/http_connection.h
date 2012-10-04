@@ -2,7 +2,7 @@
 #define HTTP_CONNECTION_H
 
 #include "coroutine.h"
-#include "http-parser/http_parser.h"
+#include "http_parser.h"
 #include "http_request.h"
 #include "http_reply.h"
 
@@ -31,13 +31,8 @@ public:
 	int safe_read (int fd, char *p, size_t sz);
 	int safe_write(int fd, const char *p, size_t sz);
 
-
 private:
 	void process();
-
-	// HTTP
-	void configure_http_parser();
-	void save_last_header();
 
 private:
 	Server &m_server;
@@ -47,19 +42,9 @@ private:
 
 	HttpRequest m_request;
 	HttpReply   m_reply;
+	HttpParser  m_parser;
 
-	// parsing
-	struct http_parser m_parser;
-	struct http_parser_settings m_parserconf;
-	std::string m_header_key;
-	std::string m_header_val;
-	bool m_header_gotval;
-
-friend int _http_on_url_cb(http_parser *p, const char *at, size_t sz);
-friend int _http_on_message_complete_cb(http_parser *p);
-friend int _http_on_header_field_cb(http_parser *p, const char *at, size_t sz);
-friend int _http_on_header_value_cb(http_parser *p, const char *at, size_t sz);
-friend int _http_on_headers_complete_cb(http_parser *p);
+friend void _process(void*);
 };
 
 #endif // HTTP_CONNECTION_H

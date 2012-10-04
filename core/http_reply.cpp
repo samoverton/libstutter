@@ -54,7 +54,6 @@ HttpReply::prepare()
 	}
 	ss << crlf;
 
-
 	m_data.clear();
 	string headers = ss.str();
 	m_data.reserve(headers.size() + m_body.size());
