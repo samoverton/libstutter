@@ -25,7 +25,7 @@ int
 _http_on_url_cb(http_parser *p, const char *at, size_t sz)
 {
 	HttpClient *c = reinterpret_cast<HttpClient*>(p->data);
-	c->m_url.append(at, sz);
+	c->m_request.add_url_fragment(at, sz); // FIXME?
 
 	return 0;
 }
@@ -71,7 +71,7 @@ void
 HttpClient::save_last_header()
 {
 	if (m_header_gotval) {
-		m_headers.insert(make_pair(m_header_key, m_header_val));
+		m_request.add_header(m_header_key, m_header_val);
 		m_header_key.clear();
 		m_header_val.clear();
 		m_header_gotval = false;
@@ -81,24 +81,23 @@ HttpClient::save_last_header()
 void
 HttpClient::reply()
 {
-	char data[] = "HTTP/1.1 200 OK\r\n"
-		"Content-Length: 13\r\n"
-		"Content-Type: text/plain\r\n"
-		"Connection: keep-alive\r\n"
-		"\r\n"
-		"hello, world\n";
+	m_reply.set_status(200, "OK");
+	m_reply.add_header("Content-Type", "text/plain");
+	m_reply.add_header("Connection", "keep-alive");
+	m_reply.add_body("hello, world\n", 13);
+	m_reply.prepare();
 
-	size_t sz = sizeof(data)-1;
-	int done = 0;
-	while (done < sz)
+	HttpReply::iterator i;
+	for (i = m_reply.begin(); i != m_reply.end(); )
 	{
-		int sent = safe_write(data + done, sz - done);
+		int sent = safe_write(&(*i), distance(i, m_reply.end()));
 		if (sent <= 0)
 			yield((int)Need::HALT);
-		done += sent;
+		i += sent;
 	}
 
-	// reset parser for next request
+	// reset reply and parser for next request
+	m_reply.reset();
 	configure_http_parser();
 }
 
@@ -118,10 +117,8 @@ HttpClient::configure_http_parser()
 	m_parserconf.on_headers_complete = _http_on_headers_complete_cb;
 
 	// http data
-	m_url.clear();
 	m_header_key.clear();
 	m_header_val.clear();
-	m_headers.clear();
 	m_header_gotval = false;
 }
 
@@ -133,7 +130,7 @@ HttpClient::safe_read(char *p, size_t sz)
 }
 
 int
-HttpClient::safe_write(char *p, size_t sz)
+HttpClient::safe_write(const char *p, size_t sz)
 {
 	yield((int)Need::WRITE);
 	return write(m_fd, p, sz);

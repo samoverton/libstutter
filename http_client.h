@@ -3,6 +3,9 @@
 
 #include "coroutine.h"
 #include "http-parser/http_parser.h"
+#include "http_request.h"
+#include "http_reply.h"
+
 #include <event.h>
 #include <string>
 #include <map>
@@ -33,23 +36,22 @@ private:
 
 	// yielding IO
 	int safe_read (char *p, size_t sz);
-	int safe_write(char *p, size_t sz);
+	int safe_write(const char *p, size_t sz);
 
 private:
 	Server &m_server;
 	int m_fd;
 	struct event m_ev;
 
-	// http request
+	HttpRequest m_request;
+	HttpReply   m_reply;
+
+	// parsing
 	struct http_parser m_parser;
 	struct http_parser_settings m_parserconf;
-
-	std::string m_url;
 	std::string m_header_key;
 	std::string m_header_val;
 	bool m_header_gotval;
-	std::map<std::string, std::string> m_headers;
-
 
 friend int _http_on_url_cb(http_parser *p, const char *at, size_t sz);
 friend int _http_on_message_complete_cb(http_parser *p);
