@@ -2,6 +2,9 @@
 #include "unistd.h"
 #include "string.h"
 
+#include "handlers/base.h"
+#include "handlers/hello.h"
+
 #include <iostream>
 using namespace std;
 
@@ -39,7 +42,7 @@ _http_on_message_complete_cb(http_parser *p)
 	// cout << "Message complete" << endl;
 	HttpConnection *c = reinterpret_cast<HttpConnection*>(p->data);
 
-	c->reply();
+	c->process();
 
 	return 0;
 }
@@ -82,18 +85,19 @@ HttpConnection::save_last_header()
 }
 
 void
-HttpConnection::reply()
+HttpConnection::process()
 {
-	m_reply.set_status(200, "OK");
-	m_reply.add_header("Content-Type", "text/plain");
-	m_reply.add_header("Connection", "keep-alive");
-	m_reply.add_body("hello, world\n", 13);
+	// use custom handler to build reply
+	HelloHandler h(*this);
+	h.handle(m_request, m_reply);
+
+	// pack reply buffer
 	m_reply.prepare();
 
 	HttpReply::iterator i;
 	for (i = m_reply.begin(); i != m_reply.end(); )
 	{
-		int sent = safe_write(&(*i), distance(i, m_reply.end()));
+		int sent = safe_write(m_fd, &(*i), distance(i, m_reply.end()));
 		if (sent <= 0)
 			yield((int)Need::HALT);
 		i += sent;
@@ -126,19 +130,19 @@ HttpConnection::configure_http_parser()
 }
 
 int
-HttpConnection::safe_read(char *p, size_t sz)
+HttpConnection::safe_read(int fd, char *p, size_t sz)
 {
-	m_watched_fd = m_fd;
+	m_watched_fd = fd;
 	yield((int)Need::READ);
-	return read(m_fd, p, sz);
+	return read(fd, p, sz);
 }
 
 int
-HttpConnection::safe_write(const char *p, size_t sz)
+HttpConnection::safe_write(int fd, const char *p, size_t sz)
 {
-	m_watched_fd = m_fd;
+	m_watched_fd = fd;
 	yield((int)Need::WRITE);
-	return write(m_fd, p, sz);
+	return write(fd, p, sz);
 }
 
 int
@@ -147,7 +151,7 @@ HttpConnection::exec()
 	while(true)
 	{
 		char buffer[READ_BUFFER_SIZE];
-		int recvd = safe_read(buffer, sizeof(buffer));
+		int recvd = safe_read(m_fd, buffer, sizeof(buffer));
 		if (recvd <= 0)
 			return (int)Need::HALT;
 

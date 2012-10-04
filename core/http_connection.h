@@ -28,15 +28,15 @@ public:
 
 
 private:
-	void reply();
+	void process();
 
 	// HTTP
 	void configure_http_parser();
 	void save_last_header();
 
 	// yielding IO
-	int safe_read (char *p, size_t sz);
-	int safe_write(const char *p, size_t sz);
+	int safe_read (int fd, char *p, size_t sz);
+	int safe_write(int fd, const char *p, size_t sz);
 
 private:
 	Server &m_server;

@@ -1,14 +1,14 @@
 #include "http_reply.h"
 #include "http_connection.h"
 #include <sstream>
+#include <iostream>
 
 using namespace std;
 
 HttpReply::HttpReply(HttpConnection &connection)
-	: m_code(200)
-	, m_status("OK")
-	, m_connection(connection)
+	: m_connection(connection)
 {
+	reset();
 }
 
 void
@@ -54,6 +54,7 @@ HttpReply::prepare()
 	}
 	ss << crlf;
 
+
 	m_data.clear();
 	string headers = ss.str();
 	m_data.reserve(headers.size() + m_body.size());
@@ -65,10 +66,12 @@ void
 HttpReply::reset()
 {
 	m_headers.clear();
-	m_code = 0;
-	m_status.clear();
+	m_code = 200;
+	m_status = "OK";
 	m_data.clear();
 	m_body.clear();
+
+	add_header("Connection", "keep-alive");
 }
 
 HttpReply::iterator

@@ -6,6 +6,7 @@
 
 class HelloHandler : public virtual BaseHandler {
 public:
+	HelloHandler(HttpConnection &cx);
 	virtual void handle(const HttpRequest &req, HttpReply &reply);
 
 private:

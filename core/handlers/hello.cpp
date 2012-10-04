@@ -2,6 +2,11 @@
 
 using namespace std;
 
+HelloHandler::HelloHandler(HttpConnection &cx)
+	: BaseHandler(cx)
+{
+}
+
 void
 HelloHandler::handle(const HttpRequest &req, HttpReply &reply)
 {
