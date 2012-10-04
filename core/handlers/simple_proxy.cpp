@@ -10,8 +10,8 @@ SimpleProxyHandler::SimpleProxyHandler(HttpConnection &cx)
 void
 SimpleProxyHandler::handle(const HttpRequest &req, HttpReply &reply)
 {
-	HttpReply jbird_reply(connection());
-	send_to("bea", req, jbird_reply);
+	//HttpReply jbird_reply(connection());
+	send_to("bea", req, reply);
 	/*
 
 	   if (reply.code() != 200 && reply.code() != 204)

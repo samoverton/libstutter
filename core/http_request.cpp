@@ -17,12 +17,14 @@ using namespace std;
 
 HttpRequest::HttpRequest(HttpConnection &connection)
 	: m_connection(connection)
+	, m_done(false)
 {}
 
 HttpRequest::HttpRequest(const HttpRequest &request)
 	: m_url(request.m_url)
 	, m_headers(request.m_headers)
 	, m_connection(request.m_connection)
+	, m_done(request.m_done)
 {
 }
 
@@ -80,8 +82,6 @@ HttpRequest::prepare()
 void
 HttpRequest::connect()
 {
-	cout << "CONNECT" << endl;
-
 	int fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (-1 == fd) {
 		// TODO: log
@@ -106,7 +106,7 @@ HttpRequest::connect()
 		struct sockaddr_in *sin = (struct sockaddr_in*)ai->ai_addr;
 		int ret = ::connect(fd, (const struct sockaddr*)sin,
 				sizeof(struct sockaddr_in));
-		cout << "Connect: ret=" << ret << endl;
+		// cout << "Connect: ret=" << ret << endl;
 		m_fd = fd;
 		break;
 	}
@@ -116,13 +116,10 @@ HttpRequest::connect()
 void
 HttpRequest::send()
 {
-	cout << "SEND [" << m_data << "]" << endl;
-
 	string::iterator i;
 	for (i = m_data.begin(); i != m_data.end(); )
 	{
 		int sent = m_connection.safe_write(m_fd, &(*i), distance(i, m_data.end()));
-		cerr << "sent: " << sent << " bytes" << endl;
 		if (sent <= 0) {
 			// TODO: handle
 			close(m_fd);
@@ -133,8 +130,29 @@ HttpRequest::send()
 }
 
 void
+_done(void *self)
+{
+	HttpRequest *req = reinterpret_cast<HttpRequest*>(self);
+	req->m_done = true; // FIXME: ugly
+}
+
+void
 HttpRequest::read_reply(HttpReply &reply)
 {
-	cout << "READ_REPLY" << endl;
+	HttpParser parser(HttpParser::RESPONSE, &reply,
+			_done, reinterpret_cast<void*>(this));
+
+	while(!m_done)
+	{
+		char buffer[1024];
+		int recvd = m_connection.safe_read(m_fd, buffer, sizeof(buffer));
+		if (recvd <= 0)
+			m_connection.yield((int)HttpConnection::Need::HALT);
+
+		bool success = parser.add(buffer, (size_t)recvd);
+		if (!success)
+			m_connection.yield((int)HttpConnection::Need::HALT);
+	}
+
 	close(m_fd);
 }

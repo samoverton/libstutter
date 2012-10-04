@@ -32,8 +32,10 @@ private:
 
 	HttpConnection &m_connection;
 	std::string m_data;
+	bool m_done;
 
 friend class HttpConnection;
+friend void _done(void*);
 };
 
 #endif // HTTP_REQUEST_H

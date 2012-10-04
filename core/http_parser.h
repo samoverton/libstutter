@@ -15,12 +15,13 @@ public:
 	HttpParser(Mode m, HttpReply *reply, void (*fun)(void*), void *ptr);
 
 	bool add(const char *p, size_t sz);
-	void configure();
+	void reset();
 
 private:
 	void configure_http_parser();
 	void save_last_header();
-	void add_url_fragment(const char *p, size_t sz);
+	void add_url_fragment (const char *p, size_t sz);
+	void add_body_fragment(const char *at, size_t sz);
 	void callback();
 
 private:
@@ -42,6 +43,7 @@ friend int _http_on_url_cb(http_parser *p, const char *at, size_t sz);
 friend int _http_on_message_complete_cb(http_parser *p);
 friend int _http_on_header_field_cb(http_parser *p, const char *at, size_t sz);
 friend int _http_on_header_value_cb(http_parser *p, const char *at, size_t sz);
+friend int _http_on_body_cb(http_parser *p, const char *at, size_t sz);
 friend int _http_on_headers_complete_cb(http_parser *p);
 };
 

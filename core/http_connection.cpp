@@ -28,7 +28,6 @@ HttpConnection::HttpConnection(Server &server, int fd)
 	, m_parser(HttpParser::REQUEST, &m_request,
 			_process, static_cast<void*>(this))
 {
-	m_parser.configure();
 }
 
 HttpConnection::~HttpConnection()
@@ -40,8 +39,8 @@ void
 HttpConnection::process()
 {
 	// use custom handler to build reply
-	HelloHandler h(*this);
-	// SimpleProxyHandler h(*this);
+	// HelloHandler h(*this);
+	SimpleProxyHandler h(*this);
 	h.handle(m_request, m_reply);
 
 	// pack reply buffer
@@ -58,7 +57,7 @@ HttpConnection::process()
 
 	// reset reply and parser for next request
 	m_reply.reset();
-	m_parser.configure();
+	m_parser.reset();
 }
 
 

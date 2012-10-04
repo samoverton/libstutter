@@ -46,6 +46,14 @@ _http_on_header_value_cb(http_parser *p, const char *at, size_t sz)
 }
 
 int
+_http_on_body_cb(http_parser *p, const char *at, size_t sz)
+{
+	HttpParser *parser = reinterpret_cast<HttpParser*>(p->data);
+	parser->add_body_fragment(at, sz);
+	return 0;
+}
+
+int
 _http_on_headers_complete_cb(http_parser *p)
 {
 	HttpParser *parser = reinterpret_cast<HttpParser*>(p->data);
@@ -81,6 +89,13 @@ HttpParser::add_url_fragment(const char *p, size_t sz)
 }
 
 void
+HttpParser::add_body_fragment(const char *at, size_t sz)
+{
+	if (m_mode == HttpParser::RESPONSE)
+		m_reply->add_body(at, sz);
+}
+
+void
 HttpParser::callback()
 {
 	m_fun(m_fun_data);
@@ -93,6 +108,7 @@ HttpParser::HttpParser(Mode m, HttpRequest *request, void (*fun)(void*), void *p
 	, m_fun(fun)
 	, m_fun_data(ptr)
 {
+	reset();
 }
 
 HttpParser::HttpParser(Mode m, HttpReply *reply, void (*fun)(void*), void *ptr)
@@ -102,6 +118,7 @@ HttpParser::HttpParser(Mode m, HttpReply *reply, void (*fun)(void*), void *ptr)
 	, m_fun(fun)
 	, m_fun_data(ptr)
 {
+	reset();
 }
 
 bool
@@ -112,7 +129,7 @@ HttpParser::add(const char *p, size_t sz)
 }
 
 void
-HttpParser::configure()
+HttpParser::reset()
 {
 	// parser
 	http_parser_init(&m_parser, (m_mode == REQUEST ? HTTP_REQUEST : HTTP_RESPONSE));
@@ -125,6 +142,7 @@ HttpParser::configure()
 	m_parserconf.on_header_field = _http_on_header_field_cb;
 	m_parserconf.on_header_value = _http_on_header_value_cb;
 	m_parserconf.on_headers_complete = _http_on_headers_complete_cb;
+	m_parserconf.on_body = _http_on_body_cb;
 
 	// http data
 	m_header_key.clear();
