@@ -1,7 +1,8 @@
 OUT=test
 
-HTTP_PARSER_OBJS=http-parser/http_parser.o
-OBJS=main.o coroutine.o server.o http_client.o http_request.o http_reply.o $(HTTP_PARSER_OBJS)
+HTTP_PARSER_OBJS=core/http-parser/http_parser.o
+CORE_OBJS=core/main.o core/coroutine.o core/server.o core/http_client.o core/http_request.o core/http_reply.o
+OBJS=$(CORE_OBJS) $(HTTP_PARSER_OBJS)
 CXXFLAGS=-std=c++0x -O3 -Wall -Wextra
 LDFLAGS=-levent
 
