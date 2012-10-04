@@ -3,7 +3,7 @@
 using namespace std;
 
 void
-HandlerHello::handle(const HttpRequest &req, HttpReply &reply)
+HelloHandler::handle(const HttpRequest &req, HttpReply &reply)
 {
 	/*
 	   send_to("storagevm", req, reply);
@@ -18,7 +18,7 @@ HandlerHello::handle(const HttpRequest &req, HttpReply &reply)
 }
 
 void
-HandlerHello::send_to(string host, const HttpRequest &req, HttpReply &reply)
+HelloHandler::send_to(string host, const HttpRequest &req, HttpReply &reply)
 {
 	/*
 	HttpRequest storage_fw(req);

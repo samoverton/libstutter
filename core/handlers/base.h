@@ -5,9 +5,9 @@
 #include "../http_request.h"
 #include "../http_reply.h"
 
-class HandlerBase {
+class BaseHandler {
 public:
-	HandlerBase(HttpConnection &cx);
+	BaseHandler(HttpConnection &cx);
 	virtual void handle(const HttpRequest &req, HttpReply &reply) = 0;
 
 protected:

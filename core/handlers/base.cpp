@@ -1,12 +1,12 @@
 #include "base.h"
 
-HandlerBase::HandlerBase(HttpConnection &cx)
+BaseHandler::BaseHandler(HttpConnection &cx)
 	: m_cx(cx)
 {
 }
 
 HttpConnection &
-HandlerBase::connection()
+BaseHandler::connection()
 {
 	return m_cx;
 }

@@ -4,7 +4,7 @@
 #include "base.h"
 #include <string>
 
-class HandlerHello : public virtual HandlerBase {
+class HelloHandler : public virtual BaseHandler {
 public:
 	virtual void handle(const HttpRequest &req, HttpReply &reply);
 
