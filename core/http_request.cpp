@@ -1,6 +1,18 @@
 #include "http_request.h"
+#include "http_client.h"
 
 using namespace std;
+
+HttpRequest::HttpRequest(HttpClient &client)
+	: m_client(client)
+{}
+
+HttpRequest::HttpRequest(const HttpRequest &request)
+	: m_url(request.m_url)
+	, m_headers(request.m_headers)
+	, m_client(request.m_client)
+{
+}
 
 const string&
 HttpRequest::url() const

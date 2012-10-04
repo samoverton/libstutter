@@ -14,7 +14,6 @@ HandlerHello::handle(const HttpRequest &req, HttpReply &reply)
 	   send_to("jbirdvm", req, reply);
 	*/
 
-	reply.set_status(200, "OK");
 	reply.add_body("hello\n", 6);
 }
 

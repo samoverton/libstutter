@@ -4,8 +4,12 @@
 #include <string>
 #include <map>
 
+class HttpClient;
+
 class HttpRequest {
 public:
+	HttpRequest(HttpClient &client);
+	HttpRequest(const HttpRequest &request);
 	const std::string &url() const;
 	void add_header(std::string &key, std::string &val);
 	void add_url_fragment(const char *at, size_t sz);
@@ -13,6 +17,8 @@ public:
 private:
 	std::string m_url;
 	std::map<std::string, std::string> m_headers;
+
+	HttpClient &m_client;
 
 friend class HttpClient;
 };

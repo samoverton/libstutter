@@ -1,7 +1,15 @@
 #include "http_reply.h"
+#include "http_client.h"
 #include <sstream>
 
 using namespace std;
+
+HttpReply::HttpReply(HttpClient &client)
+	: m_code(200)
+	, m_status("OK")
+	, m_client(client)
+{
+}
 
 void
 HttpReply::set_status(short code, std::string status)

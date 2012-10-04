@@ -10,6 +10,8 @@ using namespace std;
 HttpClient::HttpClient(Server &server, int fd)
 	: m_server(server)
 	, m_fd(fd)
+	, m_request(*this)
+	, m_reply(*this)
 {
 	configure_http_parser();
 }
