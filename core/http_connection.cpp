@@ -4,6 +4,7 @@
 
 #include "handlers/base.h"
 #include "handlers/hello.h"
+#include "handlers/simple_proxy.h"
 
 #include <iostream>
 using namespace std;
@@ -88,7 +89,8 @@ void
 HttpConnection::process()
 {
 	// use custom handler to build reply
-	HelloHandler h(*this);
+	// HelloHandler h(*this);
+	SimpleProxyHandler h(*this);
 	h.handle(m_request, m_reply);
 
 	// pack reply buffer
@@ -132,7 +134,7 @@ HttpConnection::configure_http_parser()
 int
 HttpConnection::safe_read(int fd, char *p, size_t sz)
 {
-	m_watched_fd = fd;
+	watch_fd(fd);
 	yield((int)Need::READ);
 	return read(fd, p, sz);
 }
@@ -140,7 +142,7 @@ HttpConnection::safe_read(int fd, char *p, size_t sz)
 int
 HttpConnection::safe_write(int fd, const char *p, size_t sz)
 {
-	m_watched_fd = fd;
+	watch_fd(fd);
 	yield((int)Need::WRITE);
 	return write(fd, p, sz);
 }
@@ -168,7 +170,13 @@ HttpConnection::exec()
 int
 HttpConnection::watched_fd() const
 {
-	return m_fd;
+	return m_watched_fd;
+}
+
+void
+HttpConnection::watch_fd(int fd)
+{
+	m_watched_fd = fd;
 }
 
 struct event *

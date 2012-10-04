@@ -12,10 +12,10 @@ public:
 	typedef enum {INIT, RUNNING, DONE} State;
 	State state() const;
 	int resume();
+	void yield(int value);
 
 protected:
 	virtual int exec() = 0;
-	void yield(int value);
 	void run();
 
 private:

@@ -1,5 +1,4 @@
 #include "server.h"
-#include <iostream>
 
 #include <unistd.h>
 #include <signal.h>
@@ -92,7 +91,6 @@ Server::resume_connection(HttpConnection *c)
 			break;
 
 		case HttpConnection::Need::HALT:
-			cout << "delete connection " << c << endl;
 			delete c;
 			break;
 	}

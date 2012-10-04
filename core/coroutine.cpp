@@ -1,6 +1,6 @@
 #include "coroutine.h"
 
-#define COROUTINE_STACK_SIZE (16 * 1024)
+#define COROUTINE_STACK_SIZE (32 * 1024)
 
 using namespace std;
 

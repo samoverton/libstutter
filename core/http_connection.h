@@ -20,11 +20,16 @@ public:
 	virtual int exec();
 
 	int watched_fd() const;
+	void watch_fd(int fd);
 	struct event *event();
 	Server &server();
 
 public:
 	typedef enum {READ, WRITE, HALT} Need;
+
+	// yielding IO
+	int safe_read (int fd, char *p, size_t sz);
+	int safe_write(int fd, const char *p, size_t sz);
 
 
 private:
@@ -33,10 +38,6 @@ private:
 	// HTTP
 	void configure_http_parser();
 	void save_last_header();
-
-	// yielding IO
-	int safe_read (int fd, char *p, size_t sz);
-	int safe_write(int fd, const char *p, size_t sz);
 
 private:
 	Server &m_server;
