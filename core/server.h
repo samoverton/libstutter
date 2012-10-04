@@ -3,7 +3,7 @@
 
 #include <string>
 #include <event.h>
-#include "http_client.h"
+#include "http_connection.h"
 
 class Server {
 public:
@@ -13,8 +13,8 @@ public:
 
 private:
 	int setup_socket() const;
-	void register_client(HttpClient *c, short event);
-	void resume_client(HttpClient *c);
+	void register_connection(HttpConnection *c, short event);
+	void resume_connection(HttpConnection *c);
 
 private:
 	std::string m_host;
@@ -25,8 +25,8 @@ private:
 	struct event_base *m_base;
 	struct event       m_ev;
 
-friend void _on_possible_accept(int, short, void *);
-friend void    _on_client_event(int, short, void *);
+friend void  _on_possible_accept(int, short, void *);
+friend void _on_connection_event(int, short, void *);
 
 };
 

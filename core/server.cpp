@@ -79,39 +79,39 @@ Server::setup_socket() const
 }
 
 void
-Server::resume_client(HttpClient *c)
+Server::resume_connection(HttpConnection *c)
 {
-	HttpClient::Need n = (HttpClient::Need)c->resume();
+	HttpConnection::Need n = (HttpConnection::Need)c->resume();
 	switch(n) {
-		case HttpClient::Need::READ:
-			register_client(c, EV_READ);
+		case HttpConnection::Need::READ:
+			register_connection(c, EV_READ);
 			break;
 
-		case HttpClient::Need::WRITE:
-			register_client(c, EV_WRITE);
+		case HttpConnection::Need::WRITE:
+			register_connection(c, EV_WRITE);
 			break;
 
-		case HttpClient::Need::HALT:
-			cout << "delete client " << c->fd() << endl;
+		case HttpConnection::Need::HALT:
+			cout << "delete connection " << c->fd() << endl;
 			delete c;
 			break;
 	}
 }
 
 void
-_on_client_event(int fd, short event, void *ptr)
+_on_connection_event(int fd, short event, void *ptr)
 {
-	HttpClient *c = reinterpret_cast<HttpClient*>(ptr);
+	HttpConnection *c = reinterpret_cast<HttpConnection*>(ptr);
 	Server &s = c->server();
 
-	s.resume_client(c);
+	s.resume_connection(c);
 }
 
 void
-Server::register_client(HttpClient *c, short event)
+Server::register_connection(HttpConnection *c, short event)
 {
 	struct event *ev = c->event();
-	event_set(ev, c->fd(), event, _on_client_event, c);
+	event_set(ev, c->fd(), event, _on_connection_event, c);
 	event_base_set(m_base, ev);
 	event_add(ev, 0); // TODO: check return code
 }
@@ -121,14 +121,14 @@ _on_possible_accept(int fd, short event, void *ptr)
 {
 	Server *s = reinterpret_cast<Server*>(ptr);
 
-	// accept fd and create client
+	// accept fd and create connection
 	struct sockaddr_in addr;
 	socklen_t addr_sz = sizeof(addr);
 	int client_fd = accept(fd, (struct sockaddr*)&addr, &addr_sz);
-	HttpClient *c = new HttpClient(*s, client_fd);
+	HttpConnection *c = new HttpConnection(*s, client_fd);
 
 	// resume
-	s->resume_client(c);
+	s->resume_connection(c);
 }
 
 void

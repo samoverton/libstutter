@@ -1,13 +1,13 @@
 #include "http_reply.h"
-#include "http_client.h"
+#include "http_connection.h"
 #include <sstream>
 
 using namespace std;
 
-HttpReply::HttpReply(HttpClient &client)
+HttpReply::HttpReply(HttpConnection &connection)
 	: m_code(200)
 	, m_status("OK")
-	, m_client(client)
+	, m_connection(connection)
 {
 }
 

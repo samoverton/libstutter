@@ -4,11 +4,11 @@
 #include <string>
 #include <map>
 
-class HttpClient;
+class HttpConnection;
 
 class HttpRequest {
 public:
-	HttpRequest(HttpClient &client);
+	HttpRequest(HttpConnection &connection);
 	HttpRequest(const HttpRequest &request);
 	const std::string &url() const;
 	void add_header(std::string &key, std::string &val);
@@ -18,9 +18,9 @@ private:
 	std::string m_url;
 	std::map<std::string, std::string> m_headers;
 
-	HttpClient &m_client;
+	HttpConnection &m_connection;
 
-friend class HttpClient;
+friend class HttpConnection;
 };
 
 #endif // HTTP_REQUEST_H

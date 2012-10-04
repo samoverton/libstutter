@@ -1,5 +1,5 @@
-#ifndef HTTP_CLIENT_H
-#define HTTP_CLIENT_H
+#ifndef HTTP_CONNECTION_H
+#define HTTP_CONNECTION_H
 
 #include "coroutine.h"
 #include "http-parser/http_parser.h"
@@ -12,11 +12,11 @@
 
 class Server;
 
-class HttpClient : public Coroutine {
+class HttpConnection : public Coroutine {
 public:
 
-	HttpClient(Server &server, int fd);
-	virtual ~HttpClient();
+	HttpConnection(Server &server, int fd);
+	virtual ~HttpConnection();
 	virtual int exec();
 
 	int fd() const;
@@ -60,4 +60,4 @@ friend int _http_on_header_value_cb(http_parser *p, const char *at, size_t sz);
 friend int _http_on_headers_complete_cb(http_parser *p);
 };
 
-#endif // HTTP_CLIENT_H
+#endif // HTTP_CONNECTION_H

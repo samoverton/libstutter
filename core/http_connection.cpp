@@ -1,4 +1,4 @@
-#include "http_client.h"
+#include "http_connection.h"
 #include "unistd.h"
 #include "string.h"
 
@@ -7,7 +7,7 @@ using namespace std;
 
 #define READ_BUFFER_SIZE 4096
 
-HttpClient::HttpClient(Server &server, int fd)
+HttpConnection::HttpConnection(Server &server, int fd)
 	: m_server(server)
 	, m_fd(fd)
 	, m_request(*this)
@@ -16,7 +16,7 @@ HttpClient::HttpClient(Server &server, int fd)
 	configure_http_parser();
 }
 
-HttpClient::~HttpClient()
+HttpConnection::~HttpConnection()
 {
 	close(m_fd);
 }
@@ -26,7 +26,7 @@ HttpClient::~HttpClient()
 int
 _http_on_url_cb(http_parser *p, const char *at, size_t sz)
 {
-	HttpClient *c = reinterpret_cast<HttpClient*>(p->data);
+	HttpConnection *c = reinterpret_cast<HttpConnection*>(p->data);
 	c->m_request.add_url_fragment(at, sz); // FIXME?
 
 	return 0;
@@ -36,7 +36,7 @@ int
 _http_on_message_complete_cb(http_parser *p)
 {
 	// cout << "Message complete" << endl;
-	HttpClient *c = reinterpret_cast<HttpClient*>(p->data);
+	HttpConnection *c = reinterpret_cast<HttpConnection*>(p->data);
 
 	c->reply();
 
@@ -46,7 +46,7 @@ _http_on_message_complete_cb(http_parser *p)
 int
 _http_on_header_field_cb(http_parser *p, const char *at, size_t sz)
 {
-	HttpClient *c = reinterpret_cast<HttpClient*>(p->data);
+	HttpConnection *c = reinterpret_cast<HttpConnection*>(p->data);
 	c->save_last_header();
 	c->m_header_key.append(at, sz);
 	return 0;
@@ -55,7 +55,7 @@ _http_on_header_field_cb(http_parser *p, const char *at, size_t sz)
 int
 _http_on_header_value_cb(http_parser *p, const char *at, size_t sz)
 {
-	HttpClient *c = reinterpret_cast<HttpClient*>(p->data);
+	HttpConnection *c = reinterpret_cast<HttpConnection*>(p->data);
 	c->m_header_val.append(at, sz);
 	c->m_header_gotval = true;
 	return 0;
@@ -64,13 +64,13 @@ _http_on_header_value_cb(http_parser *p, const char *at, size_t sz)
 int
 _http_on_headers_complete_cb(http_parser *p)
 {
-	HttpClient *c = reinterpret_cast<HttpClient*>(p->data);
+	HttpConnection *c = reinterpret_cast<HttpConnection*>(p->data);
 	c->save_last_header();
 	return 0;
 }
 
 void
-HttpClient::save_last_header()
+HttpConnection::save_last_header()
 {
 	if (m_header_gotval) {
 		m_request.add_header(m_header_key, m_header_val);
@@ -81,7 +81,7 @@ HttpClient::save_last_header()
 }
 
 void
-HttpClient::reply()
+HttpConnection::reply()
 {
 	m_reply.set_status(200, "OK");
 	m_reply.add_header("Content-Type", "text/plain");
@@ -104,7 +104,7 @@ HttpClient::reply()
 }
 
 void
-HttpClient::configure_http_parser()
+HttpConnection::configure_http_parser()
 {
 	// parser
 	http_parser_init(&m_parser, HTTP_REQUEST);
@@ -125,21 +125,21 @@ HttpClient::configure_http_parser()
 }
 
 int
-HttpClient::safe_read(char *p, size_t sz)
+HttpConnection::safe_read(char *p, size_t sz)
 {
 	yield((int)Need::READ);
 	return read(m_fd, p, sz);
 }
 
 int
-HttpClient::safe_write(const char *p, size_t sz)
+HttpConnection::safe_write(const char *p, size_t sz)
 {
 	yield((int)Need::WRITE);
 	return write(m_fd, p, sz);
 }
 
 int
-HttpClient::exec()
+HttpConnection::exec()
 {
 	while(true)
 	{
@@ -159,19 +159,19 @@ HttpClient::exec()
 }
 
 int
-HttpClient::fd() const
+HttpConnection::fd() const
 {
 	return m_fd;
 }
 
 struct event *
-HttpClient::event()
+HttpConnection::event()
 {
 	return &m_ev;
 }
 
 Server &
-HttpClient::server()
+HttpConnection::server()
 {
 	return m_server;
 }

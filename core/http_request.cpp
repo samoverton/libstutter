@@ -1,16 +1,16 @@
 #include "http_request.h"
-#include "http_client.h"
+#include "http_connection.h"
 
 using namespace std;
 
-HttpRequest::HttpRequest(HttpClient &client)
-	: m_client(client)
+HttpRequest::HttpRequest(HttpConnection &connection)
+	: m_connection(connection)
 {}
 
 HttpRequest::HttpRequest(const HttpRequest &request)
 	: m_url(request.m_url)
 	, m_headers(request.m_headers)
-	, m_client(request.m_client)
+	, m_connection(request.m_connection)
 {
 }
 
