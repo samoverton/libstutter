@@ -16,13 +16,15 @@ public:
 	void add_url_fragment(const char *at, size_t sz);
 	void set_host(std::string host);
 
-	void send(HttpReply &reply);
+	typedef enum {NOT_EXECUTED = -1, SUCCESS, SOCKET_ERROR,
+		DNS_ERROR, CONNECTION_ERROR, WRITE_ERROR} Error;
+	Error send(HttpReply &reply);
 
 private:
-	void connect();
-	void prepare();
-	void send();
-	void read_reply(HttpReply &reply);
+	bool connect();
+	bool prepare();
+	bool send();
+	bool read_reply(HttpReply &reply);
 
 private:
 	int m_fd;
@@ -32,7 +34,7 @@ private:
 
 	HttpConnection &m_connection;
 	std::string m_data;
-	bool m_done;
+	Error m_error;
 
 friend class HttpConnection;
 friend void _done(void*);

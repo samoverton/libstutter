@@ -17,14 +17,14 @@ using namespace std;
 
 HttpRequest::HttpRequest(HttpConnection &connection)
 	: m_connection(connection)
-	, m_done(false)
+	, m_error(NOT_EXECUTED)
 {}
 
 HttpRequest::HttpRequest(const HttpRequest &request)
 	: m_url(request.m_url)
 	, m_headers(request.m_headers)
 	, m_connection(request.m_connection)
-	, m_done(request.m_done)
+	, m_error(request.m_error)
 {
 }
 
@@ -52,16 +52,14 @@ HttpRequest::set_host(string host)
 	m_host = host;
 }
 
-void
+HttpRequest::Error
 HttpRequest::send(HttpReply &reply)
 {
-	prepare();
-	connect();
-	send();
-	read_reply(reply);
+	prepare() && connect() && send() && read_reply(reply);
+	return m_error;
 }
 
-void
+bool
 HttpRequest::prepare()
 {
 	add_header("Host", m_host);
@@ -77,43 +75,51 @@ HttpRequest::prepare()
 	ss << crlf;
 
 	m_data = ss.str();
+	return true;
 }
 
-void
+bool
 HttpRequest::connect()
 {
 	int fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (-1 == fd) {
-		// TODO: log
-		return;
+	if (fd < 0) {
+		m_error = SOCKET_ERROR;
+		return false; // TODO: log
 	}
 
 	// set socket as non-blocking.
 	int ret = fcntl(fd, F_SETFD, O_NONBLOCK);
 	if (0 != ret) {
-		// TODO: log
-		return;
+		m_error = SOCKET_ERROR;
+		return false; // TODO: log
 	}
 
 	struct addrinfo *info = 0;
 	ret = getaddrinfo(m_host.c_str(), "8080", 0, &info);
-	if (ret < 0)
-		return; // TODO: log
+	if (ret < 0) {
+		m_error = DNS_ERROR;
+		return false; // TODO: log
+	}
 
-	char *id = 0;
+	bool success = true;
 	struct addrinfo *ai;
 	for (ai = info; ai; ai = ai->ai_next) {
 		struct sockaddr_in *sin = (struct sockaddr_in*)ai->ai_addr;
 		int ret = ::connect(fd, (const struct sockaddr*)sin,
 				sizeof(struct sockaddr_in));
 		// cout << "Connect: ret=" << ret << endl;
+		if (ret != 0) {
+			success = false;
+			m_error = CONNECTION_ERROR;
+		}
 		m_fd = fd;
 		break;
 	}
 	freeaddrinfo(info);
+	return success;
 }
 
-void
+bool
 HttpRequest::send()
 {
 	string::iterator i;
@@ -121,28 +127,29 @@ HttpRequest::send()
 	{
 		int sent = m_connection.safe_write(m_fd, &(*i), distance(i, m_data.end()));
 		if (sent <= 0) {
-			// TODO: handle
+			m_error = WRITE_ERROR;
 			close(m_fd);
-			return;
+			return false;
 		}
 		i += sent;
 	}
+	return true;
 }
 
 void
 _done(void *self)
 {
 	HttpRequest *req = reinterpret_cast<HttpRequest*>(self);
-	req->m_done = true; // FIXME: ugly
+	req->m_error = HttpRequest::Error::SUCCESS;
 }
 
-void
+bool
 HttpRequest::read_reply(HttpReply &reply)
 {
 	HttpParser parser(HttpParser::RESPONSE, &reply,
 			_done, reinterpret_cast<void*>(this));
 
-	while(!m_done)
+	while(m_error != SUCCESS)
 	{
 		char buffer[1024];
 		int recvd = m_connection.safe_read(m_fd, buffer, sizeof(buffer));
@@ -155,4 +162,5 @@ HttpRequest::read_reply(HttpReply &reply)
 	}
 
 	close(m_fd);
+	return true;
 }

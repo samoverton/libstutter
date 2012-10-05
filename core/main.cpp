@@ -3,6 +3,9 @@
 int
 main(int argc, char *argv[])
 {
+	(void)argc;
+	(void)argv;
+
 	Server s("127.0.0.1", 8888);
 
 	/*

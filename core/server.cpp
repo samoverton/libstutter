@@ -99,6 +99,8 @@ Server::resume_connection(HttpConnection *c)
 void
 _on_connection_event(int fd, short event, void *ptr)
 {
+	(void)fd;
+	(void)event;
 	HttpConnection *c = reinterpret_cast<HttpConnection*>(ptr);
 	Server &s = c->server();
 
@@ -117,6 +119,7 @@ Server::register_connection(HttpConnection *c, short event)
 void
 _on_possible_accept(int fd, short event, void *ptr)
 {
+	(void)event;
 	Server *s = reinterpret_cast<Server*>(ptr);
 
 	// accept fd and create connection
