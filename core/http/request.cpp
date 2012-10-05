@@ -79,10 +79,10 @@ Request::verb_str() const
 void
 Request::reset()
 {
+	Message::reset();
+	m_verb = GET;
 	m_url.clear();
 	m_host.clear();
-	m_headers.clear();
-	m_data.clear();
 	m_error = NOT_EXECUTED;
 }
 
