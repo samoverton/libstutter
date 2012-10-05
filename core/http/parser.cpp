@@ -111,7 +111,7 @@ HttpParser::HttpParser(Mode m, http::Request *request, void (*fun)(void*), void 
 	reset();
 }
 
-HttpParser::HttpParser(Mode m, HttpReply *reply, void (*fun)(void*), void *ptr)
+HttpParser::HttpParser(Mode m, http::Reply *reply, void (*fun)(void*), void *ptr)
 	: m_mode(m)
 	, m_request(0)
 	, m_reply(reply)

@@ -5,9 +5,10 @@
 #include <map>
 
 class HttpConnection;
-class HttpReply;
 
 namespace http {
+class Reply;
+
 class Request {
 public:
 	Request(HttpConnection &connection);
@@ -20,14 +21,14 @@ public:
 
 	typedef enum {NOT_EXECUTED = -1, SUCCESS, SOCKET_ERROR,
 		DNS_ERROR, CONNECTION_ERROR, WRITE_ERROR} Error;
-	Error send(HttpReply &reply);
+	Error send(Reply &reply);
 	void error(Error e);
 
 private:
 	bool connect();
 	bool prepare();
 	bool send();
-	bool read_reply(HttpReply &reply);
+	bool read_reply(Reply &reply);
 
 private:
 	int m_fd;

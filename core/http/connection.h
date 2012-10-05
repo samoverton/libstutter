@@ -41,7 +41,7 @@ private:
 	struct event m_ev;
 
 	http::Request m_request;
-	HttpReply   m_reply;
+	http::Reply   m_reply;
 	HttpParser  m_parser;
 
 friend void _process(void*);

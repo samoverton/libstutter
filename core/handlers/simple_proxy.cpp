@@ -8,7 +8,7 @@ SimpleProxyHandler::SimpleProxyHandler(HttpConnection &cx)
 }
 
 void
-SimpleProxyHandler::handle(const http::Request &req, HttpReply &reply)
+SimpleProxyHandler::handle(const http::Request &req, http::Reply &reply)
 {
 	send_to("10.2.129.13", req, reply);
 	if (reply.code() != 200 && reply.code() != 204)
@@ -17,7 +17,7 @@ SimpleProxyHandler::handle(const http::Request &req, HttpReply &reply)
 }
 
 void
-SimpleProxyHandler::send_to(string host, const http::Request &req, HttpReply &reply)
+SimpleProxyHandler::send_to(string host, const http::Request &req, http::Reply &reply)
 {
 	http::Request storage_fw(req);
 	storage_fw.set_host(host);

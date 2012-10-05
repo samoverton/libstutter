@@ -3,13 +3,13 @@
 
 namespace http {
 	class Request;
+	class Reply;
 }
-class HttpReply;
 
 class HandlerBase {
 public:
 	
-	virtual void handle(const http::Request &req, HttpReply &reply) = 0;
+	virtual void handle(const http::Request &req, http::Reply &reply) = 0;
 
 };
 

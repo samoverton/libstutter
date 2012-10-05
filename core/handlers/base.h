@@ -8,7 +8,7 @@
 class BaseHandler {
 public:
 	BaseHandler(HttpConnection &cx);
-	virtual void handle(const http::Request &req, HttpReply &reply) = 0;
+	virtual void handle(const http::Request &req, http::Reply &reply) = 0;
 
 protected:
 	HttpConnection &connection();

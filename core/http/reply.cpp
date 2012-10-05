@@ -4,28 +4,29 @@
 #include <iostream>
 
 using namespace std;
+using http::Reply;
 
-HttpReply::HttpReply(HttpConnection &connection)
+Reply::Reply(HttpConnection &connection)
 	: m_connection(connection)
 {
 	reset();
 }
 
 void
-HttpReply::set_status(short code, std::string status)
+Reply::set_status(short code, std::string status)
 {
 	m_code = code;
 	m_status = status;
 }
 
 void
-HttpReply::add_header(string key, string val)
+Reply::add_header(string key, string val)
 {
 	m_headers.insert(make_pair(key, val));
 }
 
 void
-HttpReply::add_header(string key, int val)
+Reply::add_header(string key, int val)
 {
 	stringstream ss;
 	ss << val;
@@ -34,13 +35,13 @@ HttpReply::add_header(string key, int val)
 }
 
 void
-HttpReply::add_body(const char *p, size_t sz)
+Reply::add_body(const char *p, size_t sz)
 {
 	m_body.insert(m_body.end(), p, p+sz);
 }
 
 void
-HttpReply::prepare()
+Reply::prepare()
 {
 	add_header("Content-Length", m_body.size());
 
@@ -62,7 +63,7 @@ HttpReply::prepare()
 }
 
 void
-HttpReply::reset()
+Reply::reset()
 {
 	m_headers.clear();
 	m_code = 200;
@@ -74,19 +75,19 @@ HttpReply::reset()
 }
 
 short
-HttpReply::code() const
+Reply::code() const
 {
 	return m_code;
 }
 
-HttpReply::iterator
-HttpReply::begin() const
+Reply::iterator
+Reply::begin() const
 {
 	return m_data.begin();
 }
 
-HttpReply::iterator
-HttpReply::end() const
+Reply::iterator
+Reply::end() const
 {
 	return m_data.end();
 }

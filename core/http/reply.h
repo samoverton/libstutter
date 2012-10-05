@@ -7,10 +7,11 @@
 
 class HttpConnection;
 
-class HttpReply {
+namespace http {
+class Reply {
 
 public:
-	HttpReply(HttpConnection &connection);
+	Reply(HttpConnection &connection);
 
 	void set_status(short code, std::string status);
 	void add_header(std::string key, std::string val);
@@ -35,5 +36,6 @@ private:
 
 	HttpConnection &m_connection;
 };
+}
 
 #endif // HTTP_REPLY_H

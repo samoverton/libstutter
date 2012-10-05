@@ -10,6 +10,8 @@
 using namespace std;
 using namespace std::placeholders;
 
+using http::Reply;
+
 #define READ_BUFFER_SIZE 4096
 
 void
@@ -46,7 +48,7 @@ HttpConnection::process()
 	// pack reply buffer
 	m_reply.prepare();
 
-	HttpReply::iterator i;
+	Reply::iterator i;
 	for (i = m_reply.begin(); i != m_reply.end(); )
 	{
 		int sent = safe_write(m_fd, &(*i), distance(i, m_reply.end()));

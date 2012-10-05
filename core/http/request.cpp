@@ -14,6 +14,7 @@
 
 using namespace std;
 using http::Request;
+using http::Reply;
 
 Request::Request(HttpConnection &connection)
 	: m_connection(connection)
@@ -63,7 +64,7 @@ Request::reset()
 }
 
 Request::Error
-Request::send(HttpReply &reply)
+Request::send(Reply &reply)
 {
 	prepare() && connect() && send() && read_reply(reply);
 	return m_error;
@@ -158,7 +159,7 @@ _done(void *self)
 }
 
 bool
-Request::read_reply(HttpReply &reply)
+Request::read_reply(Reply &reply)
 {
 	reply.reset();
 	HttpParser parser(HttpParser::RESPONSE, &reply,

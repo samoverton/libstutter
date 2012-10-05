@@ -7,14 +7,14 @@
 
 namespace http {
 	class Request;
+	class Reply;
 }
-class HttpReply;
 
 class HttpParser {
 public:
 	typedef enum {REQUEST, RESPONSE} Mode;
 	HttpParser(Mode m, http::Request *request, void (*fun)(void*), void *ptr);
-	HttpParser(Mode m, HttpReply *reply, void (*fun)(void*), void *ptr);
+	HttpParser(Mode m, http::Reply *reply, void (*fun)(void*), void *ptr);
 
 	bool add(const char *p, size_t sz);
 	void reset();
@@ -29,7 +29,7 @@ private:
 private:
 	Mode m_mode;
 	http::Request *m_request;
-	HttpReply *m_reply;
+	http::Reply *m_reply;
 
 	// callback (TODO: use std::function?)
 	void (*m_fun)(void*);
