@@ -11,8 +11,8 @@ void
 SimpleProxyHandler::handle(const http::Request &req, http::Reply &reply)
 {
 	send_to("10.2.129.13", req, reply);
-	if (reply.code() != 200 && reply.code() != 204)
-		return;
+	// if (reply.code() != 200 && reply.code() != 204)
+	// 	return;
 	send_to("zoe", req, reply);
 }
 

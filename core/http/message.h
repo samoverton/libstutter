@@ -9,6 +9,7 @@ namespace http {
 class Message {
 public:
 	Message();
+	Message(const Message &msg);
 	void add_header(std::string key, std::string val);
 	void add_header(std::string key, int val);
 	void add_body(const char *p, size_t sz);

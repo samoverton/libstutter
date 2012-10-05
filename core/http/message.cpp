@@ -1,10 +1,16 @@
 #include "message.h"
+#include <iostream>
 #include <sstream>
 
 using namespace std;
 using http::Message;
 
 Message::Message()
+{
+}
+Message::Message(const Message &msg)
+	: m_headers(msg.m_headers)
+	, m_body(msg.m_body)
 {
 }
 

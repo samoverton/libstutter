@@ -1,7 +1,6 @@
 #include "request.h"
 #include "connection.h"
 
-#include <iostream>
 #include <sstream>
 
 #include <netinet/in.h>
@@ -26,8 +25,8 @@ Request::Request(Connection &connection)
 {}
 
 Request::Request(const Request &request)
-	: Message()
-	, m_verb(GET)
+	: Message(request)
+	, m_verb(request.m_verb)
 	, m_url(request.m_url)
 	, m_connection(request.m_connection)
 	, m_error(request.m_error)
@@ -77,7 +76,6 @@ Request::verb_str() const
 	}
 }
 
-
 void
 Request::reset()
 {
@@ -106,6 +104,8 @@ void
 Request::prepare()
 {
 	add_header("Host", m_host);
+	add_header("Content-Length", m_body.size());
+
 	stringstream ss;
 	string crlf("\r\n");
 	ss << verb_str() << " " << m_url << " HTTP/1.1" << crlf;
