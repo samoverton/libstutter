@@ -96,6 +96,12 @@ Server::resume_connection(http::Connection *c)
 	}
 }
 
+PoolManager&
+Server::pool_manager()
+{
+	return m_poolmgr;
+}
+
 void
 _on_connection_event(int fd, short event, void *ptr)
 {

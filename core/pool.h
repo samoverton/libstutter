@@ -2,16 +2,27 @@
 #define POOL_H
 
 #include <set>
+#include <map>
+#include <string>
 
-class Pool {
+class SocketPool {
 public:
-	bool get(int &i);
-	bool put(int i);
+	bool get(int &fd);
+	bool put(int fd);
+	bool del(int fd);
 
 private:
 
 	std::set<int> m_avail;
 	std::set<int> m_taken;
+};
+
+class PoolManager {
+public:
+	SocketPool & get_pool(std::string host);
+
+private:
+	std::map<std::string, SocketPool> m_pools;
 
 };
 

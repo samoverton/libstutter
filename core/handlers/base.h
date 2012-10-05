@@ -4,6 +4,7 @@
 #include "../http/connection.h"
 #include "../http/request.h"
 #include "../http/reply.h"
+#include "../pool.h"
 
 class BaseHandler {
 public:
@@ -12,6 +13,7 @@ public:
 
 protected:
 	http::Connection &connection();
+	PoolManager &m_poolmgr;
 
 private:
 	http::Connection &m_cx;

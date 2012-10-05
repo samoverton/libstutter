@@ -4,12 +4,14 @@
 #include <string>
 #include <event.h>
 #include "http/connection.h"
+#include "pool.h"
 
 class Server {
 public:
 
 	Server(std::string host, short port);
 	void start();
+	PoolManager &pool_manager();
 
 private:
 	int setup_socket() const;
@@ -20,6 +22,8 @@ private:
 	std::string m_host;
 	short m_port;
 	int m_fd;
+
+	PoolManager m_poolmgr;
 
 	// libevent
 	struct event_base *m_base;
