@@ -19,12 +19,16 @@ using http::Connection;
 using http::Parser;
 
 Request::Request(Connection &connection)
-	: m_connection(connection)
+	: Message()
+	, m_verb(GET)
+	, m_connection(connection)
 	, m_error(NOT_EXECUTED)
 {}
 
 Request::Request(const Request &request)
-	: m_url(request.m_url)
+	: Message()
+	, m_verb(GET)
+	, m_url(request.m_url)
 	, m_connection(request.m_connection)
 	, m_error(request.m_error)
 {
@@ -49,6 +53,32 @@ Request::set_host(string host)
 }
 
 void
+Request::set_verb(Verb v)
+{
+	m_verb = v;
+}
+
+Request::Verb
+Request::verb() const
+{
+	return m_verb;
+}
+
+string
+Request::verb_str() const
+{
+	switch(m_verb) {
+		case GET:    return "GET";
+		case POST:   return "POST";
+		case PUT:    return "PUT";
+		case HEAD:   return "HEAD";
+		case DELETE: return "DELETE";
+		default:     return "";
+	}
+}
+
+
+void
 Request::reset()
 {
 	m_url.clear();
@@ -61,7 +91,8 @@ Request::reset()
 Request::Error
 Request::send(Reply &reply)
 {
-	prepare() && connect() && send() && read_reply(reply);
+	prepare();
+	connect() && send() && read_reply(reply);
 	return m_error;
 }
 
@@ -71,7 +102,7 @@ Request::error(Error e)
 	m_error = e;
 }
 
-bool
+void
 Request::prepare()
 {
 	add_header("Host", m_host);
@@ -87,7 +118,6 @@ Request::prepare()
 
 	string headers = ss.str();
 	m_data.insert(m_data.end(), headers.begin(), headers.end());
-	return true;
 }
 
 bool

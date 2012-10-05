@@ -6,16 +6,17 @@
 namespace http {
 class Connection;
 
-class Reply : public Message {
+class Reply : public virtual Message {
 
 public:
 	Reply(Connection &connection);
 
 	void set_status(short code, std::string status);
-	void prepare();
-	virtual void reset();
-
 	short code() const;
+
+	// from message
+	virtual void prepare();
+	virtual void reset();
 
 private:
 	short m_code;
