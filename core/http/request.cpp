@@ -108,7 +108,7 @@ Request::prepare()
 	add_header("Host", m_host);
 	stringstream ss;
 	string crlf("\r\n");
-	ss << "GET " << m_url << " HTTP/1.1" << crlf;
+	ss << verb_str() << " " << m_url << " HTTP/1.1" << crlf;
 
 	map<string,string>::const_iterator hi;
 	for(hi = m_headers.begin(); hi != m_headers.end(); hi++) {

@@ -94,13 +94,23 @@ Parser::add_url_fragment(const char *p, size_t sz)
 void
 Parser::add_body_fragment(const char *at, size_t sz)
 {
-	if (m_mode == Parser::RESPONSE)
+	if (m_mode == RESPONSE)
 		m_reply->add_body(at, sz);
 }
 
 void
 Parser::callback()
 {
+	if (m_mode == REQUEST) { // Verb
+		switch(m_parser.method) {
+			case HTTP_GET:    m_request->set_verb(Request::Verb::GET);    break;
+			case HTTP_POST:   m_request->set_verb(Request::Verb::POST);   break;
+			case HTTP_PUT:    m_request->set_verb(Request::Verb::PUT);    break;
+			case HTTP_HEAD:   m_request->set_verb(Request::Verb::HEAD);   break;
+			case HTTP_DELETE: m_request->set_verb(Request::Verb::DELETE); break;
+			default: break;
+		}
+	}
 	m_fun(m_fun_data);
 }
 
