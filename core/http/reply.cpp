@@ -8,7 +8,8 @@ using http::Reply;
 using http::Connection;
 
 Reply::Reply(Connection &connection)
-	: m_connection(connection)
+	: Message()
+	, m_connection(connection)
 {
 	reset();
 }
@@ -18,27 +19,6 @@ Reply::set_status(short code, std::string status)
 {
 	m_code = code;
 	m_status = status;
-}
-
-void
-Reply::add_header(string key, string val)
-{
-	m_headers.insert(make_pair(key, val));
-}
-
-void
-Reply::add_header(string key, int val)
-{
-	stringstream ss;
-	ss << val;
-	
-	add_header(key, ss.str());
-}
-
-void
-Reply::add_body(const char *p, size_t sz)
-{
-	m_body.insert(m_body.end(), p, p+sz);
 }
 
 void
@@ -66,12 +46,10 @@ Reply::prepare()
 void
 Reply::reset()
 {
-	m_headers.clear();
+	Message::reset();
+
 	m_code = 200;
 	m_status = "OK";
-	m_data.clear();
-	m_body.clear();
-
 	add_header("Connection", "keep-alive");
 }
 
@@ -80,16 +58,3 @@ Reply::code() const
 {
 	return m_code;
 }
-
-Reply::iterator
-Reply::begin() const
-{
-	return m_data.begin();
-}
-
-Reply::iterator
-Reply::end() const
-{
-	return m_data.end();
-}
-

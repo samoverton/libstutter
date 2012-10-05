@@ -25,7 +25,6 @@ Request::Request(Connection &connection)
 
 Request::Request(const Request &request)
 	: m_url(request.m_url)
-	, m_headers(request.m_headers)
 	, m_connection(request.m_connection)
 	, m_error(request.m_error)
 {
@@ -35,12 +34,6 @@ const string&
 Request::url() const
 {
 	return m_url;
-}
-
-void
-Request::add_header(string key, string val)
-{
-	m_headers.insert(make_pair(key, val));
 }
 
 void
@@ -92,7 +85,8 @@ Request::prepare()
 	}
 	ss << crlf;
 
-	m_data = ss.str();
+	string headers = ss.str();
+	m_data.insert(m_data.end(), headers.begin(), headers.end());
 	return true;
 }
 
@@ -139,10 +133,11 @@ Request::connect()
 bool
 Request::send()
 {
-	string::iterator i;
+	Message::iterator i;
 	for (i = m_data.begin(); i != m_data.end(); )
 	{
-		int sent = m_connection.safe_write(m_fd, &(*i), distance(i, m_data.end()));
+		size_t sz = distance<Message::iterator>(i, m_data.end());
+		int sent = m_connection.safe_write(m_fd, &(*i), sz);
 		if (sent <= 0) {
 			m_error = WRITE_ERROR;
 			close(m_fd);

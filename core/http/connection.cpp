@@ -42,8 +42,8 @@ void
 Connection::process()
 {
 	// use custom handler to build reply
-	// HelloHandler h(*this);
-	SimpleProxyHandler h(*this);
+	HelloHandler h(*this);
+	// SimpleProxyHandler h(*this);
 	h.handle(m_request, m_reply);
 
 	// pack reply buffer
