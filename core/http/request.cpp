@@ -16,6 +16,7 @@ using namespace std;
 using http::Request;
 using http::Reply;
 using http::Connection;
+using http::Parser;
 
 Request::Request(Connection &connection)
 	: m_connection(connection)
@@ -163,7 +164,7 @@ bool
 Request::read_reply(Reply &reply)
 {
 	reply.reset();
-	HttpParser parser(HttpParser::RESPONSE, &reply,
+	Parser parser(Parser::RESPONSE, &reply,
 			_done, reinterpret_cast<void*>(this));
 
 	while(m_error != SUCCESS)

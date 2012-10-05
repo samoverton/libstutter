@@ -6,15 +6,14 @@
 #include <functional>
 
 namespace http {
-	class Request;
-	class Reply;
-}
+class Request;
+class Reply;
 
-class HttpParser {
+class Parser {
 public:
 	typedef enum {REQUEST, RESPONSE} Mode;
-	HttpParser(Mode m, http::Request *request, void (*fun)(void*), void *ptr);
-	HttpParser(Mode m, http::Reply *reply, void (*fun)(void*), void *ptr);
+	Parser(Mode m, http::Request *request, void (*fun)(void*), void *ptr);
+	Parser(Mode m, http::Reply *reply, void (*fun)(void*), void *ptr);
 
 	bool add(const char *p, size_t sz);
 	void reset();
@@ -48,5 +47,6 @@ friend int _http_on_header_value_cb(http_parser *p, const char *at, size_t sz);
 friend int _http_on_body_cb(http_parser *p, const char *at, size_t sz);
 friend int _http_on_headers_complete_cb(http_parser *p);
 };
+}
 
 #endif // HTTP_PARSER_H

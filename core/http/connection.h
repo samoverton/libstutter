@@ -41,7 +41,7 @@ private:
 
 	http::Request m_request;
 	http::Reply   m_reply;
-	HttpParser  m_parser;
+	http::Parser  m_parser;
 
 friend void _process(void*);
 };

@@ -11,6 +11,7 @@ using namespace std;
 
 using http::Connection;
 using http::Reply;
+using http::Parser;
 
 #define READ_BUFFER_SIZE 4096
 
@@ -27,7 +28,7 @@ Connection::Connection(Server &server, int fd)
 	, m_watched_fd(fd)
 	, m_request(*this)
 	, m_reply(*this)
-	, m_parser(HttpParser::REQUEST, &m_request,
+	, m_parser(Parser::REQUEST, &m_request,
 			_process, static_cast<void*>(this))
 {
 }
