@@ -8,7 +8,7 @@ HelloHandler::HelloHandler(HttpConnection &cx)
 }
 
 void
-HelloHandler::handle(const HttpRequest &req, HttpReply &reply)
+HelloHandler::handle(const http::Request &req, HttpReply &reply)
 {
 	(void)req;
 	char message[] = "hello, world\n";

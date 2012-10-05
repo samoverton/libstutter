@@ -12,15 +12,15 @@
 #include <sys/ioctl.h>
 #include <netdb.h>
 
-
 using namespace std;
+using http::Request;
 
-HttpRequest::HttpRequest(HttpConnection &connection)
+Request::Request(HttpConnection &connection)
 	: m_connection(connection)
 	, m_error(NOT_EXECUTED)
 {}
 
-HttpRequest::HttpRequest(const HttpRequest &request)
+Request::Request(const Request &request)
 	: m_url(request.m_url)
 	, m_headers(request.m_headers)
 	, m_connection(request.m_connection)
@@ -29,31 +29,31 @@ HttpRequest::HttpRequest(const HttpRequest &request)
 }
 
 const string&
-HttpRequest::url() const
+Request::url() const
 {
 	return m_url;
 }
 
 void
-HttpRequest::add_header(string key, string val)
+Request::add_header(string key, string val)
 {
 	m_headers.insert(make_pair(key, val));
 }
 
 void
-HttpRequest::add_url_fragment(const char *at, size_t sz)
+Request::add_url_fragment(const char *at, size_t sz)
 {
 	m_url.append(at, sz);
 }
 
 void
-HttpRequest::set_host(string host)
+Request::set_host(string host)
 {
 	m_host = host;
 }
 
 void
-HttpRequest::reset()
+Request::reset()
 {
 	m_url.clear();
 	m_host.clear();
@@ -62,15 +62,21 @@ HttpRequest::reset()
 	m_error = NOT_EXECUTED;
 }
 
-HttpRequest::Error
-HttpRequest::send(HttpReply &reply)
+Request::Error
+Request::send(HttpReply &reply)
 {
 	prepare() && connect() && send() && read_reply(reply);
 	return m_error;
 }
 
+void
+Request::error(Error e)
+{
+	m_error = e;
+}
+
 bool
-HttpRequest::prepare()
+Request::prepare()
 {
 	add_header("Host", m_host);
 	stringstream ss;
@@ -88,7 +94,7 @@ HttpRequest::prepare()
 }
 
 bool
-HttpRequest::connect()
+Request::connect()
 {
 	int fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (fd < 0) {
@@ -128,7 +134,7 @@ HttpRequest::connect()
 }
 
 bool
-HttpRequest::send()
+Request::send()
 {
 	string::iterator i;
 	for (i = m_data.begin(); i != m_data.end(); )
@@ -147,12 +153,12 @@ HttpRequest::send()
 void
 _done(void *self)
 {
-	HttpRequest *req = reinterpret_cast<HttpRequest*>(self);
-	req->m_error = HttpRequest::Error::SUCCESS;
+	Request *req = reinterpret_cast<Request*>(self);
+	req->error(http::Request::Error::SUCCESS);
 }
 
 bool
-HttpRequest::read_reply(HttpReply &reply)
+Request::read_reply(HttpReply &reply)
 {
 	reply.reset();
 	HttpParser parser(HttpParser::RESPONSE, &reply,

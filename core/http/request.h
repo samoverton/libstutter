@@ -7,10 +7,11 @@
 class HttpConnection;
 class HttpReply;
 
-class HttpRequest {
+namespace http {
+class Request {
 public:
-	HttpRequest(HttpConnection &connection);
-	HttpRequest(const HttpRequest &request);
+	Request(HttpConnection &connection);
+	Request(const Request &request);
 	const std::string &url() const;
 	void add_header(std::string key, std::string val);
 	void add_url_fragment(const char *at, size_t sz);
@@ -20,6 +21,7 @@ public:
 	typedef enum {NOT_EXECUTED = -1, SUCCESS, SOCKET_ERROR,
 		DNS_ERROR, CONNECTION_ERROR, WRITE_ERROR} Error;
 	Error send(HttpReply &reply);
+	void error(Error e);
 
 private:
 	bool connect();
@@ -41,4 +43,5 @@ friend class HttpConnection;
 friend void _done(void*);
 };
 
+}
 #endif // HTTP_REQUEST_H

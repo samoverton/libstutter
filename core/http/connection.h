@@ -40,7 +40,7 @@ private:
 	int m_watched_fd;
 	struct event m_ev;
 
-	HttpRequest m_request;
+	http::Request m_request;
 	HttpReply   m_reply;
 	HttpParser  m_parser;
 

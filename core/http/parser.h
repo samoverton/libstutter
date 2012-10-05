@@ -5,13 +5,15 @@
 #include <string>
 #include <functional>
 
-class HttpRequest;
+namespace http {
+	class Request;
+}
 class HttpReply;
 
 class HttpParser {
 public:
 	typedef enum {REQUEST, RESPONSE} Mode;
-	HttpParser(Mode m, HttpRequest *request, void (*fun)(void*), void *ptr);
+	HttpParser(Mode m, http::Request *request, void (*fun)(void*), void *ptr);
 	HttpParser(Mode m, HttpReply *reply, void (*fun)(void*), void *ptr);
 
 	bool add(const char *p, size_t sz);
@@ -26,7 +28,7 @@ private:
 
 private:
 	Mode m_mode;
-	HttpRequest *m_request;
+	http::Request *m_request;
 	HttpReply *m_reply;
 
 	// callback (TODO: use std::function?)

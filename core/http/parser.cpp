@@ -101,7 +101,7 @@ HttpParser::callback()
 	m_fun(m_fun_data);
 }
 
-HttpParser::HttpParser(Mode m, HttpRequest *request, void (*fun)(void*), void *ptr)
+HttpParser::HttpParser(Mode m, http::Request *request, void (*fun)(void*), void *ptr)
 	: m_mode(m)
 	, m_request(request)
 	, m_reply(0)
