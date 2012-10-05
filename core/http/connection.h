@@ -12,11 +12,12 @@
 
 class Server;
 
-class HttpConnection : public Coroutine {
+namespace http {
+class Connection : public Coroutine {
 public:
 
-	HttpConnection(Server &server, int fd);
-	virtual ~HttpConnection();
+	Connection(Server &server, int fd);
+	virtual ~Connection();
 	virtual int exec();
 
 	int watched_fd() const;
@@ -30,9 +31,7 @@ public:
 	// yielding IO
 	int safe_read (int fd, char *p, size_t sz);
 	int safe_write(int fd, const char *p, size_t sz);
-
-private:
-	void process();
+	void process(); // callback
 
 private:
 	Server &m_server;
@@ -46,5 +45,6 @@ private:
 
 friend void _process(void*);
 };
+}
 
 #endif // HTTP_CONNECTION_H

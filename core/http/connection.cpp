@@ -8,8 +8,8 @@
 
 #include <iostream>
 using namespace std;
-using namespace std::placeholders;
 
+using http::Connection;
 using http::Reply;
 
 #define READ_BUFFER_SIZE 4096
@@ -17,11 +17,11 @@ using http::Reply;
 void
 _process(void *self)
 {
-	HttpConnection *cx = reinterpret_cast<HttpConnection*>(self);
+	Connection *cx = reinterpret_cast<Connection*>(self);
 	cx->process();
 }
 
-HttpConnection::HttpConnection(Server &server, int fd)
+Connection::Connection(Server &server, int fd)
 	: m_server(server)
 	, m_fd(fd)
 	, m_watched_fd(fd)
@@ -32,13 +32,13 @@ HttpConnection::HttpConnection(Server &server, int fd)
 {
 }
 
-HttpConnection::~HttpConnection()
+Connection::~Connection()
 {
 	close(m_fd);
 }
 
 void
-HttpConnection::process()
+Connection::process()
 {
 	// use custom handler to build reply
 	// HelloHandler h(*this);
@@ -65,7 +65,7 @@ HttpConnection::process()
 
 
 int
-HttpConnection::safe_read(int fd, char *p, size_t sz)
+Connection::safe_read(int fd, char *p, size_t sz)
 {
 	watch_fd(fd);
 	yield((int)Need::READ);
@@ -73,7 +73,7 @@ HttpConnection::safe_read(int fd, char *p, size_t sz)
 }
 
 int
-HttpConnection::safe_write(int fd, const char *p, size_t sz)
+Connection::safe_write(int fd, const char *p, size_t sz)
 {
 	watch_fd(fd);
 	yield((int)Need::WRITE);
@@ -81,7 +81,7 @@ HttpConnection::safe_write(int fd, const char *p, size_t sz)
 }
 
 int
-HttpConnection::exec()
+Connection::exec()
 {
 	while(true)
 	{
@@ -99,25 +99,25 @@ HttpConnection::exec()
 }
 
 int
-HttpConnection::watched_fd() const
+Connection::watched_fd() const
 {
 	return m_watched_fd;
 }
 
 void
-HttpConnection::watch_fd(int fd)
+Connection::watch_fd(int fd)
 {
 	m_watched_fd = fd;
 }
 
 struct event *
-HttpConnection::event()
+Connection::event()
 {
 	return &m_ev;
 }
 
 Server &
-HttpConnection::server()
+Connection::server()
 {
 	return m_server;
 }

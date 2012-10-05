@@ -2,7 +2,7 @@
 
 using namespace std;
 
-SimpleProxyHandler::SimpleProxyHandler(HttpConnection &cx)
+SimpleProxyHandler::SimpleProxyHandler(http::Connection &cx)
 	: BaseHandler(cx)
 {
 }

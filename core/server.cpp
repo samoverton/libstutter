@@ -78,19 +78,19 @@ Server::setup_socket() const
 }
 
 void
-Server::resume_connection(HttpConnection *c)
+Server::resume_connection(http::Connection *c)
 {
-	HttpConnection::Need n = (HttpConnection::Need)c->resume();
+	http::Connection::Need n = (http::Connection::Need)c->resume();
 	switch(n) {
-		case HttpConnection::Need::READ:
+		case http::Connection::Need::READ:
 			register_connection(c, EV_READ);
 			break;
 
-		case HttpConnection::Need::WRITE:
+		case http::Connection::Need::WRITE:
 			register_connection(c, EV_WRITE);
 			break;
 
-		case HttpConnection::Need::HALT:
+		case http::Connection::Need::HALT:
 			delete c;
 			break;
 	}
@@ -101,14 +101,14 @@ _on_connection_event(int fd, short event, void *ptr)
 {
 	(void)fd;
 	(void)event;
-	HttpConnection *c = reinterpret_cast<HttpConnection*>(ptr);
+	http::Connection *c = reinterpret_cast<http::Connection*>(ptr);
 	Server &s = c->server();
 
 	s.resume_connection(c);
 }
 
 void
-Server::register_connection(HttpConnection *c, short event)
+Server::register_connection(http::Connection *c, short event)
 {
 	struct event *ev = c->event();
 	event_set(ev, c->watched_fd(), event, _on_connection_event, c);
@@ -126,7 +126,7 @@ _on_possible_accept(int fd, short event, void *ptr)
 	struct sockaddr_in addr;
 	socklen_t addr_sz = sizeof(addr);
 	int client_fd = accept(fd, (struct sockaddr*)&addr, &addr_sz);
-	HttpConnection *c = new HttpConnection(*s, client_fd);
+	http::Connection *c = new http::Connection(*s, client_fd);
 
 	// resume
 	s->resume_connection(c);

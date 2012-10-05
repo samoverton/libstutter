@@ -5,13 +5,13 @@
 #include <map>
 #include <vector>
 
-class HttpConnection;
-
 namespace http {
+class Connection;
+
 class Reply {
 
 public:
-	Reply(HttpConnection &connection);
+	Reply(Connection &connection);
 
 	void set_status(short code, std::string status);
 	void add_header(std::string key, std::string val);
@@ -34,7 +34,7 @@ private:
 	std::vector<char> m_data;
 	std::vector<char> m_body;
 
-	HttpConnection &m_connection;
+	Connection &m_connection;
 };
 }
 

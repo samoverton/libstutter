@@ -2,7 +2,7 @@
 
 using namespace std;
 
-HelloHandler::HelloHandler(HttpConnection &cx)
+HelloHandler::HelloHandler(http::Connection &cx)
 	: BaseHandler(cx)
 {
 }

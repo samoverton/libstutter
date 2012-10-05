@@ -4,14 +4,13 @@
 #include <string>
 #include <map>
 
-class HttpConnection;
-
 namespace http {
 class Reply;
+class Connection;
 
 class Request {
 public:
-	Request(HttpConnection &connection);
+	Request(Connection &connection);
 	Request(const Request &request);
 	const std::string &url() const;
 	void add_header(std::string key, std::string val);
@@ -36,11 +35,11 @@ private:
 	std::string m_host;
 	std::map<std::string, std::string> m_headers;
 
-	HttpConnection &m_connection;
+	Connection &m_connection;
 	std::string m_data;
 	Error m_error;
 
-friend class HttpConnection;
+friend class Connection;
 friend void _done(void*);
 };
 

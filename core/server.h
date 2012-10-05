@@ -13,8 +13,8 @@ public:
 
 private:
 	int setup_socket() const;
-	void register_connection(HttpConnection *c, short event);
-	void resume_connection(HttpConnection *c);
+	void register_connection(http::Connection *c, short event);
+	void resume_connection(http::Connection *c);
 
 private:
 	std::string m_host;

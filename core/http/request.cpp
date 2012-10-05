@@ -15,8 +15,9 @@
 using namespace std;
 using http::Request;
 using http::Reply;
+using http::Connection;
 
-Request::Request(HttpConnection &connection)
+Request::Request(Connection &connection)
 	: m_connection(connection)
 	, m_error(NOT_EXECUTED)
 {}
@@ -170,11 +171,11 @@ Request::read_reply(Reply &reply)
 		char buffer[1024];
 		int recvd = m_connection.safe_read(m_fd, buffer, sizeof(buffer));
 		if (recvd <= 0)
-			m_connection.yield((int)HttpConnection::Need::HALT);
+			m_connection.yield((int)Connection::Need::HALT);
 
 		bool success = parser.add(buffer, (size_t)recvd);
 		if (!success)
-			m_connection.yield((int)HttpConnection::Need::HALT);
+			m_connection.yield((int)Connection::Need::HALT);
 	}
 
 	close(m_fd);

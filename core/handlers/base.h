@@ -7,14 +7,14 @@
 
 class BaseHandler {
 public:
-	BaseHandler(HttpConnection &cx);
+	BaseHandler(http::Connection &cx);
 	virtual void handle(const http::Request &req, http::Reply &reply) = 0;
 
 protected:
-	HttpConnection &connection();
+	http::Connection &connection();
 
 private:
-	HttpConnection &m_cx;
+	http::Connection &m_cx;
 };
 
 #endif // HANDLER_BASE_H

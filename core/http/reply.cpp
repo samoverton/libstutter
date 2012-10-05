@@ -5,8 +5,9 @@
 
 using namespace std;
 using http::Reply;
+using http::Connection;
 
-Reply::Reply(HttpConnection &connection)
+Reply::Reply(Connection &connection)
 	: m_connection(connection)
 {
 	reset();

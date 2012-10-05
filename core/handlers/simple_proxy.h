@@ -6,7 +6,7 @@
 
 class SimpleProxyHandler : public virtual BaseHandler {
 public:
-	SimpleProxyHandler(HttpConnection &cx);
+	SimpleProxyHandler(http::Connection &cx);
 	virtual void handle(const http::Request &req, http::Reply &reply);
 
 private:
