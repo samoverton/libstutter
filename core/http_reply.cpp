@@ -73,6 +73,12 @@ HttpReply::reset()
 	add_header("Connection", "keep-alive");
 }
 
+short
+HttpReply::code() const
+{
+	return m_code;
+}
+
 HttpReply::iterator
 HttpReply::begin() const
 {

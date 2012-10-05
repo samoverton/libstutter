@@ -17,8 +17,10 @@ public:
 	void add_header(std::string key, int val);
 	void add_body(const char *p, size_t sz);
 
-	void reset();
 	void prepare();
+	void reset();
+
+	short code() const;
 
 	typedef std::vector<char>::const_iterator iterator;
 	iterator begin() const;

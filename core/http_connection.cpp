@@ -55,7 +55,8 @@ HttpConnection::process()
 		i += sent;
 	}
 
-	// reset reply and parser for next request
+	// reset objects for next request
+	m_request.reset();
 	m_reply.reset();
 	m_parser.reset();
 }

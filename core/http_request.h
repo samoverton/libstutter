@@ -15,6 +15,7 @@ public:
 	void add_header(std::string key, std::string val);
 	void add_url_fragment(const char *at, size_t sz);
 	void set_host(std::string host);
+	void reset();
 
 	typedef enum {NOT_EXECUTED = -1, SUCCESS, SOCKET_ERROR,
 		DNS_ERROR, CONNECTION_ERROR, WRITE_ERROR} Error;

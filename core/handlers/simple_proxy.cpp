@@ -10,17 +10,10 @@ SimpleProxyHandler::SimpleProxyHandler(HttpConnection &cx)
 void
 SimpleProxyHandler::handle(const HttpRequest &req, HttpReply &reply)
 {
-	//HttpReply jbird_reply(connection());
-	send_to("bea", req, reply);
-	/*
-
-	   if (reply.code() != 200 && reply.code() != 204)
-		   return;
-
-	   send_to("jbirdvm", req, reply);
-	*/
-
-	// reply.add_body("hello\n", 6);
+	send_to("10.2.129.13", req, reply);
+	if (reply.code() != 200 && reply.code() != 204)
+		return;
+	send_to("zoe", req, reply);
 }
 
 void

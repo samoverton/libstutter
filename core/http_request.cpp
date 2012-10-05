@@ -52,6 +52,16 @@ HttpRequest::set_host(string host)
 	m_host = host;
 }
 
+void
+HttpRequest::reset()
+{
+	m_url.clear();
+	m_host.clear();
+	m_headers.clear();
+	m_data.clear();
+	m_error = NOT_EXECUTED;
+}
+
 HttpRequest::Error
 HttpRequest::send(HttpReply &reply)
 {
@@ -63,7 +73,6 @@ bool
 HttpRequest::prepare()
 {
 	add_header("Host", m_host);
-
 	stringstream ss;
 	string crlf("\r\n");
 	ss << "GET " << m_url << " HTTP/1.1" << crlf;
@@ -107,10 +116,9 @@ HttpRequest::connect()
 		struct sockaddr_in *sin = (struct sockaddr_in*)ai->ai_addr;
 		int ret = ::connect(fd, (const struct sockaddr*)sin,
 				sizeof(struct sockaddr_in));
-		// cout << "Connect: ret=" << ret << endl;
 		if (ret != 0) {
 			success = false;
-			m_error = CONNECTION_ERROR;
+			m_error = CONNECTION_ERROR; // TODO: log
 		}
 		m_fd = fd;
 		break;
@@ -146,6 +154,7 @@ _done(void *self)
 bool
 HttpRequest::read_reply(HttpReply &reply)
 {
+	reply.reset();
 	HttpParser parser(HttpParser::RESPONSE, &reply,
 			_done, reinterpret_cast<void*>(this));
 
