@@ -1,9 +1,9 @@
 #ifndef HANDLER_BASE_H
 #define HANDLER_BASE_H
 
-#include "../http_connection.h"
-#include "../http_request.h"
-#include "../http_reply.h"
+#include "../http/connection.h"
+#include "../http/request.h"
+#include "../http/reply.h"
 
 class BaseHandler {
 public:

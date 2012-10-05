@@ -1,6 +1,6 @@
-#include "http_parser.h"
-#include "http_request.h"
-#include "http_reply.h"
+#include "parser.h"
+#include "request.h"
+#include "reply.h"
 
 #include <string.h>
 

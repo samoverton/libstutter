@@ -1,10 +1,10 @@
-#include "http_connection.h"
+#include "connection.h"
 #include "unistd.h"
 #include "string.h"
 
-#include "handlers/base.h"
-#include "handlers/hello.h"
-#include "handlers/simple_proxy.h"
+#include "../handlers/base.h"
+#include "../handlers/hello.h"
+#include "../handlers/simple_proxy.h"
 
 #include <iostream>
 using namespace std;

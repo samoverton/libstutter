@@ -1,5 +1,5 @@
-#include "http_request.h"
-#include "http_connection.h"
+#include "request.h"
+#include "connection.h"
 
 #include <iostream>
 #include <sstream>

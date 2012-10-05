@@ -3,7 +3,7 @@
 
 #include <string>
 #include <event.h>
-#include "http_connection.h"
+#include "http/connection.h"
 
 class Server {
 public:

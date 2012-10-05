@@ -1,5 +1,5 @@
-#include "http_reply.h"
-#include "http_connection.h"
+#include "reply.h"
+#include "connection.h"
 #include <sstream>
 #include <iostream>
 
