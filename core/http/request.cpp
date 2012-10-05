@@ -1,6 +1,9 @@
 #include "request.h"
 #include "connection.h"
+#include "../pool.h"
+#include "../server.h"
 
+#include <iostream>
 #include <sstream>
 
 #include <netinet/in.h>
@@ -124,59 +127,43 @@ Request::prepare()
 bool
 Request::connect()
 {
-	int fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (fd < 0) {
-		m_error = SOCKET_ERROR;
-		return false; // TODO: log
-	}
-
-	// set socket as non-blocking.
-	int ret = fcntl(fd, F_SETFD, O_NONBLOCK);
-	if (0 != ret) {
-		m_error = SOCKET_ERROR;
-		return false; // TODO: log
-	}
-
-	struct addrinfo *info = 0;
-	ret = getaddrinfo(m_host.c_str(), "8080", 0, &info);
-	if (ret < 0) {
-		m_error = DNS_ERROR;
-		return false; // TODO: log
-	}
-
-	bool success = true;
-	struct addrinfo *ai;
-	for (ai = info; ai; ai = ai->ai_next) {
-		struct sockaddr_in *sin = (struct sockaddr_in*)ai->ai_addr;
-		int ret = ::connect(fd, (const struct sockaddr*)sin,
-				sizeof(struct sockaddr_in));
-		if (ret != 0) {
-			success = false;
-			m_error = CONNECTION_ERROR; // TODO: log
-		}
-		m_fd = fd;
-		break;
-	}
-	freeaddrinfo(info);
-	return success;
+	SocketPool &pool = m_connection.server().pool_manager().get_pool(m_host);
+	return pool.get(m_fd);
 }
 
 bool
 Request::send()
 {
-	Message::iterator i;
-	for (i = m_data.begin(); i != m_data.end(); )
+	SocketPool &pool = m_connection.server().pool_manager().get_pool(m_host);
+	int error_count = 0;
+	while(error_count < 3)
 	{
-		size_t sz = distance<Message::iterator>(i, m_data.end());
-		int sent = m_connection.safe_write(m_fd, &(*i), sz);
-		if (sent <= 0) {
-			m_error = WRITE_ERROR;
-			close(m_fd);
-			return false;
+restart:
+		Message::iterator i;
+		for (i = m_data.begin(); i != m_data.end(); )
+		{
+			size_t sz = distance<Message::iterator>(i, m_data.end());
+			int sent = m_connection.safe_write(m_fd, &(*i), sz);
+
+			if (sent <= 0) { // try again
+				// TODO: log
+
+				// close socket and remove from the pool
+				close(m_fd);
+				pool.del(m_fd);
+
+				// reconnect and try again
+				connect();
+				error_count++;
+				goto restart;
+			}
+			i += sent;
 		}
-		i += sent;
+		return true;
 	}
-	return true;
+
+	m_error = WRITE_ERROR;
+	return false;
 }
 
 void
@@ -205,6 +192,9 @@ Request::read_reply(Reply &reply)
 			m_connection.yield((int)Connection::Need::HALT);
 	}
 
-	close(m_fd);
+	// put socket back in the pool
+	SocketPool &pool = m_connection.server().pool_manager().get_pool(m_host);
+	pool.put(m_fd);
+
 	return true;
 }

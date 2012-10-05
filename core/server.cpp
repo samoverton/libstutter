@@ -119,7 +119,10 @@ Server::register_connection(http::Connection *c, short event)
 	struct event *ev = c->event();
 	event_set(ev, c->watched_fd(), event, _on_connection_event, c);
 	event_base_set(m_base, ev);
-	event_add(ev, 0); // TODO: check return code
+	int added = event_add(ev, 0);
+	if (added != 0) {
+		c->resume(); // the blocking IO call will now fail
+	}
 }
 
 void
