@@ -8,6 +8,7 @@
 namespace http {
 class Request;
 class Reply;
+class Message;
 
 class Parser {
 public:
@@ -29,6 +30,7 @@ private:
 	Mode m_mode;
 	http::Request *m_request;
 	http::Reply *m_reply;
+	http::Message *m_msg;
 
 	// callback (TODO: use std::function?)
 	void (*m_fun)(void*);

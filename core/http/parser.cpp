@@ -1,4 +1,5 @@
 #include "parser.h"
+#include "message.h"
 #include "request.h"
 #include "reply.h"
 
@@ -15,7 +16,6 @@ _http_on_url_cb(http_parser *p, const char *at, size_t sz)
 {
 	Parser *parser = reinterpret_cast<Parser*>(p->data);
 	parser->add_url_fragment(at, sz);
-
 	return 0;
 }
 
@@ -24,7 +24,6 @@ _http_on_message_complete_cb(http_parser *p)
 {
 	Parser *parser = reinterpret_cast<Parser*>(p->data);
 	parser->callback();
-
 	return 0;
 }
 
@@ -67,15 +66,7 @@ void
 Parser::save_last_header()
 {
 	if (m_header_gotval) {
-		switch(m_mode) {
-			case REQUEST:
-				m_request->add_header(m_header_key, m_header_val);
-				break;
-
-			case RESPONSE:
-				m_reply->add_header(m_header_key, m_header_val);
-				break;
-		}
+		m_msg->add_header(m_header_key, m_header_val);
 
 		m_header_key.clear();
 		m_header_val.clear();
@@ -93,8 +84,7 @@ Parser::add_url_fragment(const char *p, size_t sz)
 void
 Parser::add_body_fragment(const char *at, size_t sz)
 {
-	if (m_mode == RESPONSE)
-		m_reply->add_body(at, sz);
+	m_msg->add_body(at, sz);
 }
 
 void
@@ -117,6 +107,7 @@ Parser::Parser(Mode m, http::Request *request, void (*fun)(void*), void *ptr)
 	: m_mode(m)
 	, m_request(request)
 	, m_reply(0)
+	, m_msg(m_request)
 	, m_fun(fun)
 	, m_fun_data(ptr)
 {
@@ -127,6 +118,7 @@ Parser::Parser(Mode m, http::Reply *reply, void (*fun)(void*), void *ptr)
 	: m_mode(m)
 	, m_request(0)
 	, m_reply(reply)
+	, m_msg(m_reply)
 	, m_fun(fun)
 	, m_fun_data(ptr)
 {

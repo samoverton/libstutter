@@ -118,6 +118,7 @@ Request::prepare()
 
 	string headers = ss.str();
 	m_data.insert(m_data.end(), headers.begin(), headers.end());
+	m_data.insert(m_data.end(), m_body.begin(),  m_body.end());
 }
 
 bool
