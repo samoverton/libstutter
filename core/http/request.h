@@ -34,6 +34,10 @@ private:
 	bool send();
 	bool read_reply(Reply &reply);
 
+protected:
+	virtual bool send_headers();
+	virtual bool send_body();
+
 private:
 	int m_fd;
 	Verb m_verb;

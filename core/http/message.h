@@ -25,6 +25,10 @@ public:
 	virtual void prepare() = 0;
 
 protected:
+	virtual bool send_headers() = 0;
+	virtual bool send_body() = 0;
+
+protected:
 	std::map<std::string, std::string> m_headers;
 	std::vector<char> m_data;
 	Body m_body;

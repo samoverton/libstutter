@@ -14,6 +14,8 @@
 #include <sys/ioctl.h>
 #include <netdb.h>
 
+#define MAX_SEND_RETRIES 3
+
 using namespace std;
 using http::Request;
 using http::Reply;
@@ -121,7 +123,6 @@ Request::prepare()
 
 	string headers = ss.str();
 	m_data.insert(m_data.end(), headers.begin(), headers.end());
-	// m_data.insert(m_data.end(), m_body.begin(),  m_body.end());
 }
 
 bool
@@ -135,36 +136,48 @@ bool
 Request::send()
 {
 	SocketPool &pool = m_connection.server().pool_manager().get_pool(m_host);
-	int error_count = 0;
-	while(error_count < 3)
+
+	for(int error_count = 0; error_count < MAX_SEND_RETRIES; error_count++)
 	{
-restart:
-		Message::iterator i;
-		for (i = m_data.begin(); i != m_data.end(); )
-		{
-			size_t sz = distance<Message::iterator>(i, m_data.end());
-			int sent = m_connection.safe_write(m_fd, &(*i), sz);
+		if (send_headers() && send_body())
+			return true;
 
-			if (sent <= 0) { // try again
-				// TODO: log
+		// close socket and remove from the pool
+		close(m_fd);
+		pool.del(m_fd);
 
-				// close socket and remove from the pool
-				close(m_fd);
-				pool.del(m_fd);
-
-				// reconnect and try again
-				connect();
-				error_count++;
-				goto restart;
-			}
-			i += sent;
-		}
-		return true;
+		// reconnect and try again
+		connect();
 	}
 
 	m_error = WRITE_ERROR;
 	return false;
 }
+
+bool
+Request::send_headers()
+{
+	Message::iterator i;
+	for (i = m_data.begin(); i != m_data.end(); )
+	{
+		size_t sz = distance<Message::iterator>(i, m_data.end());
+		int sent = m_connection.safe_write(m_fd, &(*i), sz);
+
+		if (sent <= 0) {
+			// TODO: log
+			return false;
+		}
+		i += sent;
+	}
+	return true;
+}
+
+bool
+Request::send_body()
+{
+	return m_body.send(m_connection);
+}
+
 
 void
 _done(void *self)

@@ -19,9 +19,9 @@ public:
 	virtual void prepare();
 	virtual void reset();
 
-private:
-	bool send_headers();
-	bool send_body();
+protected:
+	virtual bool send_headers();
+	virtual bool send_body();
 
 private:
 	short m_code;
