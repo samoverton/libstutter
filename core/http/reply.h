@@ -14,6 +14,7 @@ public:
 	void set_status(short code, std::string status);
 	short code() const;
 	bool send();
+	bool set_file(const std::string filename);
 
 	// from message
 	virtual void prepare();

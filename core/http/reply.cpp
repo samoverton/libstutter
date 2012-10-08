@@ -3,6 +3,10 @@
 #include <sstream>
 #include <iostream>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 using namespace std;
 using http::Reply;
 using http::Connection;
@@ -28,7 +32,7 @@ Reply::prepare()
 	stringstream ss;
 	string crlf("\r\n");
 	ss << "HTTP/1.1 " << m_code << " " << m_status << crlf;
-	
+
 	map<string,string>::const_iterator hi;
 	for(hi = m_headers.begin(); hi != m_headers.end(); hi++) {
 		ss << hi->first << ": " << hi->second << crlf;
@@ -64,6 +68,17 @@ Reply::send()
 
 	return send_headers()
 		&& send_body();
+}
+
+bool
+Reply::set_file(const std::string filename)
+{
+	if (!m_body.set_file(filename)) {
+		return false;
+	}
+
+	add_header("Content-Length", m_body.size());
+	return true;
 }
 
 bool

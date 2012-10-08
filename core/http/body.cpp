@@ -2,6 +2,9 @@
 #include "connection.h"
 
 #include <iostream>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #define MAX_BUFFER_SIZE 8192
 #define TMP_FILE_TEMPLATE "/tmp/body-XXXXXX"
@@ -13,15 +16,13 @@ using namespace std;
 Body::Body()
 	: m_fd(-1)
 	, m_size(0)
+	, m_unlink(false)
 {
 }
 
 Body::~Body()
 {
-	if (m_fd > 0) {
-		close(m_fd);
-		unlink(m_filename.c_str());
-	}
+	clear();
 }
 
 ssize_t
@@ -40,10 +41,12 @@ Body::clear()
 	if (m_fd > 0) {
 		::close(m_fd);
 		m_fd = -1;
-		unlink(m_filename.c_str());
 	}
+	if (m_unlink)
+		unlink(m_filename.c_str());
 	m_filename.clear();
 	m_size = 0;
+	m_unlink = false;
 }
 
 size_t
@@ -72,6 +75,7 @@ Body::create_file()
 	char filename[] = TMP_FILE_TEMPLATE;
 	if ((m_fd = mkstemp(filename)) > 0) {
 		m_filename = filename;
+		m_unlink = true;
 		return true;
 	}
 	return false;
@@ -87,6 +91,24 @@ Body::buffer_on_disk(const char *p, size_t sz)
 	if (ret > 0)
 		m_size += ret;
 	return ret;
+}
+
+bool
+Body::set_file(const string &name)
+{
+	int fd;
+	if ((fd = ::open(name.c_str(), O_RDONLY)) < 0)
+		return false;
+
+	clear();
+	m_fd = fd;
+	m_filename = name;
+
+	struct stat st;
+	if (fstat(m_fd, &st) == 0)
+		m_size = st.st_size;
+
+	return true;
 }
 
 // send

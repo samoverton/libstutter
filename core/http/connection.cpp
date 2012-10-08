@@ -6,6 +6,7 @@
 #include "../handlers/base.h"
 #include "../handlers/hello.h"
 #include "../handlers/simple_proxy.h"
+#include "../handlers/file.h"
 
 #include <iostream>
 using namespace std;
@@ -44,7 +45,8 @@ Connection::process()
 {
 	// use custom handler to build reply
 	// HelloHandler h(*this);
-	SimpleProxyHandler h(*this);
+	// SimpleProxyHandler h(*this);
+	FileHandler h(*this);
 	h.handle(m_request, m_reply);
 
 	// pack reply buffer

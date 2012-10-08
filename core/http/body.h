@@ -17,6 +17,7 @@ public:
 	size_t size() const;
 
 	bool send(Connection &cx);
+	bool set_file(const std::string &name);
 
 private:
 	ssize_t buffer_in_memory(const char *p, size_t sz);
@@ -31,7 +32,7 @@ private:
 	std::string m_filename;
 	int m_fd;
 	size_t m_size;
-
+	bool m_unlink;
 };
 
 }
