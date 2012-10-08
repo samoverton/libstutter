@@ -24,7 +24,9 @@ Reply::set_status(short code, std::string status)
 void
 Reply::prepare()
 {
-	add_header("Content-Length", m_body.size());
+	char p[] = "hello, world\n";
+	// add_header("Content-Length", m_body.size()); // TODO: restore
+	add_header("Content-Length", sizeof(p)-1);
 
 	stringstream ss;
 	string crlf("\r\n");
@@ -40,7 +42,9 @@ Reply::prepare()
 	string headers = ss.str();
 	m_data.reserve(headers.size() + m_body.size());
 	m_data.insert(m_data.end(), headers.begin(), headers.end());
-	m_data.insert(m_data.end(), m_body.begin(), m_body.end());
+
+	m_data.insert(m_data.end(), p, p+sizeof(p)-1);
+	// m_data.insert(m_data.end(), m_body.begin(), m_body.end());
 }
 
 void

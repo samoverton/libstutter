@@ -5,6 +5,8 @@
 #include <map>
 #include <vector>
 
+#include "body.h"
+
 namespace http {
 class Message {
 public:
@@ -25,7 +27,7 @@ public:
 protected:
 	std::map<std::string, std::string> m_headers;
 	std::vector<char> m_data;
-	std::vector<char> m_body;
+	Body m_body;
 };
 }
 

@@ -1,8 +1,10 @@
 #include "message.h"
 #include <sstream>
+#include <iostream>
 
 using namespace std;
 using http::Message;
+using http::Body;
 
 Message::Message()
 {
@@ -16,7 +18,7 @@ Message::Message(const Message &msg)
 void
 Message::add_header(string key, string val)
 {
-	m_headers.insert(make_pair(key, val));
+	m_headers[key] = val; // replace
 }
 
 void
@@ -31,7 +33,15 @@ Message::add_header(string key, int val)
 void
 Message::add_body(const char *p, size_t sz)
 {
-	m_body.insert(m_body.end(), p, p+sz);
+	size_t done = 0;
+	while (done != sz) {
+		ssize_t added = m_body.add(p+done, sz-done);
+		if (added <= 0) {
+			// TODO: log, propagate
+			return;
+		}
+		done += added;
+	}
 }
 	
 void
