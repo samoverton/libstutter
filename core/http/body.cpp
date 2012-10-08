@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#define MAX_BUFFER_SIZE 4096
+#define MAX_BUFFER_SIZE 1024
 #define TMP_FILE_TEMPLATE "/tmp/body-XXXXXX"
 
 using http::Body;
@@ -12,6 +12,14 @@ Body::Body()
 	: m_fd(-1)
 	, m_size(0)
 {
+}
+
+Body::~Body()
+{
+	if (m_fd > 0) {
+		close(m_fd);
+		unlink(m_filename.c_str());
+	}
 }
 
 ssize_t
@@ -27,11 +35,12 @@ void
 Body::clear()
 {
 	m_data.clear();
-	m_filename.clear();
 	if (m_fd > 0) {
 		::close(m_fd);
 		m_fd = -1;
+		unlink(m_filename.c_str());
 	}
+	m_filename.clear();
 	m_size = 0;
 }
 

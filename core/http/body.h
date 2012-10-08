@@ -16,6 +16,7 @@ public:
 class Body {
 public:
 	Body();
+	~Body();
 	ssize_t add(const char *p, size_t sz);
 	void clear();
 	size_t size() const;
