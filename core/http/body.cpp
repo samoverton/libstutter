@@ -1,11 +1,13 @@
 #include "body.h"
+#include "connection.h"
 
 #include <iostream>
 
-#define MAX_BUFFER_SIZE 1024
+#define MAX_BUFFER_SIZE 4096
 #define TMP_FILE_TEMPLATE "/tmp/body-XXXXXX"
 
 using http::Body;
+using http::Connection;
 using namespace std;
 
 Body::Body()
@@ -87,4 +89,35 @@ Body::buffer_on_disk(const char *p, size_t sz)
 		m_size += ret;
 	cout << "buffered " << ret << " bytes on disk" << endl;
 	return ret;
+}
+
+// send
+
+bool
+Body::send(Connection &cx)
+{
+	return send_from_memory(cx)
+		&& send_from_disk(cx);
+}
+
+bool
+Body::send_from_memory(Connection &cx) const
+{
+	size_t done = 0;
+	while (done < m_data.size()) {
+		int sent = cx.safe_write(&m_data[done], m_data.size() - done);
+		if (sent <= 0) {
+			// TODO: log
+			return false;
+		}
+		done += sent;
+	}
+	return true;
+}
+
+bool
+Body::send_from_disk(Connection &cx) const
+{
+	(void)cx;
+	return true;
 }

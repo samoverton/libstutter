@@ -24,9 +24,7 @@ Reply::set_status(short code, std::string status)
 void
 Reply::prepare()
 {
-	char p[] = "hello, world\n";
-	// add_header("Content-Length", m_body.size()); // TODO: restore
-	add_header("Content-Length", sizeof(p)-1);
+	add_header("Content-Length", m_body.size());
 
 	stringstream ss;
 	string crlf("\r\n");
@@ -42,8 +40,6 @@ Reply::prepare()
 	string headers = ss.str();
 	m_data.reserve(headers.size() + m_body.size());
 	m_data.insert(m_data.end(), headers.begin(), headers.end());
-
-	m_data.insert(m_data.end(), p, p+sizeof(p)-1);
 }
 
 void
@@ -62,29 +58,33 @@ Reply::code() const
 	return m_code;
 }
 
-void
+bool
 Reply::send()
 {
 	prepare();
 
-	send_headers();
-	send_body();
+	return send_headers()
+		&& send_body();
 }
 
-void
+bool
 Reply::send_headers()
 {
 	iterator i;
 	for (i = begin(); i != end(); )
 	{
 		int sent = m_connection.safe_write(&(*i), distance(i, end()));
-		if (sent <= 0)
-			m_connection.yield((int)Connection::Need::HALT);
+		if (sent <= 0) {
+			// TODO: log
+			return false;
+		}
 		i += sent;
 	}
+	return true;
 }
 
-void
+bool
 Reply::send_body()
 {
+	return m_body.send(m_connection);
 }

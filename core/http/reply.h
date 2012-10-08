@@ -13,15 +13,15 @@ public:
 
 	void set_status(short code, std::string status);
 	short code() const;
-	void send();
+	bool send();
 
 	// from message
 	virtual void prepare();
 	virtual void reset();
 
 private:
-	void send_headers();
-	void send_body();
+	bool send_headers();
+	bool send_body();
 
 private:
 	short m_code;

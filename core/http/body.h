@@ -5,13 +5,8 @@
 #include <vector>
 
 namespace http {
-class Body;
 
-class BodyIterator {
-public:
-	BodyIterator(Body &b);
-	
-};
+class Connection;
 
 class Body {
 public:
@@ -21,14 +16,15 @@ public:
 	void clear();
 	size_t size() const;
 
-	typedef BodyIterator iterator;
-	iterator begin() const;
-	iterator end() const;
+	bool send(Connection &cx);
 
 private:
 	ssize_t buffer_in_memory(const char *p, size_t sz);
 	ssize_t buffer_on_disk(const char *p, size_t sz);
 	bool create_file();
+
+	bool send_from_memory(Connection &cx) const;
+	bool send_from_disk(Connection &cx) const;
 
 private:
 	std::vector<char> m_data;
@@ -36,7 +32,6 @@ private:
 	int m_fd;
 	size_t m_size;
 
-friend class BodyIterator;
 };
 
 }
