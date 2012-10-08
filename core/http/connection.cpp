@@ -1,6 +1,7 @@
 #include "connection.h"
-#include "unistd.h"
-#include "string.h"
+#include <unistd.h>
+#include <string.h>
+#include <sys/sendfile.h>
 
 #include "../handlers/base.h"
 #include "../handlers/hello.h"
@@ -82,6 +83,13 @@ int
 Connection::safe_write(const char *p, size_t sz)
 {
 	return safe_write(m_fd, p, sz);
+}
+
+int
+Connection::safe_write(int in_fd, off_t *offset, size_t count)
+{
+	yield((int)Need::WRITE);
+	return sendfile(m_watched_fd, in_fd, offset, count);
 }
 
 int

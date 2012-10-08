@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-#define MAX_BUFFER_SIZE 4096
+#define MAX_BUFFER_SIZE 8192
 #define TMP_FILE_TEMPLATE "/tmp/body-XXXXXX"
 
 using http::Body;
@@ -60,7 +60,6 @@ Body::buffer_in_memory(const char *p, size_t sz)
 
 	m_data.insert(m_data.end(), p, p + insert);
 	m_size += insert;
-	cout << "buffered " << insert << " bytes in memory" << endl;
 	return insert;
 }
 
@@ -87,7 +86,6 @@ Body::buffer_on_disk(const char *p, size_t sz)
 	int ret = write(m_fd, p, sz);
 	if (ret > 0)
 		m_size += ret;
-	cout << "buffered " << ret << " bytes on disk" << endl;
 	return ret;
 }
 
@@ -118,6 +116,20 @@ Body::send_from_memory(Connection &cx) const
 bool
 Body::send_from_disk(Connection &cx) const
 {
-	(void)cx;
+	if (m_fd <= 0)
+		return true;
+
+	size_t remain = size() - m_data.size();
+	off_t offset = 0;
+	while (remain > 0) {
+		int sent = cx.safe_write(m_fd, &offset, remain);
+		if (sent <= 0) {
+			// TODO: log
+			return false;
+		}
+		offset += sent;
+		remain -= sent;
+	}
+
 	return true;
 }
