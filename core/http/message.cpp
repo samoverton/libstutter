@@ -1,17 +1,21 @@
 #include "message.h"
+#include "connection.h"
 #include <sstream>
 #include <iostream>
 
 using namespace std;
 using http::Message;
 using http::Body;
+using http::Connection;
 
-Message::Message()
+Message::Message(Connection &cx)
+	: m_connection(cx)
 {
 }
 Message::Message(const Message &msg)
 	: m_headers(msg.m_headers)
 	, m_body(msg.m_body)
+	, m_connection(msg.m_connection)
 {
 }
 

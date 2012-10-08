@@ -9,7 +9,7 @@ class Connection;
 class Reply : public virtual Message {
 
 public:
-	Reply(Connection &connection);
+	Reply(Connection &cx);
 
 	void set_status(short code, std::string status);
 	short code() const;
@@ -26,8 +26,6 @@ protected:
 private:
 	short m_code;
 	std::string m_status;
-
-	Connection &m_connection;
 };
 }
 

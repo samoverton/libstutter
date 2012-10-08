@@ -7,9 +7,8 @@ using namespace std;
 using http::Reply;
 using http::Connection;
 
-Reply::Reply(Connection &connection)
-	: Message()
-	, m_connection(connection)
+Reply::Reply(Connection &cx)
+	: Message(cx)
 {
 	reset();
 }

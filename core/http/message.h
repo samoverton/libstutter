@@ -8,9 +8,11 @@
 #include "body.h"
 
 namespace http {
+class Connection;
+
 class Message {
 public:
-	Message();
+	Message(Connection &cx);
 	Message(const Message &msg);
 	void add_header(std::string key, std::string val);
 	void add_header(std::string key, int val);
@@ -32,6 +34,9 @@ protected:
 	std::map<std::string, std::string> m_headers;
 	std::vector<char> m_data;
 	Body m_body;
+
+protected:
+	Connection &m_connection;
 };
 }
 

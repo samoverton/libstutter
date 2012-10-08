@@ -22,10 +22,9 @@ using http::Reply;
 using http::Connection;
 using http::Parser;
 
-Request::Request(Connection &connection)
-	: Message()
+Request::Request(Connection &cx)
+	: Message(cx)
 	, m_verb(GET)
-	, m_connection(connection)
 	, m_error(NOT_EXECUTED)
 {}
 
@@ -33,7 +32,6 @@ Request::Request(const Request &request)
 	: Message(request)
 	, m_verb(request.m_verb)
 	, m_url(request.m_url)
-	, m_connection(request.m_connection)
 	, m_error(request.m_error)
 {
 }
@@ -171,6 +169,7 @@ Request::send_headers()
 	}
 	return true;
 }
+
 
 bool
 Request::send_body()

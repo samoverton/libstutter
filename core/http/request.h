@@ -9,7 +9,7 @@ class Connection;
 
 class Request : public virtual Message {
 public:
-	Request(Connection &connection);
+	Request(Connection &cx);
 	Request(const Request &request);
 	const std::string &url() const;
 	void add_url_fragment(const char *at, size_t sz);
@@ -44,7 +44,6 @@ private:
 	std::string m_url;
 	std::string m_host;
 
-	Connection &m_connection;
 	Error m_error;
 
 friend class Connection;
