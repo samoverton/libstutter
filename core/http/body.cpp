@@ -20,6 +20,15 @@ Body::Body()
 {
 }
 
+Body::Body(const Body &b)
+	: m_data(b.m_data)
+	, m_filename(b.m_filename)
+	, m_fd(b.m_fd)
+	, m_size(b.m_size)
+	, m_unlink(false)
+{
+}
+
 Body::~Body()
 {
 	clear();

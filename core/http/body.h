@@ -11,6 +11,7 @@ class Connection;
 class Body {
 public:
 	Body();
+	Body(const Body &b);
 	~Body();
 	ssize_t add(const char *p, size_t sz);
 	void clear();
