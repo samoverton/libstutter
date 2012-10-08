@@ -33,18 +33,24 @@ public:
 
 private:
 	bool connect();
-	bool send();
+	bool send_data(Reply &reply);
 	bool read_reply(Reply &reply);
+	void release_socket();
+
+	bool send_raw(int fd, const char *data, size_t sz);
 
 protected:
 	virtual bool send_headers();
-	virtual bool send_body();
+	bool send_body(Reply &reply);
 
 private:
 	int m_fd;
 	Verb m_verb;
 	std::string m_url;
 	std::string m_host;
+
+	// upload
+	bool m_require_100;
 
 	Error m_error;
 

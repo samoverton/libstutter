@@ -4,6 +4,7 @@
 #include "reply.h"
 
 #include <string.h>
+#include <iostream>
 
 using namespace std;
 using http::Parser;
@@ -93,16 +94,23 @@ Parser::add_body_fragment(const char *at, size_t sz)
 void
 Parser::callback()
 {
-	if (m_mode == REQUEST) { // Verb
-		switch(m_parser.method) {
-			case HTTP_GET:    m_request->set_verb(Request::Verb::GET);    break;
-			case HTTP_POST:   m_request->set_verb(Request::Verb::POST);   break;
-			case HTTP_PUT:    m_request->set_verb(Request::Verb::PUT);    break;
-			case HTTP_HEAD:   m_request->set_verb(Request::Verb::HEAD);   break;
-			case HTTP_DELETE: m_request->set_verb(Request::Verb::DELETE); break;
-			default: break;
-		}
+	switch (m_mode) {
+		case REQUEST: // handle Verb
+			switch(m_parser.method) {
+				case HTTP_GET:    m_request->set_verb(Request::Verb::GET);    break;
+				case HTTP_POST:   m_request->set_verb(Request::Verb::POST);   break;
+				case HTTP_PUT:    m_request->set_verb(Request::Verb::PUT);    break;
+				case HTTP_HEAD:   m_request->set_verb(Request::Verb::HEAD);   break;
+				case HTTP_DELETE: m_request->set_verb(Request::Verb::DELETE); break;
+				default: break;
+			}
+			break;
+
+		case RESPONSE: // handle status
+			m_reply->set_status(m_parser.status_code, "");
+			break;
 	}
+
 	m_fun(m_fun_data);
 }
 
@@ -131,6 +139,15 @@ Parser::Parser(Mode m, http::Reply *reply, void (*fun)(void*), void *ptr)
 bool
 Parser::add(const char *p, size_t sz)
 {
+#if 1
+	cout << "Parser<" << (m_mode == REQUEST? "REQUEST" : "RESPONSE") << ">::add [";
+	if (*p) {
+		cout.write(p, sz);
+	} else {
+		cout << "(" << sz << " bytes...)";
+	}
+	cout << "]" << endl;
+#endif
 	size_t nparsed = http_parser_execute(&m_parser, &m_parserconf, p, sz);
 	return (nparsed == sz);
 }

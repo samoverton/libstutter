@@ -25,6 +25,7 @@ using http::Parser;
 Request::Request(Connection &cx)
 	: Message(cx)
 	, m_verb(GET)
+	, m_require_100(false)
 	, m_error(NOT_EXECUTED)
 {}
 
@@ -32,6 +33,7 @@ Request::Request(const Request &request)
 	: Message(request)
 	, m_verb(request.m_verb)
 	, m_url(request.m_url)
+	, m_require_100(request.m_require_100)
 	, m_error(request.m_error)
 {
 }
@@ -83,17 +85,8 @@ bool
 Request::send_continue()
 {
 	char hdr[] = "HTTP/1.1 100 Continue\r\n\r\n";
-	size_t done = 0, sz = sizeof(hdr)-1;
-	while(done < sz) {
-		int sent = m_connection.safe_write(hdr + done, sz - done);
-
-		if (sent <= 0) {
-			// TODO: log
-			return false;
-		}
-		done += sent;
-	}
-	return true;
+	return send_raw(m_connection.watched_fd(),
+			hdr, sizeof(hdr)-1);
 }
 
 void
@@ -110,7 +103,8 @@ Request::Error
 Request::send(Reply &reply)
 {
 	prepare();
-	connect() && send() && read_reply(reply);
+	connect() && send_data(reply) && read_reply(reply);
+	release_socket();
 	return m_error;
 }
 
@@ -140,7 +134,13 @@ Request::prepare()
 	m_data.insert(m_data.end(), headers.begin(), headers.end());
 
 	// add in-memory body buffer
-	m_data.insert(m_data.end(), m_body.buffer_begin(), m_body.buffer_end());
+	if (get_header("Expect") == "100-continue") {
+		m_require_100 = true;
+	} else {
+		m_data.insert(m_data.end(), m_body.buffer_begin(), m_body.buffer_end());
+	}
+
+	cout << "Sending this to back-end: [" << headers << "]" << endl;
 }
 
 bool
@@ -151,13 +151,13 @@ Request::connect()
 }
 
 bool
-Request::send()
+Request::send_data(Reply &reply)
 {
 	SocketPool &pool = m_connection.server().pool_manager().get_pool(m_host);
 
 	for(int error_count = 0; error_count < MAX_SEND_RETRIES; error_count++)
 	{
-		if (send_headers() && send_body())
+		if (send_headers() && send_body(reply))
 			return true;
 
 		// close socket and remove from the pool
@@ -175,26 +175,53 @@ Request::send()
 bool
 Request::send_headers()
 {
-	Message::iterator i;
-	for (i = m_data.begin(); i != m_data.end(); )
+	return send_raw(m_fd, &m_data[0], m_data.size());
+}
+
+bool
+Request::send_raw(int fd, const char *data, size_t sz)
+{
+	size_t done = 0;
+	while (done < sz)
 	{
-		size_t sz = distance<Message::iterator>(i, m_data.end());
-		int sent = m_connection.safe_write(m_fd, &(*i), sz);
+		int sent = m_connection.safe_write(fd, data + done, sz - done);
 
 		if (sent <= 0) {
 			// TODO: log
 			return false;
 		}
-		i += sent;
+		done += sent;
 	}
 	return true;
 }
 
 
 bool
-Request::send_body()
+Request::send_body(Reply &reply)
 {
-	return m_body.send_from_disk(m_connection);
+	if (m_require_100) {
+		// wait for 100-continue
+		read_reply(reply);
+		cout << "GOT SOME DATA, status=" << reply.code() << endl;
+		if (reply.code() != 100) {
+			// TODO: log
+			return false;
+		}
+
+		// send first part of the body
+		Body::iterator i = m_body.buffer_begin();
+		size_t sz = distance(i, m_body.buffer_end());
+		if (!send_raw(m_connection.watched_fd(), &(*i), sz))
+			return false;
+		cout << "sent first " << sz << " bytes of body" << endl;
+	}
+
+	bool ret = m_body.send_from_disk(m_connection);
+	if (ret)
+		cout << "sent more data from disk-buffered body" << endl;
+	else
+		cout << "failed to send the rest of the body" << endl;
+	return ret;
 }
 
 
@@ -224,9 +251,13 @@ Request::read_reply(Reply &reply)
 			m_connection.yield((int)Connection::Need::HALT);
 	}
 
+	return true;
+}
+
+void
+Request::release_socket()
+{
 	// put socket back in the pool
 	SocketPool &pool = m_connection.server().pool_manager().get_pool(m_host);
 	pool.put(m_fd);
-
-	return true;
 }
