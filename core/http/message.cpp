@@ -48,6 +48,16 @@ Message::add_body(const char *p, size_t sz)
 	}
 }
 
+string
+Message::get_header(string key) const
+{
+	map<string,string>::const_iterator it;
+	if ((it = m_headers.find(key)) == m_headers.end())
+		return "";
+
+	return it->second;
+}
+
 void
 Message::reset()
 {

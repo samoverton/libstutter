@@ -79,6 +79,23 @@ Request::verb_str() const
 	}
 }
 
+bool
+Request::send_continue()
+{
+	char hdr[] = "HTTP/1.1 100 Continue\r\n\r\n";
+	size_t done = 0, sz = sizeof(hdr)-1;
+	while(done < sz) {
+		int sent = m_connection.safe_write(hdr + done, sz - done);
+
+		if (sent <= 0) {
+			// TODO: log
+			return false;
+		}
+		done += sent;
+	}
+	return true;
+}
+
 void
 Request::reset()
 {

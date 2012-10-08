@@ -20,6 +20,8 @@ public:
 	Verb verb() const;
 	std::string verb_str() const;
 
+	bool send_continue();
+
 	typedef enum {NOT_EXECUTED = -1, SUCCESS, SOCKET_ERROR,
 		DNS_ERROR, CONNECTION_ERROR, WRITE_ERROR} Error;
 	Error send(Reply &reply);

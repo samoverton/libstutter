@@ -72,6 +72,9 @@ Parser::save_last_header()
 		m_header_val.clear();
 		m_header_gotval = false;
 	}
+
+	if (m_mode == REQUEST && m_request->get_header("Expect") == "100-continue")
+		m_request->send_continue();
 }
 
 void
