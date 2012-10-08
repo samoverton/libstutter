@@ -111,29 +111,19 @@ Body::set_file(const string &name)
 	return true;
 }
 
+const Body::iterator
+Body::buffer_begin()
+{
+	return m_data.begin();
+}
+
+const Body::iterator
+Body::buffer_end()
+{
+	return m_data.end();
+}
+
 // send
-
-bool
-Body::send(Connection &cx)
-{
-	return send_from_memory(cx)
-		&& send_from_disk(cx);
-}
-
-bool
-Body::send_from_memory(Connection &cx) const
-{
-	size_t done = 0;
-	while (done < m_data.size()) {
-		int sent = cx.safe_write(&m_data[done], m_data.size() - done);
-		if (sent <= 0) {
-			// TODO: log
-			return false;
-		}
-		done += sent;
-	}
-	return true;
-}
 
 bool
 Body::send_from_disk(Connection &cx) const
@@ -144,7 +134,7 @@ Body::send_from_disk(Connection &cx) const
 	size_t remain = size() - m_data.size();
 	off_t offset = 0;
 	while (remain > 0) {
-		int sent = cx.safe_write(m_fd, &offset, remain);
+		int sent = cx.safe_sendfile(m_fd, &offset, remain);
 		if (sent <= 0) {
 			// TODO: log
 			return false;

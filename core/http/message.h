@@ -28,7 +28,6 @@ public:
 
 protected:
 	virtual bool send_headers() = 0;
-	virtual bool send_body() = 0;
 
 protected:
 	std::map<std::string, std::string> m_headers;

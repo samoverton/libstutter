@@ -34,7 +34,7 @@ public:
 
 	int safe_read (char *p, size_t sz);
 	int safe_write(const char *p, size_t sz);
-	int safe_write(int in_fd, off_t *offset, size_t count); // sendfile
+	int safe_sendfile(int in_fd, off_t *offset, size_t count); // sendfile
 	void process(); // callback
 
 private:

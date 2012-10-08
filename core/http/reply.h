@@ -22,7 +22,6 @@ public:
 
 protected:
 	virtual bool send_headers();
-	virtual bool send_body();
 
 private:
 	short m_code;

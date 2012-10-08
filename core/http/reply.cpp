@@ -43,6 +43,9 @@ Reply::prepare()
 	string headers = ss.str();
 	m_data.reserve(headers.size() + m_body.size());
 	m_data.insert(m_data.end(), headers.begin(), headers.end());
+
+	// insert in-memory part of the body
+	m_data.insert(m_data.end(), m_body.buffer_begin(), m_body.buffer_end());
 }
 
 void
@@ -67,7 +70,7 @@ Reply::send()
 	prepare();
 
 	return send_headers()
-		&& send_body();
+		&& m_body.send_from_disk(m_connection);
 }
 
 bool
@@ -97,8 +100,3 @@ Reply::send_headers()
 	return true;
 }
 
-bool
-Reply::send_body()
-{
-	return m_body.send(m_connection);
-}

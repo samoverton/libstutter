@@ -67,6 +67,7 @@ Connection::safe_read(int fd, char *p, size_t sz)
 	yield((int)Need::READ);
 	return read(fd, p, sz);
 }
+
 int
 Connection::safe_read (char *p, size_t sz)
 {
@@ -88,7 +89,7 @@ Connection::safe_write(const char *p, size_t sz)
 }
 
 int
-Connection::safe_write(int in_fd, off_t *offset, size_t count)
+Connection::safe_sendfile(int in_fd, off_t *offset, size_t count)
 {
 	yield((int)Need::WRITE);
 	return sendfile(m_watched_fd, in_fd, offset, count);

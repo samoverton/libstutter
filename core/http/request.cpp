@@ -121,6 +121,9 @@ Request::prepare()
 
 	string headers = ss.str();
 	m_data.insert(m_data.end(), headers.begin(), headers.end());
+
+	// add in-memory body buffer
+	m_data.insert(m_data.end(), m_body.buffer_begin(), m_body.buffer_end());
 }
 
 bool
@@ -174,7 +177,7 @@ Request::send_headers()
 bool
 Request::send_body()
 {
-	return m_body.send(m_connection);
+	return m_body.send_from_disk(m_connection);
 }
 
 
