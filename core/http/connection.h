@@ -31,6 +31,9 @@ public:
 	// yielding IO
 	int safe_read (int fd, char *p, size_t sz);
 	int safe_write(int fd, const char *p, size_t sz);
+
+	int safe_read (char *p, size_t sz);
+	int safe_write(const char *p, size_t sz);
 	void process(); // callback
 
 private:

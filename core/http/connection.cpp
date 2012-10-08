@@ -48,15 +48,7 @@ Connection::process()
 
 	// pack reply buffer
 	m_reply.prepare();
-
-	Reply::iterator i;
-	for (i = m_reply.begin(); i != m_reply.end(); )
-	{
-		int sent = safe_write(m_fd, &(*i), distance(i, m_reply.end()));
-		if (sent <= 0)
-			yield((int)Need::HALT);
-		i += sent;
-	}
+	m_reply.send();
 
 	// reset objects for next request
 	m_request.reset();
@@ -72,6 +64,11 @@ Connection::safe_read(int fd, char *p, size_t sz)
 	yield((int)Need::READ);
 	return read(fd, p, sz);
 }
+int
+Connection::safe_read (char *p, size_t sz)
+{
+	return safe_read(m_fd, p, sz);
+}
 
 int
 Connection::safe_write(int fd, const char *p, size_t sz)
@@ -79,6 +76,12 @@ Connection::safe_write(int fd, const char *p, size_t sz)
 	watch_fd(fd);
 	yield((int)Need::WRITE);
 	return write(fd, p, sz);
+}
+
+int
+Connection::safe_write(const char *p, size_t sz)
+{
+	return safe_write(m_fd, p, sz);
 }
 
 int

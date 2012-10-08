@@ -43,7 +43,7 @@ Message::add_body(const char *p, size_t sz)
 		done += added;
 	}
 }
-	
+
 void
 Message::reset()
 {

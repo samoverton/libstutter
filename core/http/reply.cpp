@@ -44,7 +44,6 @@ Reply::prepare()
 	m_data.insert(m_data.end(), headers.begin(), headers.end());
 
 	m_data.insert(m_data.end(), p, p+sizeof(p)-1);
-	// m_data.insert(m_data.end(), m_body.begin(), m_body.end());
 }
 
 void
@@ -61,4 +60,31 @@ short
 Reply::code() const
 {
 	return m_code;
+}
+
+void
+Reply::send()
+{
+	prepare();
+
+	send_headers();
+	send_body();
+}
+
+void
+Reply::send_headers()
+{
+	iterator i;
+	for (i = begin(); i != end(); )
+	{
+		int sent = m_connection.safe_write(&(*i), distance(i, end()));
+		if (sent <= 0)
+			m_connection.yield((int)Connection::Need::HALT);
+		i += sent;
+	}
+}
+
+void
+Reply::send_body()
+{
 }
