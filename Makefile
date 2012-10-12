@@ -1,4 +1,4 @@
-OUT=test
+OUT=stutter
 
 HTTP_PARSER_OBJS=core/http/joyent/http_parser.o
 HANDLER_OBJS=core/handlers/base.o core/handlers/hello.o core/handlers/simple_proxy.o core/handlers/file.o
