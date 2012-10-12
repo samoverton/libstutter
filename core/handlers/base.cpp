@@ -7,6 +7,10 @@ BaseHandler::BaseHandler(http::Connection &cx)
 {
 }
 
+BaseHandler::~BaseHandler()
+{
+}
+
 http::Connection &
 BaseHandler::connection()
 {

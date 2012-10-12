@@ -14,6 +14,7 @@ class Message {
 public:
 	Message(Connection &cx);
 	Message(const Message &msg);
+	virtual ~Message();
 	void add_header(std::string key, std::string val);
 	void add_header(std::string key, int val);
 	void add_body(const char *p, size_t sz);

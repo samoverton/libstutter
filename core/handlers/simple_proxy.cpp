@@ -13,7 +13,7 @@ SimpleProxyHandler::handle(const http::Request &req, http::Reply &reply)
 	send_to("bea", req, reply);
 	// if (reply.code() != 200 && reply.code() != 204)
 	// 	return;
-	send_to("zoe", req, reply);
+	// send_to("zoe", req, reply);
 }
 
 void

@@ -97,11 +97,11 @@ Parser::callback()
 	switch (m_mode) {
 		case REQUEST: // handle Verb
 			switch(m_parser.method) {
-				case HTTP_GET:    m_request->set_verb(Request::Verb::GET);    break;
-				case HTTP_POST:   m_request->set_verb(Request::Verb::POST);   break;
-				case HTTP_PUT:    m_request->set_verb(Request::Verb::PUT);    break;
-				case HTTP_HEAD:   m_request->set_verb(Request::Verb::HEAD);   break;
-				case HTTP_DELETE: m_request->set_verb(Request::Verb::DELETE); break;
+				case HTTP_GET:    m_request->set_verb(Request::GET);    break;
+				case HTTP_POST:   m_request->set_verb(Request::POST);   break;
+				case HTTP_PUT:    m_request->set_verb(Request::PUT);    break;
+				case HTTP_HEAD:   m_request->set_verb(Request::HEAD);   break;
+				case HTTP_DELETE: m_request->set_verb(Request::DELETE); break;
 				default: break;
 			}
 			break;

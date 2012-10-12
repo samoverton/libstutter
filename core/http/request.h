@@ -6,11 +6,13 @@
 namespace http {
 class Reply;
 class Connection;
+class Parser;
 
 class Request : public virtual Message {
 public:
 	Request(Connection &cx);
 	Request(const Request &request);
+	virtual ~Request();
 	const std::string &url() const;
 	void add_url_fragment(const char *at, size_t sz);
 	void set_host(std::string host);
@@ -33,15 +35,15 @@ public:
 
 private:
 	bool connect();
-	bool send_data(Reply &reply);
-	bool read_reply(Reply &reply);
+	bool send_data(Parser &parser, Reply &reply);
+	bool read_reply(Parser &p, Reply &reply);
 	void release_socket();
 
 	bool send_raw(int fd, const char *data, size_t sz);
 
 protected:
 	virtual bool send_headers();
-	bool send_body(Reply &reply);
+	bool send_body(Parser &parser, Reply &reply);
 
 private:
 	int m_fd;

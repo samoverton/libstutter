@@ -17,6 +17,10 @@ Reply::Reply(Connection &cx)
 	reset();
 }
 
+Reply::~Reply()
+{
+}
+
 void
 Reply::set_status(short code, std::string status)
 {

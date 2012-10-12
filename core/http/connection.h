@@ -13,6 +13,7 @@
 class Server;
 
 namespace http {
+
 class Connection : public Coroutine {
 public:
 
@@ -26,7 +27,7 @@ public:
 	Server &server();
 
 public:
-	typedef enum {READ, WRITE, HALT} Need;
+	enum Need {READ, WRITE, HALT};
 
 	// yielding IO
 	int safe_read (int fd, char *p, size_t sz);

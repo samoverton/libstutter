@@ -38,6 +38,10 @@ Request::Request(const Request &request)
 {
 }
 
+Request::~Request()
+{
+}
+
 const string&
 Request::url() const
 {
@@ -99,11 +103,27 @@ Request::reset()
 	m_error = NOT_EXECUTED;
 }
 
+namespace http {
+void
+_done(void *self)
+{
+	Request *req = reinterpret_cast<Request*>(self);
+	req->error(http::Request::SUCCESS);
+}
+}
+
+
 Request::Error
 Request::send(Reply &reply)
 {
 	prepare();
-	connect() && send_data(reply) && read_reply(reply);
+
+	reply.reset();
+	Parser parser(Parser::RESPONSE, &reply,
+			_done, reinterpret_cast<void*>(this));
+
+
+	connect() && send_data(parser, reply) && read_reply(parser, reply);
 	release_socket();
 	return m_error;
 }
@@ -151,13 +171,13 @@ Request::connect()
 }
 
 bool
-Request::send_data(Reply &reply)
+Request::send_data(Parser &parser, Reply &reply)
 {
 	SocketPool &pool = m_connection.server().pool_manager().get_pool(m_host);
 
 	for(int error_count = 0; error_count < MAX_SEND_RETRIES; error_count++)
 	{
-		if (send_headers() && send_body(reply))
+		if (send_headers() && send_body(parser, reply))
 			return true;
 
 		// close socket and remove from the pool
@@ -197,14 +217,13 @@ Request::send_raw(int fd, const char *data, size_t sz)
 
 
 bool
-Request::send_body(Reply &reply)
+Request::send_body(Parser &parser, Reply &reply)
 {
-	if (m_require_100) {
-		// wait for 100-continue
-		read_reply(reply);
+	if (m_require_100) { // wait for 100-continue
+
+		read_reply(parser, reply);
 		cout << "GOT SOME DATA, status=" << reply.code() << endl;
 		if (reply.code() != 100) {
-			// TODO: log
 			return false;
 		}
 
@@ -213,6 +232,7 @@ Request::send_body(Reply &reply)
 		size_t sz = distance(i, m_body.buffer_end());
 		if (!send_raw(m_connection.watched_fd(), &(*i), sz))
 			return false;
+
 		cout << "sent first " << sz << " bytes of body" << endl;
 	}
 
@@ -225,30 +245,26 @@ Request::send_body(Reply &reply)
 }
 
 
-void
-_done(void *self)
-{
-	Request *req = reinterpret_cast<Request*>(self);
-	req->error(http::Request::Error::SUCCESS);
-}
-
 bool
-Request::read_reply(Reply &reply)
+Request::read_reply(Parser &parser, Reply &reply)
 {
-	reply.reset();
-	Parser parser(Parser::RESPONSE, &reply,
-			_done, reinterpret_cast<void*>(this));
-
+	cout << "read reply..." << endl;
 	while(m_error != SUCCESS)
 	{
 		char buffer[1024];
 		int recvd = m_connection.safe_read(m_fd, buffer, sizeof(buffer));
-		if (recvd <= 0)
-			m_connection.yield((int)Connection::Need::HALT);
+		cout << "recvd = " << recvd << endl;
+		if (recvd <= 0) {
+			// TODO: log
+			cout << "Error reading from " << m_fd << endl;
+			m_connection.yield((int)Connection::HALT);
+		}
 
 		bool success = parser.add(buffer, (size_t)recvd);
-		if (!success)
-			m_connection.yield((int)Connection::Need::HALT);
+		if (!success) {
+			cout << "failed to add " << recvd << " bytes" << endl;
+			m_connection.yield((int)Connection::HALT);
+		}
 	}
 
 	return true;

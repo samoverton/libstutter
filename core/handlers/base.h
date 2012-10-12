@@ -9,6 +9,7 @@
 class BaseHandler {
 public:
 	BaseHandler(http::Connection &cx);
+	virtual ~BaseHandler();
 	virtual void handle(const http::Request &req, http::Reply &reply) = 0;
 
 protected:

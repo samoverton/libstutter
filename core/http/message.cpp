@@ -19,6 +19,10 @@ Message::Message(const Message &msg)
 {
 }
 
+Message::~Message()
+{
+}
+
 void
 Message::add_header(string key, string val)
 {

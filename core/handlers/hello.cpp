@@ -7,6 +7,10 @@ HelloHandler::HelloHandler(http::Connection &cx)
 {
 }
 
+HelloHandler::~HelloHandler()
+{
+}
+
 void
 HelloHandler::handle(const http::Request &req, http::Reply &reply)
 {

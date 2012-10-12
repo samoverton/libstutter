@@ -10,6 +10,7 @@ class Reply : public virtual Message {
 
 public:
 	Reply(Connection &cx);
+	virtual ~Reply();
 
 	void set_status(short code, std::string status);
 	short code() const;

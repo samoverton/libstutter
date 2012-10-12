@@ -64,7 +64,7 @@ int
 Connection::safe_read(int fd, char *p, size_t sz)
 {
 	watch_fd(fd);
-	yield((int)Need::READ);
+	yield((int)READ);
 	return read(fd, p, sz);
 }
 
@@ -78,7 +78,7 @@ int
 Connection::safe_write(int fd, const char *p, size_t sz)
 {
 	watch_fd(fd);
-	yield((int)Need::WRITE);
+	yield((int)WRITE);
 	return write(fd, p, sz);
 }
 
@@ -91,7 +91,7 @@ Connection::safe_write(const char *p, size_t sz)
 int
 Connection::safe_sendfile(int in_fd, off_t *offset, size_t count)
 {
-	yield((int)Need::WRITE);
+	yield((int)WRITE);
 	return sendfile(m_watched_fd, in_fd, offset, count);
 }
 
@@ -103,14 +103,14 @@ Connection::exec()
 		char buffer[READ_BUFFER_SIZE];
 		int recvd = safe_read(m_fd, buffer, sizeof(buffer));
 		if (recvd <= 0)
-			return (int)Need::HALT;
+			return (int)HALT;
 
 		bool success = m_parser.add(buffer, (size_t)recvd);
 		if (!success)
-			return (int)Need::HALT;
+			return (int)HALT;
 	}
 
-	return (int)Need::HALT;
+	return (int)HALT;
 }
 
 int

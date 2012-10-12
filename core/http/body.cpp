@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <cstdlib>
 
 #define MAX_BUFFER_SIZE 8192
 #define TMP_FILE_TEMPLATE "/tmp/body-XXXXXX"
@@ -82,7 +83,7 @@ Body::create_file()
 		return true;
 
 	char filename[] = TMP_FILE_TEMPLATE;
-	if ((m_fd = mkstemp(filename)) > 0) {
+	if ((m_fd = ::mkstemp(filename)) > 0) {
 		m_filename = filename;
 		m_unlink = true;
 		return true;

@@ -7,7 +7,7 @@
 class Coroutine {
 public:
 	Coroutine();
-	~Coroutine();
+	virtual ~Coroutine();
 
 	typedef enum {INIT, RUNNING, DONE} State;
 	State state() const;

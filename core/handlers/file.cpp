@@ -7,6 +7,10 @@ FileHandler::FileHandler(http::Connection &cx)
 {
 }
 
+FileHandler::~FileHandler()
+{
+}
+
 void
 FileHandler::handle(const http::Request &req, http::Reply &reply)
 {
