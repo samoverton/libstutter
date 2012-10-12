@@ -74,7 +74,8 @@ Parser::save_last_header()
 		m_header_gotval = false;
 	}
 
-	if (m_mode == REQUEST && m_request->get_header("Expect") == "100-continue")
+	if (m_mode == REQUEST && m_request->get_header(Message::Expect)
+			== Message::OneHundredContinue)
 		m_request->send_continue();
 }
 

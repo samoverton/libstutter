@@ -154,7 +154,7 @@ Request::prepare()
 	m_data.insert(m_data.end(), headers.begin(), headers.end());
 
 	// add in-memory body buffer
-	if (get_header("Expect") == "100-continue") {
+	if (get_header(Message::Expect) == "100-continue") {
 		m_require_100 = true;
 	} else {
 		m_data.insert(m_data.end(), m_body.buffer_begin(), m_body.buffer_end());

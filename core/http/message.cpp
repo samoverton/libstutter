@@ -8,6 +8,9 @@ using http::Message;
 using http::Body;
 using http::Connection;
 
+const string Message::Expect = "Expect";
+const string Message::OneHundredContinue = "100-continue";
+
 Message::Message(Connection &cx)
 	: m_connection(cx)
 {

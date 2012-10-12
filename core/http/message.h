@@ -29,6 +29,10 @@ public:
 	virtual void reset();
 	virtual void prepare() = 0;
 
+	// public headers
+	static const std::string Expect;
+	static const std::string OneHundredContinue;
+
 protected:
 	virtual bool send_headers() = 0;
 
