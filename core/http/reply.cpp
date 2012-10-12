@@ -31,7 +31,8 @@ Reply::set_status(short code, std::string status)
 void
 Reply::prepare()
 {
-	add_header("Content-Length", m_body.size());
+	if (get_header("Transfer-Encoding") != "chunked")
+		add_header("Content-Length", m_body.size());
 
 	stringstream ss;
 	string crlf("\r\n");
