@@ -23,6 +23,7 @@ _http_on_url_cb(http_parser *p, const char *at, size_t sz)
 int
 _http_on_message_complete_cb(http_parser *p)
 {
+	cout << "MESSAGE COMPLETE" << endl;
 	Parser *parser = reinterpret_cast<Parser*>(p->data);
 	parser->callback();
 	return 0;

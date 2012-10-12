@@ -97,6 +97,7 @@ void
 Request::reset()
 {
 	Message::reset();
+	m_require_100 = false;
 	m_verb = GET;
 	m_url.clear();
 	m_host.clear();

@@ -17,9 +17,11 @@ public:
 	virtual ~Message();
 	void add_header(std::string key, std::string val);
 	void add_header(std::string key, int val);
+	bool del_header(std::string key);
 	void add_body(const char *p, size_t sz);
 
 	std::string get_header(std::string key) const;
+	const Body &body() const;
 
 	// data iterator
 	typedef std::vector<char>::const_iterator iterator;

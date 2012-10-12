@@ -41,6 +41,17 @@ Message::add_header(string key, int val)
 	add_header(key, ss.str());
 }
 
+bool
+Message::del_header(string key)
+{
+	map<string,string>::iterator it;
+	if ((it = m_headers.find(key)) != m_headers.end()) {
+		m_headers.erase(it);
+		return true;
+	}
+	return false;
+}
+
 void
 Message::add_body(const char *p, size_t sz)
 {
@@ -63,6 +74,12 @@ Message::get_header(string key) const
 		return "";
 
 	return it->second;
+}
+
+const Body &
+Message::body() const
+{
+	return m_body;
 }
 
 void
