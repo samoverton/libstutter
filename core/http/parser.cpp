@@ -151,6 +151,7 @@ Parser::add(const char *p, size_t sz)
 	cout << "]" << endl;
 #endif
 	size_t nparsed = http_parser_execute(&m_parser, &m_parserconf, p, sz);
+	cout << "Added " << sz << " bytes, parsed " << nparsed << endl;
 	return (nparsed == sz);
 }
 

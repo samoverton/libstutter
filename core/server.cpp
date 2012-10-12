@@ -10,6 +10,7 @@
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 
+#include <iostream>
 
 using namespace std;
 using http::Connection;
@@ -156,6 +157,8 @@ Server::start()
 			_on_possible_accept, reinterpret_cast<void*>(this));
 	event_base_set(m_base, &m_ev);
 	event_add(&m_ev, 0); // TODO: check return code
+
+	cout << "St-t-t-t-started." << endl;
 
 	event_base_dispatch(m_base);
 }

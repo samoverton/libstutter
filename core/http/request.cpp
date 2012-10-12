@@ -227,6 +227,7 @@ Request::send_body(Parser &parser, Reply &reply)
 		if (reply.code() != 100) {
 			return false;
 		}
+		m_error = NOT_EXECUTED; // wait for a new reply
 
 		// send first part of the body
 		Body::iterator i = m_body.buffer_begin();
