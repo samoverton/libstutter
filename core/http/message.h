@@ -21,7 +21,7 @@ public:
 	void add_body(const char *p, size_t sz);
 
 	std::string get_header(std::string key) const;
-	const Body &body() const;
+	Body &body();
 
 	// data iterator
 	typedef std::vector<char>::const_iterator iterator;
@@ -34,9 +34,6 @@ public:
 	// public headers
 	static const std::string Expect;
 	static const std::string OneHundredContinue;
-
-protected:
-	virtual bool send_headers() = 0;
 
 protected:
 	std::map<std::string, std::string> m_headers;

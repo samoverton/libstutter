@@ -76,8 +76,8 @@ Message::get_header(string key) const
 	return it->second;
 }
 
-const Body &
-Message::body() const
+Body &
+Message::body()
 {
 	return m_body;
 }

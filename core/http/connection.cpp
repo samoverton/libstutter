@@ -136,3 +136,21 @@ Connection::server()
 {
 	return m_server;
 }
+
+bool
+Connection::send_raw(int fd, const char *data, size_t sz)
+{
+	size_t done = 0;
+	while (done < sz)
+	{
+		int sent = safe_write(fd, data + done, sz - done);
+
+		if (sent <= 0) {
+			// TODO: log
+			return false;
+		}
+		done += sent;
+	}
+	return true;
+}
+

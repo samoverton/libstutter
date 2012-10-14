@@ -22,7 +22,7 @@ public:
 	virtual void reset();
 
 protected:
-	virtual bool send_headers();
+	bool send_headers();
 
 private:
 	short m_code;

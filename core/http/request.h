@@ -23,26 +23,17 @@ public:
 	std::string verb_str() const;
 
 	bool send_continue();
-
-	typedef enum {NOT_EXECUTED = -1, SUCCESS, SOCKET_ERROR,
-		DNS_ERROR, CONNECTION_ERROR, WRITE_ERROR} Error;
-	Error send(Reply &reply);
-	void error(Error e);
+	bool require_100_continue() const;
 
 	// from message
 	virtual void prepare();
 	virtual void reset();
 
 private:
-	bool connect();
 	bool send_data(Parser &parser, Reply &reply);
-	bool read_reply(Parser &p, Reply &reply);
 	void release_socket();
 
-	bool send_raw(int fd, const char *data, size_t sz);
-
 protected:
-	virtual bool send_headers();
 	bool send_body(Parser &parser, Reply &reply);
 
 private:
@@ -54,10 +45,7 @@ private:
 	// upload
 	bool m_require_100;
 
-	Error m_error;
-
 friend class Connection;
-friend void _done(void*);
 };
 
 }
