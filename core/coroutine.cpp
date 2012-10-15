@@ -1,5 +1,9 @@
 #include "coroutine.h"
 
+#ifdef USE_VALGRIND
+#include <valgrind/valgrind.h>
+#endif
+
 #define COROUTINE_STACK_SIZE (32 * 1024)
 
 using namespace std;
@@ -18,15 +22,20 @@ Coroutine::Coroutine()
 		, m_stack(0)
 {
 	// create new context based on current one:
-	getcontext(&m_ctx); // copy current context into m_ctx
 	create_stack();     // allocate stack for new context
+	getcontext(&m_ctx); // copy current context into m_ctx
 	makecontext(&m_ctx, (void (*)())entry_point, 1, this); // create
 }
 
 Coroutine::~Coroutine()
 {
-	if (m_stack)
+	if (m_stack) {
 		delete[] m_stack;
+
+#ifdef USE_VALGRIND
+		VALGRIND_STACK_DEREGISTER(m_id);
+#endif
+	}
 }
 
 Coroutine::State
@@ -79,4 +88,8 @@ Coroutine::create_stack()
 	m_ctx.uc_stack.ss_size = COROUTINE_STACK_SIZE;
 	m_ctx.uc_stack.ss_flags = 0;
 	m_ctx.uc_link = 0;
+
+#ifdef USE_VALGRIND
+	m_id = VALGRIND_STACK_REGISTER(m_stack, m_stack + COROUTINE_STACK_SIZE);
+#endif
 }

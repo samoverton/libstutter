@@ -35,6 +35,9 @@ private:
 	ucontext_t m_ctx;
 	char *m_stack;
 
+#ifdef USE_VALGRIND
+	int m_id;
+#endif
 friend void entry_point(void*);
 };
 
