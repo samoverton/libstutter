@@ -131,7 +131,5 @@ Request::prepare()
 	} else {
 		m_data.insert(m_data.end(), m_body.buffer_begin(), m_body.buffer_end());
 	}
-
-	// cout << "Sending this to back-end: [" << headers << "]" << endl;
 }
 

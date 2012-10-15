@@ -33,8 +33,6 @@ ostream &
 Log::get(Level l)
 {
 	if (l >= m_log.level()) {
-		// cerr << "l=" << l << ", m_log.level()=" << m_log.level() << endl;
-		// cerr << "Return " << m_log.m_filename << endl;
 		return m_log.stream();
 	}
 	return m_null.stream();

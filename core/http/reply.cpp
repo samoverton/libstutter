@@ -55,10 +55,6 @@ Reply::prepare()
 
 	// insert in-memory part of the body
 	m_data.insert(m_data.end(), m_body.buffer_begin(), m_body.buffer_end());
-
-	// cout << "Going to send this first: [";
-	// cout.write(&m_data[0], m_data.size());
-	// cout << "]" << endl;
 }
 
 void
