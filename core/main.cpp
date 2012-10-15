@@ -1,4 +1,5 @@
 #include "server.h"
+#include "log.h"
 
 int
 main(int argc, char *argv[])
@@ -7,6 +8,7 @@ main(int argc, char *argv[])
 	(void)argv;
 
 	Server s("127.0.0.1", 8888);
+	Log::setup("/tmp/stutter.log", Log::INFO);
 
 	/*
 	s.set_handler("/adhoc/api/",            jbirdForwardHandler);

@@ -3,11 +3,13 @@
 
 using namespace std;
 
+static Log m_log ("/dev/null", Log::INFO);
+static Log m_null("/dev/null", Log::INFO);
+
 Log::Log(string filename, Level level)
 	: m_filename(filename)
 	, m_level(level)
 {
-	m_null.open("/dev/null", ios::out);
 }
 
 bool
@@ -27,10 +29,34 @@ Log::close()
 	m_out.close();
 }
 
-ofstream &
+ostream &
 Log::get(Level l)
 {
-	if (l >= m_level)
-		return m_out;
-	return m_null;
+	if (l >= m_log.level()) {
+		// cerr << "l=" << l << ", m_log.level()=" << m_log.level() << endl;
+		// cerr << "Return " << m_log.m_filename << endl;
+		return m_log.stream();
+	}
+	return m_null.stream();
+}
+
+ostream &
+Log::stream()
+{
+	return m_out;
+}
+
+Log::Level
+Log::level() const
+{
+	return m_level;
+}
+
+bool
+Log::setup(std::string filename, Level level)
+{
+	m_log.close();
+	m_log.m_filename = filename;
+	m_log.m_level = level;
+	return m_log.open();
 }

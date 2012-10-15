@@ -1,4 +1,5 @@
 #include "server.h"
+#include "log.h"
 
 #include <unistd.h>
 #include <signal.h>
@@ -158,8 +159,7 @@ Server::start()
 	event_base_set(m_base, &m_ev);
 	event_add(&m_ev, 0); // TODO: check return code
 
-	cout << "St-t-t-t-stutter has st-t-t-t-started." << endl;
+	Log::get(Log::INFO) << "St-t-t-t-stutter has st-t-t-t-started." << endl;
 
 	event_base_dispatch(m_base);
 }
-
