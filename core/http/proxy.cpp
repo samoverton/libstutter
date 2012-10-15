@@ -84,7 +84,7 @@ Proxy::send(const string host, Reply &reply)
 	Parser parser(Parser::RESPONSE, &reply,
 			_done, reinterpret_cast<void*>(this));
 
-	if (!read_reply(parser, reply)) {
+	if (!read_reply(parser)) {
 		return failure(host, READ_ERROR);
 	}
 
@@ -115,7 +115,7 @@ Proxy::wait_for_100()
 	Parser parser(Parser::RESPONSE, &tmp,
 			_done, reinterpret_cast<void*>(this));
 
-	if (!read_reply(parser, tmp)) {
+	if (!read_reply(parser)) {
 		cerr << "Could not read reply while waiting for 100-continue" << endl;
 		return false;
 	}
@@ -152,7 +152,7 @@ Proxy::send_body(Request &r)
 }
 
 bool
-Proxy::read_reply(Parser &parser, Reply &reply)
+Proxy::read_reply(Parser &parser)
 {
 	// cout << "read reply on socket " << m_fd << "..." << endl;
 	m_done = false;

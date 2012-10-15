@@ -29,7 +29,7 @@ private:
 
 	bool failure(const std::string &host, Error e);
 	void error(Error e);
-	bool read_reply(Parser &parser, Reply &reply);
+	bool read_reply(Parser &parser);
 	void release_socket(const std::string &host);
 	void on_msg_complete();
 
