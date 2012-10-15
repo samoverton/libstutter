@@ -13,9 +13,10 @@ SimpleProxyHandler::SimpleProxyHandler(http::Connection &cx)
 void
 SimpleProxyHandler::handle(const http::Request &req, http::Reply &reply)
 {
-	cout << "SimpleProxyHandler" << endl;
+	// cout << "SimpleProxyHandler" << endl;
 	send_to("bea", req, reply);
-	cout << "We have the full reply from bea, return it to original client" << endl;
+	// cout << "We have the full reply from bea, return it to original client" << endl;
+
 	// if (reply.code() != 200 && reply.code() != 204)
 	// 	return;
 	// send_to("zoe", req, reply);

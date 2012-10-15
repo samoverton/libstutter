@@ -24,13 +24,14 @@ private:
 	// steps
 	bool connect(const std::string &host);
 	bool send_headers(Request &r);
-	bool wait_for_100(Parser &parser);
+	bool wait_for_100();
 	bool send_body(Request &r);
 
-	bool failure(Error e);
+	bool failure(const std::string &host, Error e);
 	void error(Error e);
 	bool read_reply(Parser &parser, Reply &reply);
 	void release_socket(const std::string &host);
+	void on_msg_complete();
 
 private:
 	int m_fd;
@@ -38,6 +39,7 @@ private:
 	const Request &m_request;
 
 	Error m_error;
+	bool  m_done;
 
 friend void _done(void*);
 };

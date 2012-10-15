@@ -23,7 +23,7 @@ _http_on_url_cb(http_parser *p, const char *at, size_t sz)
 int
 _http_on_message_complete_cb(http_parser *p)
 {
-	cout << "MESSAGE COMPLETE" << endl;
+	// cout << "MESSAGE COMPLETE" << endl;
 	Parser *parser = reinterpret_cast<Parser*>(p->data);
 	parser->callback();
 	return 0;
@@ -141,7 +141,7 @@ Parser::Parser(Mode m, http::Reply *reply, void (*fun)(void*), void *ptr)
 bool
 Parser::add(const char *p, size_t sz)
 {
-#if 1
+#if 0
 	cout << "Parser<" << (m_mode == REQUEST? "REQUEST" : "RESPONSE") << ">::add [";
 	if (*p) {
 		cout.write(p, sz);
@@ -151,7 +151,7 @@ Parser::add(const char *p, size_t sz)
 	cout << "]" << endl;
 #endif
 	size_t nparsed = http_parser_execute(&m_parser, &m_parserconf, p, sz);
-	cout << "Added " << sz << " bytes, parsed " << nparsed << endl;
+	// cout << "Added " << sz << " bytes, parsed " << nparsed << endl;
 	return (nparsed == sz);
 }
 

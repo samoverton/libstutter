@@ -49,8 +49,7 @@ Connection::process()
 	// FileHandler h(*this);
 	h.handle(m_request, m_reply);
 
-	// pack reply buffer
-	m_reply.prepare();
+	// respond to client
 	m_reply.send();
 
 	// reset objects for next request
