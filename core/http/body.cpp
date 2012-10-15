@@ -1,5 +1,6 @@
 #include "body.h"
 #include "connection.h"
+#include "../log.h"
 
 #include <iostream>
 #include <sys/types.h>
@@ -146,7 +147,7 @@ Body::send_from_disk(Connection &cx) const
 	while (remain > 0) {
 		int sent = cx.safe_sendfile(m_fd, &offset, remain);
 		if (sent <= 0) {
-			// TODO: log
+			Log::get(Log::DEBUG) << "Failed to sendfile() " << remain << " bytes" << endl;
 			return false;
 		}
 		offset += sent;

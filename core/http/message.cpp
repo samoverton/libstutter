@@ -1,5 +1,6 @@
 #include "message.h"
 #include "connection.h"
+#include "../log.h"
 #include <sstream>
 #include <iostream>
 
@@ -59,7 +60,8 @@ Message::add_body(const char *p, size_t sz)
 	while (done != sz) {
 		ssize_t added = m_body.add(p+done, sz-done);
 		if (added <= 0) {
-			// TODO: log, propagate
+			Log::get(Log::DEBUG) << "Could not add "
+				<< (sz-done) << " bytes to message body" << endl;
 			return;
 		}
 		done += added;

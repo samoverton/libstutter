@@ -7,6 +7,7 @@
 #include "../handlers/hello.h"
 #include "../handlers/simple_proxy.h"
 #include "../handlers/file.h"
+#include "../log.h"
 
 #include <iostream>
 using namespace std;
@@ -145,7 +146,8 @@ Connection::send_raw(int fd, const char *data, size_t sz)
 		int sent = safe_write(fd, data + done, sz - done);
 
 		if (sent <= 0) {
-			// TODO: log
+			Log::get(Log::DEBUG) << "Failed to send " << (sz-done)
+								 << " bytes to fd " << fd << endl;
 			return false;
 		}
 		done += sent;

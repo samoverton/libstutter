@@ -10,6 +10,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
+#include <errno.h>
 
 #include <iostream>
 
@@ -44,35 +45,35 @@ Server::setup_socket() const
 	/* create socket */
 	fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (-1 == fd) {
-		/*syslog(LOG_ERR, "Socket error: %m\n");*/
+		Log::get(Log::ERROR) << "Socket error: " << strerror(errno) << endl;
 		return -1;
 	}
 
 	/* reuse address if we've bound to it before. */
 	if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &reuse,
 				sizeof(reuse)) < 0) {
-		/* syslog(LOG_ERR, "setsockopt error: %m\n"); */
+		Log::get(Log::ERROR) << "Setsockopt error: " << strerror(errno) << endl;
 		return -1;
 	}
 
 	/* set socket as non-blocking. */
 	ret = fcntl(fd, F_SETFD, O_NONBLOCK);
 	if (0 != ret) {
-		/* syslog(LOG_ERR, "fcntl error: %m\n"); */
+		Log::get(Log::ERROR) << "Fcntl error: " << strerror(errno) << endl;
 		return -1;
 	}
 
 	/* bind */
 	ret = ::bind(fd, (struct sockaddr*)&addr, sizeof(addr));
 	if (0 != ret) {
-		/* syslog(LOG_ERR, "Bind error: %m\n"); */
+		Log::get(Log::ERROR) << "Bind error: " << strerror(errno) << endl;
 		return -1;
 	}
 
 	/* listen */
 	ret = listen(fd, SOMAXCONN);
 	if (0 != ret) {
-		/* syslog(LOG_DEBUG, "Listen error: %m\n"); */
+		Log::get(Log::ERROR) << "Listen error: " << strerror(errno) << endl;
 		return -1;
 	}
 
@@ -151,15 +152,19 @@ Server::start()
 #ifdef SIGPIPE
 	signal(SIGPIPE, SIG_IGN);
 #endif	
-	m_fd = setup_socket(); // TODO: check return code
+	m_fd = setup_socket();
+	if (m_fd < 0)
+		return;
 
 	/* start http server */
 	event_set(&m_ev, m_fd, EV_READ | EV_PERSIST,
 			_on_possible_accept, reinterpret_cast<void*>(this));
 	event_base_set(m_base, &m_ev);
-	event_add(&m_ev, 0); // TODO: check return code
+	if (event_add(&m_ev, 0) != 0) {
+		Log::get(Log::ERROR) << "Failed to add event to event loop" << endl;
+		return;
+	}
 
 	Log::get(Log::INFO) << "St-t-t-t-stutter has st-t-t-t-started." << endl;
-
 	event_base_dispatch(m_base);
 }

@@ -5,6 +5,7 @@
 #include "parser.h"
 #include "../pool.h"
 #include "../server.h"
+#include "../log.h"
 
 #include <iostream>
 
@@ -90,7 +91,6 @@ Proxy::send(const string host, Reply &reply)
 
 	release_socket(host);
 
-	// cout << "Got the reply" << endl;
 	return true;
 }
 
@@ -116,16 +116,13 @@ Proxy::wait_for_100()
 			_done, reinterpret_cast<void*>(this));
 
 	if (!read_reply(parser)) {
-		cerr << "Could not read reply while waiting for 100-continue" << endl;
+		Log::get(Log::INFO) << "Could not read reply while waiting for 100-continue" << endl;
 		return false;
 	}
-
-	cerr << "tmp.code() = " << tmp.code() << endl;
 
 	// check that we've received a 100-continue
 	if (tmp.code() == 100) {
 		parser.reset(); // reset as we'll get a full answer later
-		cerr << "Got 100-continue" << endl;
 		return true;
 	}
 
@@ -136,15 +133,11 @@ bool
 Proxy::send_body(Request &r)
 {
 	Body &body = r.body();
-	// cout << "Send body (" << body.size() << " bytes)" << endl;
-	if (m_request.require_100_continue()) {
-		// send first part of the body
+	if (m_request.require_100_continue()) { // send first part of the body
 		Body::iterator i = body.buffer_begin();
 		size_t sz = distance(i, body.buffer_end());
 		if (!m_connection.send_raw(m_fd, &(*i), sz))
 			return false;
-
-		// cout << "sent first " << sz << " bytes of body" << endl;
 	}
 
 	// send disk-backed body
@@ -154,22 +147,20 @@ Proxy::send_body(Request &r)
 bool
 Proxy::read_reply(Parser &parser)
 {
-	// cout << "read reply on socket " << m_fd << "..." << endl;
 	m_done = false;
 	while(!m_done)
 	{
 		char buffer[1024];
 		int recvd = m_connection.safe_read(m_fd, buffer, sizeof(buffer));
-		// cout << "recvd = " << recvd << endl;
 		if (recvd <= 0) {
-			// TODO: log
-			// cout << "Error reading from " << m_fd << endl;
+			Log::get(Log::DEBUG) << "Error reading from fd " << m_fd << endl;
 			return false;
 		}
 
 		bool success = parser.add(buffer, (size_t)recvd);
 		if (!success) {
-			// cout << "failed to add " << recvd << " bytes to parser" << endl;
+			Log::get(Log::DEBUG) << "Failed to add " << recvd
+                                 << " bytes to HTTP parser" << endl;
 			return false;
 		}
 	}

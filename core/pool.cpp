@@ -1,4 +1,5 @@
 #include "pool.h"
+#include "log.h"
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -67,13 +68,15 @@ SocketPool::connect(int &out_fd)
 	// set socket as non-blocking.
 	int ret = fcntl(fd, F_SETFD, O_NONBLOCK);
 	if (0 != ret) {
-		return false; // TODO: log
+		Log::get(Log::ERROR) << "Could not set pool fd as nonblocking" << endl;
+		return false;
 	}
 
 	struct addrinfo *info = 0;
 	ret = getaddrinfo(m_host.c_str(), "8080", 0, &info);
 	if (ret < 0) {
-		return false; // TODO: log
+		Log::get(Log::ERROR) << "Could not resolve host [" << m_host << "]" << endl;
+		return false;
 	}
 
 	bool success = false;
@@ -90,6 +93,9 @@ SocketPool::connect(int &out_fd)
 		break;
 	}
 	freeaddrinfo(info);
+
+	if (!success)
+		Log::get(Log::ERROR) << "Could not connect to host [" << m_host << "]" << endl;
 
 	return success;
 }

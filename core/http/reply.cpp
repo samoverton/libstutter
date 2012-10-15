@@ -1,5 +1,6 @@
 #include "reply.h"
 #include "connection.h"
+#include "../log.h"
 #include <sstream>
 #include <iostream>
 
@@ -104,12 +105,11 @@ Reply::send_headers()
 	{
 		int sent = m_connection.safe_write(&(*i), distance(i, end()));
 		if (sent <= 0) {
-			// TODO: log
+			Log::get(Log::DEBUG) << "Could not send response to client" << endl;
 			return false;
 		}
 		i += sent;
 	}
-	// cout << "Reply: sent headers back to client" << endl;
 	return true;
 }
 
