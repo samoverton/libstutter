@@ -7,6 +7,7 @@ Log::Log(string filename, Level level)
 	: m_filename(filename)
 	, m_level(level)
 {
+	m_null.open("/dev/null", ios::out);
 }
 
 bool
@@ -18,4 +19,18 @@ Log::open()
 		return false;
 	}
 	return true;
+}
+
+void
+Log::close()
+{
+	m_out.close();
+}
+
+ofstream &
+Log::get(Level l)
+{
+	if (l >= m_level)
+		return m_out;
+	return m_null;
 }

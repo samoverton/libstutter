@@ -14,12 +14,16 @@ public:
 
 	Log(std::string filename, Level level);
 	bool open();
+	void close();
+	std::ofstream &get(Level l);
 
 private:
 	std::string m_filename;
-	std::ofstream m_out;
 	Level m_level;
 
+	// log back-ends
+	std::ofstream m_out;
+	std::ofstream m_null;
 };
 
 #endif // LOG_H
