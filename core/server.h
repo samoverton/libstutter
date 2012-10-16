@@ -5,6 +5,8 @@
 #include <event.h>
 #include "http/connection.h"
 #include "pool.h"
+#include <dispatcher.h>
+#include <handlers/base.h>
 
 class Server {
 public:
@@ -12,6 +14,8 @@ public:
 	Server(std::string host, short port);
 	void start();
 	PoolManager &pool_manager();
+
+	// bool add_handler(std::string prefix, BaseHandler *handler);
 
 private:
 	int setup_socket() const;
@@ -24,6 +28,7 @@ private:
 	int m_fd;
 
 	PoolManager m_poolmgr;
+	Dispatcher  m_route;
 
 	// libevent
 	struct event_base *m_base;

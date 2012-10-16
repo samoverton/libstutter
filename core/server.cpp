@@ -1,5 +1,6 @@
 #include "server.h"
 #include "log.h"
+#include <handlers/error.h>
 
 #include <unistd.h>
 #include <signal.h>
@@ -164,6 +165,9 @@ Server::start()
 		Log::get(Log::ERROR) << "Failed to add event to event loop" << endl;
 		return;
 	}
+
+	/* add default catch-all handler */
+	// add_handler("", new ErrorHandler(403, "Forbidden"));
 
 	Log::get(Log::INFO) << "St-t-t-t-stutter has st-t-t-t-started." << endl;
 	event_base_dispatch(m_base);
