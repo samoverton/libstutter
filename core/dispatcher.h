@@ -2,6 +2,7 @@
 #define DISPATCHER_H
 
 #include <map>
+#include <vector>
 #include <string>
 
 class BaseHandler;
@@ -13,7 +14,8 @@ public:
 	BaseHandler *get(std::string prefix) const;
 
 private:
-	std::map<std::string, BaseHandler*> m_handlers;
+	typedef std::vector<std::pair<std::string, BaseHandler*> > handler_container;
+	handler_container m_handlers;
 };
 
 #endif // DISPATCHER_H

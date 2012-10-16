@@ -6,10 +6,7 @@ using namespace std;
 bool
 Dispatcher::add(string prefix, BaseHandler *b)
 {
-	if (get(prefix) != 0)
-		return false;
-
-	m_handlers.insert(make_pair(prefix, b));
+	m_handlers.push_back(make_pair(prefix, b));
 	return true;
 }
 
@@ -17,10 +14,12 @@ Dispatcher::add(string prefix, BaseHandler *b)
 BaseHandler *
 Dispatcher::get(string prefix) const
 {
-	map<string, BaseHandler*>::const_iterator it = m_handlers.find(prefix);
-	if (it != m_handlers.end())
-		return 0;
-
-	return it->second;
+	handler_container::const_iterator it;
+	for (it = m_handlers.begin(); it != m_handlers.end(); it++) {
+		if (it->first.compare(0, prefix.size(),
+					prefix.c_str(), prefix.size()) == 0)
+			return it->second;
+	}
+	return 0;
 }
 
