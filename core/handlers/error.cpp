@@ -2,8 +2,8 @@
 
 using namespace std;
 
-ErrorHandler::ErrorHandler(http::Connection &cx)
-	: BaseHandler(cx)
+ErrorHandler::ErrorHandler()
+	: BaseHandler()
 {
 }
 
@@ -12,7 +12,7 @@ ErrorHandler::~ErrorHandler()
 }
 
 void
-ErrorHandler::handle(const http::Request &req, http::Reply &reply)
+ErrorHandler::handle(http::Connection &cx, const http::Request &req, http::Reply &reply)
 {
 	(void)req;
 	char message[] = "hello, world\n";

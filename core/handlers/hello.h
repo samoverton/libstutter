@@ -6,9 +6,10 @@
 
 class HelloHandler : public virtual BaseHandler {
 public:
-	HelloHandler(http::Connection &cx);
+	HelloHandler();
 	virtual ~HelloHandler();
-	virtual void handle(const http::Request &req, http::Reply &reply);
+	virtual void handle(http::Connection &cx,
+			const http::Request &req, http::Reply &reply);
 
 };
 

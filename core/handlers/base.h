@@ -8,16 +8,13 @@
 
 class BaseHandler {
 public:
-	BaseHandler(http::Connection &cx);
+	BaseHandler();
 	virtual ~BaseHandler();
-	virtual void handle(const http::Request &req, http::Reply &reply) = 0;
+	virtual void handle(http::Connection &cx,
+			const http::Request &req, http::Reply &reply) = 0;
 
 protected:
-	http::Connection &connection();
-	PoolManager &m_poolmgr;
-
-private:
-	http::Connection &m_cx;
+	// PoolManager &m_poolmgr;
 };
 
 #endif // HANDLER_BASE_H

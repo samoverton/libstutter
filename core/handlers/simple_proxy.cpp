@@ -4,17 +4,18 @@
 
 using namespace std;
 using http::Proxy;
+using http::Connection;
 
-SimpleProxyHandler::SimpleProxyHandler(http::Connection &cx)
-	: BaseHandler(cx)
+SimpleProxyHandler::SimpleProxyHandler()
+	: BaseHandler()
 {
 }
 
 void
-SimpleProxyHandler::handle(const http::Request &req, http::Reply &reply)
+SimpleProxyHandler::handle(Connection &cx,const http::Request &req, http::Reply &reply)
 {
 	// cout << "SimpleProxyHandler" << endl;
-	send_to("bea", req, reply);
+	send_to("bea", cx, req, reply);
 	// cout << "We have the full reply from bea, return it to original client" << endl;
 
 	// if (reply.code() != 200 && reply.code() != 204)
@@ -23,8 +24,8 @@ SimpleProxyHandler::handle(const http::Request &req, http::Reply &reply)
 }
 
 void
-SimpleProxyHandler::send_to(string host, const http::Request &req, http::Reply &reply)
+SimpleProxyHandler::send_to(string host, Connection &cx, const http::Request &req, http::Reply &reply)
 {
-	Proxy p(connection(), req);
+	Proxy p(cx, req);
 	p.send(host, reply);
 }

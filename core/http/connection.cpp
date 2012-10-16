@@ -45,10 +45,10 @@ void
 Connection::process()
 {
 	// use custom handler to build reply
-	// HelloHandler h(*this);
-	SimpleProxyHandler h(*this);
-	// FileHandler h(*this);
-	h.handle(m_request, m_reply);
+	// HelloHandler h;
+	SimpleProxyHandler h;
+	// FileHandler h;
+	h.handle(*this, m_request, m_reply);
 
 	// respond to client
 	m_reply.send();

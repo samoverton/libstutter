@@ -2,8 +2,8 @@
 
 using namespace std;
 
-HelloHandler::HelloHandler(http::Connection &cx)
-	: BaseHandler(cx)
+HelloHandler::HelloHandler()
+	: BaseHandler()
 {
 }
 
@@ -12,7 +12,7 @@ HelloHandler::~HelloHandler()
 }
 
 void
-HelloHandler::handle(const http::Request &req, http::Reply &reply)
+HelloHandler::handle(http::Connection &cx, const http::Request &req, http::Reply &reply)
 {
 	(void)req;
 	char message[] = "hello, world\n";

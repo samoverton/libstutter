@@ -2,8 +2,8 @@
 
 using namespace std;
 
-FileHandler::FileHandler(http::Connection &cx)
-	: BaseHandler(cx)
+FileHandler::FileHandler()
+	: BaseHandler()
 {
 }
 
@@ -12,7 +12,7 @@ FileHandler::~FileHandler()
 }
 
 void
-FileHandler::handle(const http::Request &req, http::Reply &reply)
+FileHandler::handle(http::Connection &cx, const http::Request &req, http::Reply &reply)
 {
 	(void)req;
 	// char message[] = "this should be served with sendfile\n";
