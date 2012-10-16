@@ -9,7 +9,7 @@ OBJS=$(CORE_OBJS) $(HANDLER_OBJS) $(HTTP_PARSER_OBJS) $(HTTP_OBJS)
 CXXFLAGS=-O0 -ggdb -Wall -Wextra -I. -fPIC
 LDFLAGS=-shared
 
-all: $(LIB) $(ARCHIVE)
+all: $(LIB) $(ARCHIVE) tests
 
 $(LIB): $(OBJS)
 	$(CXX) -o $(LIB) $(OBJS) $(LDFLAGS)
@@ -25,6 +25,13 @@ $(ARCHIVE): $(OBJS)
 
 %.o: %.c
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
+
+tests:
+	make -B -C tests/ clean
+	make -B -C tests/ helloworld
+
+tests/helloworld:
+	g++ tests/helloworld/helloworld.cpp -o tests/helloworld/helloworld -Icore -lstutter -L. -levent
 
 clean:
 	rm -f $(LIB) $(ARCHIVE) $(OBJS)
