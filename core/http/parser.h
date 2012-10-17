@@ -16,18 +16,26 @@ public:
 	Parser(Mode m, http::Request *request, void (*fun)(void*), void *ptr);
 	Parser(Mode m, http::Reply *reply, void (*fun)(void*), void *ptr);
 
-	bool add(const char *p, size_t sz);
+	typedef enum {
+		PARSE_OK,
+		PARSE_FAILURE,
+		PARSE_BODY_TOO_LARGE,
+		PARSE_URI_TOO_LONG} Error;
+
+	Error add(const char *p, size_t sz);
+	Error error() const;
 	void reset();
 
 private:
 	void configure_http_parser();
-	void save_last_header();
+	int  save_last_header();
 	void add_url_fragment (const char *p, size_t sz);
 	void add_body_fragment(const char *at, size_t sz);
 	void callback();
 
 private:
 	Mode m_mode;
+	Error m_error;
 	http::Request *m_request;
 	http::Reply *m_reply;
 	http::Message *m_msg;

@@ -84,6 +84,12 @@ class StutterTest:
 	def test_long_dispatcher(self):
 		return self.request("GET", "/helloooo") # longer should match
 
+	@expect_status(414) # Request URI too long
+	@with_server("helloworld")
+	def test_uri_too_long(self):
+		uri = "/" + ("A" * 2048)
+		return self.request("GET", uri)
+
 	@expect_body("pong")
 	@expect_status(200)
 	@with_server("proxy")
@@ -116,8 +122,15 @@ class StutterTest:
 		data = "A" * 10485760
 		return self.request("POST", "/upload", data) # attempt to send 10MB
 
-t = StutterTest()
-for m in dir(t):
-	if m.startswith("test_"):
+if __name__ == "__main__":
+	t = StutterTest()
+
+	if len(sys.argv) == 2: # exec one test
+		m = sys.argv[1]
 		print m
 		getattr(t, m)()
+	else:
+		for m in dir(t):
+			if m.startswith("test_"):
+				print m
+				getattr(t, m)()

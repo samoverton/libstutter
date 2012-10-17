@@ -42,11 +42,34 @@ Connection::~Connection()
 }
 
 void
+Connection::process_error()
+{
+	switch (m_parser.error()) {
+		case Parser::PARSE_BODY_TOO_LARGE:
+			m_reply.set_status(413, "Request entity too large");
+			break;
+
+		case Parser::PARSE_URI_TOO_LONG:
+			m_reply.set_status(414, "Request URI too long");
+			break;
+
+		default:
+			m_reply.set_status(400, "Bad request");
+			break;
+	}
+}
+
+void
 Connection::process()
 {
-	// use custom handler to build reply
-	BaseHandler *h = m_server.router().get(m_request.url());
-	h->handle(*this, m_request, m_reply);
+	// check for errors
+	if (m_parser.error() != Parser::PARSE_OK) {
+		process_error();
+	} else {
+		// use custom handler to build reply
+		BaseHandler *h = m_server.router().get(m_request.url());
+		h->handle(*this, m_request, m_reply);
+	}
 
 	// respond to client
 	m_reply.send();
@@ -103,9 +126,10 @@ Connection::exec()
 		if (recvd <= 0)
 			return (int)HALT;
 
-		bool success = m_parser.add(buffer, (size_t)recvd);
-		if (!success)
+		Parser::Error e = m_parser.add(buffer, (size_t)recvd);
+		if (e == Parser::PARSE_FAILURE) {
 			return (int)HALT;
+		}
 	}
 
 	return (int)HALT;

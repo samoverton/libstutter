@@ -11,6 +11,7 @@ using http::Connection;
 
 const string Message::Expect = "Expect";
 const string Message::OneHundredContinue = "100-continue";
+const string Message::ContentLength = "Content-Length";
 
 Message::Message(Connection &cx)
 	: m_connection(cx)

@@ -4,10 +4,14 @@
 #include "reply.h"
 
 #include <string.h>
+#include <cstdlib>
 #include <iostream>
 
 using namespace std;
 using http::Parser;
+
+#define MAX_UPLOAD_SIZE (1024*1024)
+#define MAX_URI_LENGTH  (4096)
 
 /* http-parser callbacks */
 
@@ -58,12 +62,11 @@ int
 _http_on_headers_complete_cb(http_parser *p)
 {
 	Parser *parser = reinterpret_cast<Parser*>(p->data);
-	parser->save_last_header();
-	return 0;
+	return parser->save_last_header();
 }
 }
 
-void
+int
 Parser::save_last_header()
 {
 	if (m_header_gotval) {
@@ -74,22 +77,41 @@ Parser::save_last_header()
 		m_header_gotval = false;
 	}
 
+	// check for large uploads
+	if (m_mode == REQUEST) {
+		string cl = m_request->get_header(Message::ContentLength);
+		long sz = ::atol(cl.c_str());
+		if (sz < 0 || sz > MAX_UPLOAD_SIZE) {
+			m_error = PARSE_BODY_TOO_LARGE;
+			return 0;
+		}
+	}
+
+	// 100-continue
 	if (m_mode == REQUEST && m_request->get_header(Message::Expect)
 			== Message::OneHundredContinue)
 		m_request->send_continue();
+
+	return 0;
 }
 
 void
 Parser::add_url_fragment(const char *p, size_t sz)
 {
-	if (m_mode == REQUEST)
-		m_request->add_url_fragment(p, sz);
+	if (m_mode == REQUEST && m_error != PARSE_URI_TOO_LONG) {
+		if (m_request->url().size() + sz > MAX_URI_LENGTH) {
+			m_error = PARSE_URI_TOO_LONG;
+		} else {
+			m_request->add_url_fragment(p, sz);
+		}
+	}
 }
 
 void
 Parser::add_body_fragment(const char *at, size_t sz)
 {
-	m_msg->add_body(at, sz);
+	if (m_error != PARSE_BODY_TOO_LARGE)
+		m_msg->add_body(at, sz);
 }
 
 void
@@ -137,11 +159,19 @@ Parser::Parser(Mode m, http::Reply *reply, void (*fun)(void*), void *ptr)
 	reset();
 }
 
-bool
+Parser::Error
 Parser::add(const char *p, size_t sz)
 {
 	size_t nparsed = http_parser_execute(&m_parser, &m_parserconf, p, sz);
-	return (nparsed == sz);
+	if (nparsed == sz)
+		return m_error;
+	return PARSE_FAILURE; // invalid HTTP
+}
+
+Parser::Error
+Parser::error() const
+{
+	return m_error;
 }
 
 void
@@ -164,5 +194,6 @@ Parser::reset()
 	m_header_key.clear();
 	m_header_val.clear();
 	m_header_gotval = false;
+	m_error = PARSE_OK;
 }
 

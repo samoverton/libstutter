@@ -34,6 +34,7 @@ public:
 	// public headers
 	static const std::string Expect;
 	static const std::string OneHundredContinue;
+	static const std::string ContentLength;
 
 protected:
 	std::map<std::string, std::string> m_headers;
