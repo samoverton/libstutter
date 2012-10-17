@@ -3,6 +3,9 @@
 #include <handlers/base.h>
 
 #include <iostream>
+#include <unistd.h>
+
+#include "framework.h"
 
 using namespace std;
 
@@ -10,7 +13,7 @@ class HelloWorldHandler : public BaseHandler {
 public:
 	virtual void handle(http::Connection &cx, const http::Request &req, http::Reply &reply)
 	{
-		reply.add_body("hi\r\n", 4);
+		reply.add_body("hello\r\n", 7);
 	}
 };
 
@@ -22,7 +25,7 @@ main(int argc, char *argv[])
 
 	Server s("127.0.0.1", 8888);
 	s.router().add("/hello", new HelloWorldHandler());
-	//Log::setup("/tmp/stutter.log", Log::INFO);
+	s.router().add("/quit", new TestQuitHandler());
 
 	s.start();
 

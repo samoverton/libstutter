@@ -1,11 +1,16 @@
 TESTS=helloworld
 
+CXXFLAGS=-I../core
+LDFLAGS= -L.. -levent  -lstutter
+
 all: $(TESTS)
 
-helloworld:
-	g++ helloworld/helloworld.cpp -o helloworld/helloworld -I../core -lstutter -L.. -levent
+%: %.o
+	$(CXX) -o $@ $< $(LDFLAGS)
+	
+%.o: %.cpp
+	$(CXX) -o $@ -c $< $(CXXFLAGS)
 
-clean: $(TESTS)
-	for t in $(TESTS); do \
-		rm -f $$t/$$t; \
-	done
+clean: 
+	rm -f $(TESTS)
+	for t in $(TESTS); do rm -f $$t.o; done

@@ -26,12 +26,9 @@ $(ARCHIVE): $(OBJS)
 %.o: %.c
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
-tests:
-	make -B -C tests/ clean
-	make -B -C tests/ helloworld
-
-tests/helloworld:
-	g++ tests/helloworld/helloworld.cpp -o tests/helloworld/helloworld -Icore -lstutter -L. -levent
+tests: $(LIB) $(ARCHIVE)
+	make -C tests/ all
 
 clean:
 	rm -f $(LIB) $(ARCHIVE) $(OBJS)
+	make -C tests/ clean
