@@ -167,8 +167,14 @@ Server::start()
 	}
 
 	/* add default catch-all handler */
-	// add_handler("", new ErrorHandler(403, "Forbidden"));
+	router().add("", new ErrorHandler(403, "Forbidden"));
 
 	Log::get(Log::INFO) << "St-t-t-t-stutter has st-t-t-t-started." << endl;
 	event_base_dispatch(m_base);
+}
+
+Dispatcher &
+Server::router()
+{
+	return m_router;
 }

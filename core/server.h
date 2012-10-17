@@ -15,7 +15,7 @@ public:
 	void start();
 	PoolManager &pool_manager();
 
-	// bool add_handler(std::string prefix, BaseHandler *handler);
+	Dispatcher &router();
 
 private:
 	int setup_socket() const;
@@ -28,7 +28,7 @@ private:
 	int m_fd;
 
 	PoolManager m_poolmgr;
-	Dispatcher  m_route;
+	Dispatcher  m_router;
 
 	// libevent
 	struct event_base *m_base;

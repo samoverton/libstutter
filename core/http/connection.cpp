@@ -8,6 +8,7 @@
 #include "../handlers/simple_proxy.h"
 #include "../handlers/file.h"
 #include "../log.h"
+#include "../server.h"
 
 #include <iostream>
 using namespace std;
@@ -45,10 +46,8 @@ void
 Connection::process()
 {
 	// use custom handler to build reply
-	// HelloHandler h;
-	SimpleProxyHandler h;
-	// FileHandler h;
-	h.handle(*this, m_request, m_reply);
+	BaseHandler *h = m_server.router().get(m_request.url());
+	h->handle(*this, m_request, m_reply);
 
 	// respond to client
 	m_reply.send();

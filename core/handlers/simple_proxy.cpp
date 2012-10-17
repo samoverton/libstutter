@@ -14,7 +14,6 @@ SimpleProxyHandler::SimpleProxyHandler()
 void
 SimpleProxyHandler::handle(Connection &cx,const http::Request &req, http::Reply &reply)
 {
-	// cout << "SimpleProxyHandler" << endl;
 	send_to("bea", cx, req, reply);
 	// cout << "We have the full reply from bea, return it to original client" << endl;
 

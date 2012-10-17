@@ -8,9 +8,9 @@ using namespace std;
 
 class HelloWorldHandler : public BaseHandler {
 public:
-	virtual void handle(const http::Request &req, http::Reply &reply)
+	virtual void handle(http::Connection &cx, const http::Request &req, http::Reply &reply)
 	{
-		cout << "HelloWorldHandler" << endl;
+		reply.add_body("hi\r\n", 4);
 	}
 };
 
@@ -21,6 +21,7 @@ main(int argc, char *argv[])
 	(void)argv;
 
 	Server s("127.0.0.1", 8888);
+	s.router().add("/hello", new HelloWorldHandler());
 	//Log::setup("/tmp/stutter.log", Log::INFO);
 
 	s.start();

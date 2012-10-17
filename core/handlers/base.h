@@ -12,9 +12,6 @@ public:
 	virtual ~BaseHandler();
 	virtual void handle(http::Connection &cx,
 			const http::Request &req, http::Reply &reply) = 0;
-
-protected:
-	// PoolManager &m_poolmgr;
 };
 
 #endif // HANDLER_BASE_H

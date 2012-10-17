@@ -10,7 +10,6 @@ class BaseHandler;
 class Dispatcher {
 public:
 	bool add(std::string prefix, BaseHandler *b);
-
 	BaseHandler *get(std::string prefix) const;
 
 private:
