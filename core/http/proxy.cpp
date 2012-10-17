@@ -133,7 +133,7 @@ Proxy::wait_for_100()
 bool
 Proxy::send_body(Request &r)
 {
-	Body &body = r.body();
+	const Body &body = r.body();
 	if (m_request.require_100_continue()) { // send first part of the body
 		Body::iterator i = body.buffer_begin();
 		size_t sz = distance(i, body.buffer_end());

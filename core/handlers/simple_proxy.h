@@ -14,9 +14,6 @@ public:
 	virtual void handle(http::Connection &cx,
 			const http::Request &req, http::Reply &reply);
 
-private:
-	void send_to(std::string host, http::Connection &cx, const http::Request &req, http::Reply &reply);
-
 };
 
 #endif // HANDLER_HELLO_H

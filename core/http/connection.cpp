@@ -5,7 +5,6 @@
 
 #include "../handlers/base.h"
 #include "../handlers/hello.h"
-#include "../handlers/simple_proxy.h"
 #include "../handlers/file.h"
 #include "../log.h"
 #include "../server.h"

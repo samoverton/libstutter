@@ -1,14 +1,19 @@
-TESTS=helloworld proxy
+TESTS=helloworld proxy upload
 
 CXXFLAGS=-I../core
 LDFLAGS=-L.. -levent ../libstutter.a
 
 all: $(TESTS)
 
+# FIXME: how can we factor these three together?
+
 helloworld: helloworld.o
 	$(CXX) -o $@ $< $(LDFLAGS)
 
 proxy: proxy.o
+	$(CXX) -o $@ $< $(LDFLAGS)
+
+upload: upload.o
 	$(CXX) -o $@ $< $(LDFLAGS)
 	
 %.o: %.cpp

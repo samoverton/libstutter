@@ -123,13 +123,13 @@ Body::set_file(const string &name)
 }
 
 const Body::iterator
-Body::buffer_begin()
+Body::buffer_begin() const
 {
 	return m_data.begin();
 }
 
 const Body::iterator
-Body::buffer_end()
+Body::buffer_end() const
 {
 	return m_data.end();
 }

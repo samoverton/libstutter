@@ -78,8 +78,8 @@ Message::get_header(string key) const
 	return it->second;
 }
 
-Body &
-Message::body()
+const Body &
+Message::body() const
 {
 	return m_body;
 }

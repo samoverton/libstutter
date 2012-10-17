@@ -20,8 +20,8 @@ public:
 	bool set_file(const std::string &name);
 
 	typedef std::vector<char>::const_iterator iterator;
-	const iterator buffer_begin();
-	const iterator buffer_end();
+	const iterator buffer_begin() const;
+	const iterator buffer_end() const;
 
 	bool send_from_disk(Connection &cx) const;
 

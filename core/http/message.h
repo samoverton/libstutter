@@ -21,7 +21,7 @@ public:
 	void add_body(const char *p, size_t sz);
 
 	std::string get_header(std::string key) const;
-	Body &body();
+	const Body &body() const;
 
 	// data iterator
 	typedef std::vector<char>::const_iterator iterator;
