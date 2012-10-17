@@ -13,10 +13,10 @@
 
 using namespace std;
 
-SocketPool::SocketPool(std::string host)
+SocketPool::SocketPool(std::string host, short port)
 	: m_host(host)
+	, m_port(port)
 {
-	
 }
 
 bool
@@ -73,7 +73,7 @@ SocketPool::connect(int &out_fd)
 	}
 
 	struct addrinfo *info = 0;
-	ret = getaddrinfo(m_host.c_str(), "8080", 0, &info);
+	ret = getaddrinfo(m_host.c_str(), NULL, 0, &info);
 	if (ret < 0) {
 		Log::get(Log::ERROR) << "Could not resolve host [" << m_host << "]" << endl;
 		return false;
@@ -83,6 +83,7 @@ SocketPool::connect(int &out_fd)
 	struct addrinfo *ai;
 	for (ai = info; ai; ai = ai->ai_next) {
 		struct sockaddr_in *sin = (struct sockaddr_in*)ai->ai_addr;
+		sin->sin_port = htons(m_port);
 		int ret = ::connect(fd, (const struct sockaddr*)sin,
 				sizeof(struct sockaddr_in));
 		if (ret == 0) {
@@ -103,12 +104,14 @@ SocketPool::connect(int &out_fd)
 ////////////////////////////////////////////////////////////////////////////////
 
 SocketPool &
-PoolManager::get_pool(string host)
+PoolManager::get_pool(string host, short port)
 {
 	// find or insert host
-	map<string, SocketPool>::iterator it = m_pools.find(host);
+	map<pair<string, short>, SocketPool>::iterator it;
+	it = m_pools.find(make_pair(host, port));
 	if (it == m_pools.end())
-		it = m_pools.insert(make_pair(host, SocketPool(host))).first;
+		it = m_pools.insert(make_pair(make_pair(host, port),
+					SocketPool(host, port))).first;
 
 	return it->second;
 }

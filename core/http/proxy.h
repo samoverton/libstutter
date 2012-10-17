@@ -15,22 +15,22 @@ class Proxy
 public:
 	Proxy(Connection &cx, const Request &req);
 
-	bool send(const std::string host, Reply &reply);
+	bool send(const std::string host, short port, Reply &reply);
 
 	typedef enum {NOT_EXECUTED = -1, SUCCESS, SOCKET_ERROR,
 		DNS_ERROR, CONNECTION_ERROR, WRITE_ERROR, READ_ERROR} Error;
 private:
 
 	// steps
-	bool connect(const std::string &host);
+	bool connect(const std::string &host, short port);
 	bool send_headers(Request &r);
 	bool wait_for_100();
 	bool send_body(Request &r);
 
-	bool failure(const std::string &host, Error e);
+	bool failure(const std::string &host, short port, Error e);
 	void error(Error e);
 	bool read_reply(Parser &parser);
-	void release_socket(const std::string &host);
+	void release_socket(const std::string &host, short port);
 	void on_msg_complete();
 
 private:

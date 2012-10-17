@@ -7,7 +7,7 @@
 
 class SocketPool {
 public:
-	SocketPool(std::string host);
+	SocketPool(std::string host, short port);
 
 	bool get(int &fd);
 	bool put(int fd);
@@ -18,16 +18,17 @@ private:
 
 private:
 	std::string m_host;
+	short       m_port;
 	std::set<int> m_avail;
 	std::set<int> m_taken;
 };
 
 class PoolManager {
 public:
-	SocketPool &get_pool(std::string host);
+	SocketPool &get_pool(std::string host, short port);
 
 private:
-	std::map<std::string, SocketPool> m_pools;
+	std::map<std::pair<std::string, short>, SocketPool> m_pools;
 
 };
 

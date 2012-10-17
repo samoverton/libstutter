@@ -52,6 +52,13 @@ Request::add_url_fragment(const char *at, size_t sz)
 }
 
 void
+Request::set_url(string url)
+{
+	m_url = url;
+}
+
+
+void
 Request::set_host(string host)
 {
 	m_host = host;

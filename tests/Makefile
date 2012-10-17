@@ -1,4 +1,4 @@
-TESTS=helloworld
+TESTS=helloworld proxy
 
 CXXFLAGS=-I../core
 LDFLAGS=-L.. -levent ../libstutter.a
@@ -6,6 +6,9 @@ LDFLAGS=-L.. -levent ../libstutter.a
 all: $(TESTS)
 
 helloworld: helloworld.o
+	$(CXX) -o $@ $< $(LDFLAGS)
+
+proxy: proxy.o
 	$(CXX) -o $@ $< $(LDFLAGS)
 	
 %.o: %.cpp

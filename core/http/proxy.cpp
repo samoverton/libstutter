@@ -26,10 +26,10 @@ Proxy::Proxy(Connection &cx, const Request &req)
 }
 
 bool
-Proxy::failure(const string &host, Error e)
+Proxy::failure(const string &host, short port, Error e) // TODO: refactor.
 {
 	m_error = e;
-	release_socket(host);
+	release_socket(host, port);
 	return false;
 }
 
@@ -56,8 +56,9 @@ Proxy::error(Error e)
 
 
 bool
-Proxy::send(const string host, Reply &reply)
+Proxy::send(const string host, short port, Reply &reply)
 {
+	m_done = false;
 	Request r(m_request);
 	r.add_header("Host", host);
 
@@ -65,20 +66,20 @@ Proxy::send(const string host, Reply &reply)
 	r.prepare();
 
 	// connect
-	if (!connect(host)) {
-		return failure(host, CONNECTION_ERROR);
+	if (!connect(host, port)) {
+		return failure(host, port, CONNECTION_ERROR);
 	}
 
 	if (!send_headers(r)) {
-		return failure(host, WRITE_ERROR);
+		return failure(host, port, WRITE_ERROR);
 	}
 
 	if (r.require_100_continue() && !wait_for_100()) {
-		return failure(host, READ_ERROR);
+		return failure(host, port, READ_ERROR);
 	}
 
 	if (!send_body(r)) {
-		return failure(host, WRITE_ERROR);
+		return failure(host, port, WRITE_ERROR);
 	}
 
 	// create an HTTP parser for the response
@@ -86,18 +87,18 @@ Proxy::send(const string host, Reply &reply)
 			_done, reinterpret_cast<void*>(this));
 
 	if (!read_reply(parser)) {
-		return failure(host, READ_ERROR);
+		return failure(host, port, READ_ERROR);
 	}
 
-	release_socket(host);
+	release_socket(host, port);
 
 	return true;
 }
 
 bool
-Proxy::connect(const string &host)
+Proxy::connect(const string &host, short port)
 {
-	SocketPool &pool = m_connection.server().pool_manager().get_pool(host);
+	SocketPool &pool = m_connection.server().pool_manager().get_pool(host, port);
 	return pool.get(m_fd);
 }
 
@@ -169,9 +170,9 @@ Proxy::read_reply(Parser &parser)
 }
 
 void
-Proxy::release_socket(const string &host)
+Proxy::release_socket(const string &host, short port)
 {
 	// put socket back in the pool
-	SocketPool &pool = m_connection.server().pool_manager().get_pool(host);
+	SocketPool &pool = m_connection.server().pool_manager().get_pool(host, port);
 	pool.put(m_fd);
 }

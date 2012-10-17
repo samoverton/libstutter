@@ -3,7 +3,7 @@
 
 using namespace std;
 
-static Log m_log ("/dev/null", Log::INFO);
+static Log m_log ("/dev/stderr", Log::INFO);
 static Log m_null("/dev/null", Log::INFO);
 
 Log::Log(string filename, Level level)
