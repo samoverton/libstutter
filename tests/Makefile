@@ -1,11 +1,11 @@
 TESTS=helloworld
 
 CXXFLAGS=-I../core
-LDFLAGS= -L.. -levent  -lstutter
+LDFLAGS=-L.. -levent ../libstutter.a
 
 all: $(TESTS)
 
-%: %.o
+helloworld: helloworld.o
 	$(CXX) -o $@ $< $(LDFLAGS)
 	
 %.o: %.cpp
