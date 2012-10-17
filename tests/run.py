@@ -87,7 +87,7 @@ class StutterTest:
 	@expect_status(414) # Request URI too long
 	@with_server("helloworld")
 	def test_uri_too_long(self):
-		uri = "/" + ("A" * 2048)
+		uri = "/" + ("A" * 8192)
 		return self.request("GET", uri)
 
 	@expect_body("pong")
