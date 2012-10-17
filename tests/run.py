@@ -96,6 +96,26 @@ class StutterTest:
 	def test_proxy(self):
 		return self.request("GET", "/double") # two proxy calls one after the other
 
+	@expect_body("sz=10")
+	@expect_status(200)
+	@with_server("upload")
+	def test_upload(self):
+		data = "A" * 10
+		return self.request("POST", "/upload", data) # some data
+
+	@expect_body("sz=1048576")
+	@expect_status(200)
+	@with_server("upload")
+	def test_upload_large(self):
+		data = "A" * 1048576
+		return self.request("POST", "/upload", data) # send 1MB
+
+	@expect_status(413) # Request entity too large
+	@with_server("upload")
+	def test_upload_too_large(self):
+		data = "A" * 10485760
+		return self.request("POST", "/upload", data) # attempt to send 10MB
+
 t = StutterTest()
 for m in dir(t):
 	if m.startswith("test_"):
