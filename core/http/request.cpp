@@ -116,8 +116,8 @@ Request::reset()
 void
 Request::prepare()
 {
-	add_header("Host", m_host);
-	add_header("Content-Length", m_body.size());
+	add_header(Message::Host, m_host);
+	add_header(Message::ContentLength, m_body.size());
 
 	stringstream ss;
 	string crlf("\r\n");

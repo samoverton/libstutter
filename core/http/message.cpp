@@ -7,11 +7,16 @@
 using namespace std;
 using http::Message;
 using http::Body;
-using http::Connection;
 
 const string Message::Expect = "Expect";
-const string Message::OneHundredContinue = "100-continue";
 const string Message::ContentLength = "Content-Length";
+const string Message::Host = "Host";
+const string Message::Connec = "Connection";
+
+const string Message::KeepAlive = "keep-alive";
+const string Message::OneHundredContinue = "100-continue";
+
+using http::Connection;
 
 Message::Message(Connection &cx)
 	: m_connection(cx)
@@ -29,13 +34,13 @@ Message::~Message()
 }
 
 void
-Message::add_header(string key, string val)
+Message::add_header(const string &key, const string &val)
 {
 	m_headers[key] = val; // replace
 }
 
 void
-Message::add_header(string key, int val)
+Message::add_header(const string &key, int val)
 {
 	stringstream ss;
 	ss << val;
@@ -44,7 +49,7 @@ Message::add_header(string key, int val)
 }
 
 bool
-Message::del_header(string key)
+Message::del_header(const string &key)
 {
 	map<string,string>::iterator it;
 	if ((it = m_headers.find(key)) != m_headers.end()) {
@@ -70,7 +75,7 @@ Message::add_body(const char *p, size_t sz)
 }
 
 string
-Message::get_header(string key) const
+Message::get_header(const string &key) const
 {
 	map<string,string>::const_iterator it;
 	if ((it = m_headers.find(key)) == m_headers.end())

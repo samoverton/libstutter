@@ -60,7 +60,7 @@ Proxy::send(const string host, short port, Reply &reply)
 {
 	m_done = false;
 	Request r(m_request);
-	r.add_header("Host", host);
+	r.add_header(Message::Host, host);
 
 	// build headers buffer
 	r.prepare();

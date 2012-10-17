@@ -36,7 +36,7 @@ Reply::prepare()
 	if (get_header("Transfer-Encoding") == "chunked")
 		del_header("Transfer-Encoding");
 
-	add_header("Content-Length", m_body.size());
+	add_header(Message::ContentLength, m_body.size());
 
 	stringstream ss;
 	string crlf("\r\n");
@@ -62,9 +62,8 @@ Reply::reset()
 {
 	Message::reset();
 
-	m_code = 200;
-	m_status = "OK";
-	add_header("Connection", "keep-alive");
+	set_status(200, "OK");
+	add_header(Message::Connec, Message::KeepAlive);
 }
 
 short
@@ -89,7 +88,7 @@ Reply::set_file(const std::string filename)
 		return false;
 	}
 
-	add_header("Content-Length", m_body.size());
+	add_header(Message::ContentLength, m_body.size());
 	return true;
 }
 
