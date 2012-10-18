@@ -1,0 +1,47 @@
+Name:           libstutter
+Version:        @@SOURCEVER@@
+Release:        %{?release}%{?!release:1}
+Summary:        C++ library for writing simple HTTP servers
+
+Group:          Filesystem
+License:        No
+Source0:        %{name}-%{version}.tar.gz
+BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+
+Provides:       %{name}-@@CHANGESETVER@@
+
+%description
+
+%package devel
+Group:          Development/Libraries
+Summary:        Development files for libstutter
+Requires:       %{name} = %{version}-%{release}
+
+%description devel
+
+%prep
+%setup -q -n %{name}-%{version}
+
+%build
+make all
+
+%install
+export DESTDIR=%{buildroot}
+make install 
+
+%clean
+make clean
+
+%files
+%defattr(-,root,root,-)
+/usr/lib64/libstutter.so
+/usr/lib64/libstutter.a
+
+%files devel
+/usr/lib64/libstutter.so
+/usr/lib64/libstutter.a
+/usr/include/stutter/*
+
+%changelog
+* Thu Oct 18 2012 Nicolas Favre-Felix <nfelix@acunu.com> - @@SOURCEVER@@
+- Initial packaging

@@ -23,10 +23,10 @@ PREFIX ?= /usr
 INCLUDE_DIR=$(PREFIX)/include
 
 INSTALL_DIRS = $(DESTDIR) \
-			   $(INCLUDE_DIR)/stutter \
-			   $(INCLUDE_DIR)/stutter/http \
-			   $(INCLUDE_DIR)/stutter/handlers \
-			   $(DESTDIR)/$(PREFIX)/lib
+			   $(DESTDIR)/$(INCLUDE_DIR)/stutter \
+			   $(DESTDIR)/$(INCLUDE_DIR)/stutter/http \
+			   $(DESTDIR)/$(INCLUDE_DIR)/stutter/handlers \
+			   $(DESTDIR)/$(PREFIX)/lib64
 
 $(LIB): $(OBJS)
 	$(CXX) -o $(LIB) $(OBJS) $(LDFLAGS)
@@ -44,10 +44,10 @@ $(ARCHIVE): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
 install: $(LIB) $(ARCHIVE) $(INSTALL_DIRS)
-	cp $(LIB) $(ARCHIVE) $(DESTDIR)/$(PREFIX)/lib
-	cp $(HEADERS_MAIN) $(INCLUDE_DIR)/stutter
-	cp stutter/handlers/base.h $(INCLUDE_DIR)/stutter/handlers
-	cp $(HEADERS_HTTP) $(INCLUDE_DIR)/stutter/http
+	cp $(LIB) $(ARCHIVE) $(DESTDIR)/$(PREFIX)/lib64
+	cp $(HEADERS_MAIN) $(DESTDIR)/$(INCLUDE_DIR)/stutter
+	cp stutter/handlers/base.h $(DESTDIR)/$(INCLUDE_DIR)/stutter/handlers
+	cp $(HEADERS_HTTP) $(DESTDIR)/$(INCLUDE_DIR)/stutter/http
 
 $(INSTALL_DIRS):
 	mkdir -p $@
