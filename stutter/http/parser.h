@@ -1,10 +1,11 @@
 #ifndef HTTP_PARSER_H
 #define HTTP_PARSER_H
 
-#include <stutter/http/joyent/http_parser.h>
-
 #include <string>
 #include <functional>
+
+struct http_parser;
+struct http_parser_settings;
 
 namespace http {
 class Request;
@@ -16,6 +17,7 @@ public:
 	typedef enum {REQUEST, RESPONSE} Mode;
 	Parser(Mode m, http::Request *request, void (*fun)(void*), void *ptr);
 	Parser(Mode m, http::Reply *reply, void (*fun)(void*), void *ptr);
+	~Parser();
 
 	typedef enum {
 		PARSE_OK,
@@ -45,8 +47,8 @@ private:
 	void (*m_fun)(void*);
 	void *m_fun_data;
 
-	struct http_parser m_parser;
-	struct http_parser_settings m_parserconf;
+	struct http_parser *m_parser;
+	struct http_parser_settings *m_parserconf;
 	std::string m_header_key;
 	std::string m_header_val;
 	bool m_header_gotval;

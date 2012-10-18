@@ -2,6 +2,7 @@
 #include <stutter/http/message.h>
 #include <stutter/http/request.h>
 #include <stutter/http/reply.h>
+#include <stutter/http/joyent/http_parser.h>
 
 #include <string.h>
 #include <cstdlib>
@@ -119,7 +120,7 @@ Parser::callback()
 {
 	switch (m_mode) {
 		case REQUEST: // handle Verb
-			switch(m_parser.method) {
+			switch(m_parser->method) {
 				case HTTP_GET:    m_request->set_verb(Request::GET);    break;
 				case HTTP_POST:   m_request->set_verb(Request::POST);   break;
 				case HTTP_PUT:    m_request->set_verb(Request::PUT);    break;
@@ -130,7 +131,7 @@ Parser::callback()
 			break;
 
 		case RESPONSE: // handle status
-			m_reply->set_status(m_parser.status_code, "");
+			m_reply->set_status(m_parser->status_code, "");
 			break;
 	}
 
@@ -145,6 +146,8 @@ Parser::Parser(Mode m, http::Request *request, void (*fun)(void*), void *ptr)
 	, m_fun(fun)
 	, m_fun_data(ptr)
 {
+	m_parser = new http_parser;
+	m_parserconf = new http_parser_settings;
 	reset();
 }
 
@@ -156,13 +159,21 @@ Parser::Parser(Mode m, http::Reply *reply, void (*fun)(void*), void *ptr)
 	, m_fun(fun)
 	, m_fun_data(ptr)
 {
+	m_parser = new http_parser;
+	m_parserconf = new http_parser_settings;
 	reset();
+}
+
+Parser::~Parser()
+{
+	delete m_parserconf;
+	delete m_parser;
 }
 
 Parser::Error
 Parser::add(const char *p, size_t sz)
 {
-	size_t nparsed = http_parser_execute(&m_parser, &m_parserconf, p, sz);
+	size_t nparsed = http_parser_execute(m_parser, m_parserconf, p, sz);
 	if (nparsed == sz)
 		return m_error;
 	return PARSE_FAILURE; // invalid HTTP
@@ -178,17 +189,17 @@ void
 Parser::reset()
 {
 	// parser
-	http_parser_init(&m_parser, (m_mode == REQUEST ? HTTP_REQUEST : HTTP_RESPONSE));
-	m_parser.data = reinterpret_cast<void*>(this);
+	http_parser_init(m_parser, (m_mode == REQUEST ? HTTP_REQUEST : HTTP_RESPONSE));
+	m_parser->data = reinterpret_cast<void*>(this);
 
 	// callback config
-	memset(&m_parserconf, 0, sizeof(m_parserconf));
-	m_parserconf.on_url = _http_on_url_cb;
-	m_parserconf.on_message_complete = _http_on_message_complete_cb;
-	m_parserconf.on_header_field = _http_on_header_field_cb;
-	m_parserconf.on_header_value = _http_on_header_value_cb;
-	m_parserconf.on_headers_complete = _http_on_headers_complete_cb;
-	m_parserconf.on_body = _http_on_body_cb;
+	memset(m_parserconf, 0, sizeof(m_parserconf));
+	m_parserconf->on_url = _http_on_url_cb;
+	m_parserconf->on_message_complete = _http_on_message_complete_cb;
+	m_parserconf->on_header_field = _http_on_header_field_cb;
+	m_parserconf->on_header_value = _http_on_header_value_cb;
+	m_parserconf->on_headers_complete = _http_on_headers_complete_cb;
+	m_parserconf->on_body = _http_on_body_cb;
 
 	// http data
 	m_header_key.clear();
