@@ -15,21 +15,23 @@ using http::Proxy;
 using http::Connection;
 using http::Reply;
 
-Proxy::Proxy(Connection &cx, const Request &req)
+Proxy::Proxy(Connection &cx, const Request &req, const string &host, short port)
 	: m_fd(-1)
 	, m_connection(cx)
 	, m_request(req)
 	, m_error(NOT_EXECUTED)
 	, m_done(false)
+	, m_host(host)
+	, m_port(port)
 {
 
 }
 
 bool
-Proxy::failure(const string &host, short port, Error e) // TODO: refactor.
+Proxy::failure(Error e)
 {
 	m_error = e;
-	release_socket(host, port);
+	release_socket();
 	return false;
 }
 
@@ -56,30 +58,31 @@ Proxy::error(Error e)
 
 
 bool
-Proxy::send(const string host, short port, Reply &reply)
+Proxy::send(Reply &reply)
 {
 	m_done = false;
+
 	Request r(m_request);
-	r.add_header(Message::Host, host);
+	r.add_header(Message::Host, m_host);
 
 	// build headers buffer
 	r.prepare();
 
 	// connect
-	if (!connect(host, port)) {
-		return failure(host, port, CONNECTION_ERROR);
+	if (!connect()) {
+		return failure(CONNECTION_ERROR);
 	}
 
 	if (!send_headers(r)) {
-		return failure(host, port, WRITE_ERROR);
+		return failure(WRITE_ERROR);
 	}
 
 	if (r.require_100_continue() && !wait_for_100()) {
-		return failure(host, port, READ_ERROR);
+		return failure(READ_ERROR);
 	}
 
 	if (!send_body(r)) {
-		return failure(host, port, WRITE_ERROR);
+		return failure(WRITE_ERROR);
 	}
 
 	// create an HTTP parser for the response
@@ -87,18 +90,18 @@ Proxy::send(const string host, short port, Reply &reply)
 			_done, reinterpret_cast<void*>(this));
 
 	if (!read_reply(parser)) {
-		return failure(host, port, READ_ERROR);
+		return failure(READ_ERROR);
 	}
 
-	release_socket(host, port);
+	release_socket();
 
 	return true;
 }
 
 bool
-Proxy::connect(const string &host, short port)
+Proxy::connect()
 {
-	SocketPool &pool = m_connection.server().pool_manager().get_pool(host, port);
+	SocketPool &pool = m_connection.server().pool_manager().get_pool(m_host, m_port);
 	return pool.get(m_fd);
 }
 
@@ -117,7 +120,8 @@ Proxy::wait_for_100()
 			_done, reinterpret_cast<void*>(this));
 
 	if (!read_reply(parser)) {
-		Log::get(Log::INFO) << "Could not read reply while waiting for 100-continue" << endl;
+		Log::get(Log::INFO) << "Could not read reply "
+			"while waiting for 100-continue" << endl;
 		return false;
 	}
 
@@ -170,9 +174,9 @@ Proxy::read_reply(Parser &parser)
 }
 
 void
-Proxy::release_socket(const string &host, short port)
+Proxy::release_socket()
 {
 	// put socket back in the pool
-	SocketPool &pool = m_connection.server().pool_manager().get_pool(host, port);
+	SocketPool &pool = m_connection.server().pool_manager().get_pool(m_host, m_port);
 	pool.put(m_fd);
 }

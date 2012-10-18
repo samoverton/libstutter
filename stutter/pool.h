@@ -28,7 +28,8 @@ public:
 	SocketPool &get_pool(std::string host, short port);
 
 private:
-	std::map<std::pair<std::string, short>, SocketPool> m_pools;
+	typedef std::pair<std::string, short> HostPort;
+	std::map<HostPort, SocketPool> m_pools;
 
 };
 

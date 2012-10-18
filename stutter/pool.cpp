@@ -109,9 +109,10 @@ PoolManager::get_pool(string host, short port)
 	// find or insert host
 	map<pair<string, short>, SocketPool>::iterator it;
 	it = m_pools.find(make_pair(host, port));
-	if (it == m_pools.end())
-		it = m_pools.insert(make_pair(make_pair(host, port),
-					SocketPool(host, port))).first;
+	if (it == m_pools.end()) {
+		HostPort hp = make_pair(host, port);
+		it = m_pools.insert(make_pair(hp, SocketPool(host, port))).first;
+	}
 
 	return it->second;
 }

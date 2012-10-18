@@ -25,8 +25,9 @@ public:
 		fw.set_url("/ping");
 
 		// proxy
-		http::Proxy px(cx, fw);
-		px.send("localhost", 8888, reply);
+		string target("localhost");
+		http::Proxy px(cx, fw, target, 8888);
+		px.send(reply);
 	}
 };
 
@@ -39,9 +40,10 @@ public:
 		fw.set_url("/ping");
 
 		// proxy
-		http::Proxy px(cx, fw);
-		px.send("localhost", 8888, reply); // once...
-		px.send("localhost", 8888, reply); // twice. The response is now "pongpong"
+		string target("localhost");
+		http::Proxy px(cx, fw, target, 8888);
+		px.send(reply); // once...
+		px.send(reply); // twice. The response is now "pongpong"
 	}
 };
 
