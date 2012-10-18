@@ -1,11 +1,11 @@
-#include <core/http/proxy.h>
-#include <core/http/connection.h>
-#include <core/http/request.h>
-#include <core/http/reply.h>
-#include <core/http/parser.h>
-#include <core/pool.h>
-#include <core/server.h>
-#include <core/log.h>
+#include <stutter/http/proxy.h>
+#include <stutter/http/connection.h>
+#include <stutter/http/request.h>
+#include <stutter/http/reply.h>
+#include <stutter/http/parser.h>
+#include <stutter/pool.h>
+#include <stutter/server.h>
+#include <stutter/log.h>
 
 #include <iostream>
 

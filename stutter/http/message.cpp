@@ -1,6 +1,6 @@
-#include <core/http/message.h>
-#include <core/http/connection.h>
-#include <core/log.h>
+#include <stutter/http/message.h>
+#include <stutter/http/connection.h>
+#include <stutter/log.h>
 
 #include <sstream>
 #include <iostream>

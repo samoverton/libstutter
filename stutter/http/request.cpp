@@ -1,6 +1,6 @@
-#include <core/http/request.h>
-#include <core/http/connection.h>
-#include <core/server.h>
+#include <stutter/http/request.h>
+#include <stutter/http/connection.h>
+#include <stutter/server.h>
 
 #include <iostream>
 #include <sstream>

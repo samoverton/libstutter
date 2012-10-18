@@ -1,5 +1,5 @@
-#include <core/dispatcher.h>
-#include <core/handlers/base.h>
+#include <stutter/dispatcher.h>
+#include <stutter/handlers/base.h>
 
 #include <iostream>
 

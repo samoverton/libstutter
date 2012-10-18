@@ -1,5 +1,5 @@
-#include <core/pool.h>
-#include <core/log.h>
+#include <stutter/pool.h>
+#include <stutter/log.h>
 
 #include <netinet/in.h>
 #include <arpa/inet.h>

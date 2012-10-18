@@ -1,7 +1,7 @@
-#include <core/server.h>
-#include <core/log.h>
-#include <core/handlers/base.h>
-#include <core/http/proxy.h>
+#include <stutter/server.h>
+#include <stutter/log.h>
+#include <stutter/handlers/base.h>
+#include <stutter/http/proxy.h>
 
 #include <iostream>
 #include <unistd.h>

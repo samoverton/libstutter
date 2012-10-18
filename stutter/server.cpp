@@ -1,6 +1,6 @@
-#include <core/server.h>
-#include <core/log.h>
-#include <core/handlers/error.h>
+#include <stutter/server.h>
+#include <stutter/log.h>
+#include <stutter/handlers/error.h>
 
 #include <unistd.h>
 #include <signal.h>

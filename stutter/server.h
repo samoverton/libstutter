@@ -4,10 +4,10 @@
 #include <string>
 #include <event.h>
 
-#include <core/http/connection.h>
-#include <core/pool.h>
-#include <core/dispatcher.h>
-#include <core/handlers/base.h>
+#include <stutter/http/connection.h>
+#include <stutter/pool.h>
+#include <stutter/dispatcher.h>
+#include <stutter/handlers/base.h>
 
 class Server {
 public:

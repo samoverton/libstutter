@@ -1,7 +1,7 @@
 #ifndef HANDLER_FILE_H
 #define HANDLER_FILE_H
 
-#include <core/handlers/base.h>
+#include <stutter/handlers/base.h>
 #include <string>
 
 class FileHandler : public virtual BaseHandler {

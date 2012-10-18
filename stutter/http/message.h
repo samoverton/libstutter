@@ -5,7 +5,7 @@
 #include <map>
 #include <vector>
 
-#include <core/http/body.h>
+#include <stutter/http/body.h>
 
 namespace http {
 

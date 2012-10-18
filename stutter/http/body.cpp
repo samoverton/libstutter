@@ -1,6 +1,6 @@
-#include <core/http/body.h>
-#include <core/http/connection.h>
-#include <core/log.h>
+#include <stutter/http/body.h>
+#include <stutter/http/connection.h>
+#include <stutter/log.h>
 
 #include <iostream>
 #include <sys/types.h>

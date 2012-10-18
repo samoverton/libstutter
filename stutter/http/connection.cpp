@@ -2,12 +2,12 @@
 #include <string.h>
 #include <sys/sendfile.h>
 
-#include <core/http/connection.h>
-#include <core/handlers/base.h>
-#include <core/handlers/hello.h>
-#include <core/handlers/file.h>
-#include <core/log.h>
-#include <core/server.h>
+#include <stutter/http/connection.h>
+#include <stutter/handlers/base.h>
+#include <stutter/handlers/hello.h>
+#include <stutter/handlers/file.h>
+#include <stutter/log.h>
+#include <stutter/server.h>
 
 #include <iostream>
 using namespace std;

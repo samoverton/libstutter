@@ -1,4 +1,4 @@
-#include <core/coroutine.h>
+#include <stutter/coroutine.h>
 
 #ifdef USE_VALGRIND
 #include <valgrind/valgrind.h>

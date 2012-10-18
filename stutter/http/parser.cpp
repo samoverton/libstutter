@@ -1,7 +1,7 @@
-#include <core/http/parser.h>
-#include <core/http/message.h>
-#include <core/http/request.h>
-#include <core/http/reply.h>
+#include <stutter/http/parser.h>
+#include <stutter/http/message.h>
+#include <stutter/http/request.h>
+#include <stutter/http/reply.h>
 
 #include <string.h>
 #include <cstdlib>
