@@ -1,7 +1,8 @@
 #ifndef HTTP_PARSER_H
 #define HTTP_PARSER_H
 
-#include "joyent/http_parser.h"
+#include <core/http/joyent/http_parser.h>
+
 #include <string>
 #include <functional>
 

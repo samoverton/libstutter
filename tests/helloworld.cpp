@@ -1,11 +1,9 @@
-#include <server.h>
-#include <log.h>
-#include <handlers/base.h>
+#include <core/server.h>
+#include <core/log.h>
+#include <core/handlers/base.h>
 
 #include <iostream>
 #include <unistd.h>
-
-#include "framework.h"
 
 using namespace std;
 
@@ -25,7 +23,6 @@ main(int argc, char *argv[])
 
 	Server s("127.0.0.1", 8888);
 	s.router().add("/hello", new HelloWorldHandler());
-	s.router().add("/quit", new TestQuitHandler());
 
 	s.start();
 

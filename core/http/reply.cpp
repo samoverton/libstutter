@@ -1,6 +1,7 @@
-#include "reply.h"
-#include "connection.h"
-#include "../log.h"
+#include <core/http/reply.h>
+#include <core/http/connection.h>
+#include <core/log.h>
+
 #include <sstream>
 #include <iostream>
 

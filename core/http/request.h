@@ -1,7 +1,7 @@
 #ifndef HTTP_REQUEST_H
 #define HTTP_REQUEST_H
 
-#include "message.h"
+#include <core/http/message.h>
 
 namespace http {
 class Reply;

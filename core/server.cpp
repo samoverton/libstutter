@@ -1,6 +1,6 @@
-#include "server.h"
-#include "log.h"
-#include <handlers/error.h>
+#include <core/server.h>
+#include <core/log.h>
+#include <core/handlers/error.h>
 
 #include <unistd.h>
 #include <signal.h>

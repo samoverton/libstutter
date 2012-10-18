@@ -1,6 +1,6 @@
 TESTS=helloworld proxy upload
 
-CXXFLAGS=-I../core
+CXXFLAGS=-I..
 LDFLAGS=-L.. -levent ../libstutter.a
 
 all: $(TESTS)

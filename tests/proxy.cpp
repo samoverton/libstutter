@@ -1,12 +1,10 @@
-#include <server.h>
-#include <log.h>
-#include <handlers/base.h>
-#include <http/proxy.h>
+#include <core/server.h>
+#include <core/log.h>
+#include <core/handlers/base.h>
+#include <core/http/proxy.h>
 
 #include <iostream>
 #include <unistd.h>
-
-#include "framework.h"
 
 using namespace std;
 
@@ -58,7 +56,6 @@ main(int argc, char *argv[])
 	s.router().add("/ping",  new PongHandler());
 	s.router().add("/proxy", new ProxyHandler());
 	s.router().add("/double", new DoubleProxyHandler());
-	s.router().add("/quit",  new TestQuitHandler());
 
 	s.start();
 

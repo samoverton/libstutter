@@ -1,7 +1,7 @@
 #ifndef HANDLER_ERROR_H
 #define HANDLER_ERROR_H
 
-#include <handlers/base.h>
+#include <core/handlers/base.h>
 #include <string>
 
 class ErrorHandler : public virtual BaseHandler {

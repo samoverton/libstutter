@@ -1,5 +1,5 @@
-#include "dispatcher.h"
-#include <handlers/base.h>
+#include <core/dispatcher.h>
+#include <core/handlers/base.h>
 
 #include <iostream>
 

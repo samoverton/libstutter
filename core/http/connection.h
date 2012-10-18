@@ -1,10 +1,10 @@
 #ifndef HTTP_CONNECTION_H
 #define HTTP_CONNECTION_H
 
-#include "../coroutine.h"
-#include "parser.h"
-#include "request.h"
-#include "reply.h"
+#include "core/coroutine.h"
+#include <core/http/parser.h>
+#include <core/http/request.h>
+#include <core/http/reply.h>
 
 #include <event.h>
 #include <string>

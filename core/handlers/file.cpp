@@ -1,4 +1,4 @@
-#include "file.h"
+#include <core/handlers/file.h>
 
 using namespace std;
 
@@ -16,5 +16,6 @@ FileHandler::handle(http::Connection &cx, const http::Request &req, http::Reply 
 {
 	(void)req;
 
-	reply.set_file("/tmp/reply.txt");
+	// example:
+	// reply.set_file("/tmp/reply.txt");
 }

@@ -1,10 +1,10 @@
 #ifndef HANDLER_BASE_H
 #define HANDLER_BASE_H
 
-#include "../http/connection.h"
-#include "../http/request.h"
-#include "../http/reply.h"
-#include "../pool.h"
+#include <core/http/connection.h>
+#include <core/http/request.h>
+#include <core/http/reply.h>
+#include <core/pool.h>
 
 class BaseHandler {
 public:

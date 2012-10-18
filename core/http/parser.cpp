@@ -1,7 +1,7 @@
-#include "parser.h"
-#include "message.h"
-#include "request.h"
-#include "reply.h"
+#include <core/http/parser.h>
+#include <core/http/message.h>
+#include <core/http/request.h>
+#include <core/http/reply.h>
 
 #include <string.h>
 #include <cstdlib>

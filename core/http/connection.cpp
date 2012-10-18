@@ -1,13 +1,13 @@
-#include "connection.h"
 #include <unistd.h>
 #include <string.h>
 #include <sys/sendfile.h>
 
-#include "../handlers/base.h"
-#include "../handlers/hello.h"
-#include "../handlers/file.h"
-#include "../log.h"
-#include "../server.h"
+#include <core/http/connection.h>
+#include <core/handlers/base.h>
+#include <core/handlers/hello.h>
+#include <core/handlers/file.h>
+#include <core/log.h>
+#include <core/server.h>
 
 #include <iostream>
 using namespace std;

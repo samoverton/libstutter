@@ -3,10 +3,11 @@
 
 #include <string>
 #include <event.h>
-#include "http/connection.h"
-#include "pool.h"
-#include <dispatcher.h>
-#include <handlers/base.h>
+
+#include <core/http/connection.h>
+#include <core/pool.h>
+#include <core/dispatcher.h>
+#include <core/handlers/base.h>
 
 class Server {
 public:

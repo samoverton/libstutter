@@ -1,6 +1,6 @@
-#include "request.h"
-#include "connection.h"
-#include "../server.h"
+#include <core/http/request.h>
+#include <core/http/connection.h>
+#include <core/server.h>
 
 #include <iostream>
 #include <sstream>

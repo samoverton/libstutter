@@ -1,11 +1,11 @@
-#include "proxy.h"
-#include "connection.h"
-#include "request.h"
-#include "reply.h"
-#include "parser.h"
-#include "../pool.h"
-#include "../server.h"
-#include "../log.h"
+#include <core/http/proxy.h>
+#include <core/http/connection.h>
+#include <core/http/request.h>
+#include <core/http/reply.h>
+#include <core/http/parser.h>
+#include <core/pool.h>
+#include <core/server.h>
+#include <core/log.h>
 
 #include <iostream>
 

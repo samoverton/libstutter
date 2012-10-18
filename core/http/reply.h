@@ -1,7 +1,7 @@
 #ifndef HTTP_REPLY_H
 #define HTTP_REPLY_H
 
-#include "message.h"
+#include <core/http/message.h>
 
 namespace http {
 class Connection;

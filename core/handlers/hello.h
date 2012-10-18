@@ -1,7 +1,7 @@
 #ifndef HANDLER_HELLO_H
 #define HANDLER_HELLO_H
 
-#include <handlers/base.h>
+#include <core/handlers/base.h>
 #include <string>
 
 class HelloHandler : public virtual BaseHandler {
