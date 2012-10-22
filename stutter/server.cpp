@@ -13,6 +13,9 @@
 #include <sys/ioctl.h>
 #include <errno.h>
 #include <cstdlib>
+#include <sys/types.h>
+#include <pwd.h>
+#include <grp.h>
 
 #include <iostream>
 
@@ -166,6 +169,44 @@ Server::daemonize()
 	}
 }
 
+bool
+Server::drop_privileges()
+{
+	struct passwd *userp = 0;
+	string user = option(OPT_USER);
+	if (!user.empty()) {
+		userp = getpwnam(user.c_str());
+		if (!userp) {
+			Log::get(Log::ERROR) << "Unknown user \"" << user << "\"" << endl;
+			return false;
+		}
+	}
+
+	struct group *groupp = 0;
+	string group = option(OPT_GROUP);
+	if (!group.empty()) {
+		groupp = getgrnam(group.c_str());
+		if (!groupp) {
+			Log::get(Log::ERROR) << "Unknown group \"" << group << "\"" << endl;
+			return false;
+		}
+	}
+
+	if (userp && setuid(userp->pw_uid) < 0) {
+		Log::get(Log::ERROR) << "Could not setuid to " << userp->pw_uid
+			<< " (user \"" << user << "\")" << endl;
+		return false;
+	}
+
+	if (groupp && setgid(groupp->gr_gid) < 0) {
+		Log::get(Log::ERROR) << "Could not setgid to " << groupp->gr_gid
+			<< " (group \"" << group << "\")" << endl;
+		return false;
+	}
+
+	return true;
+}
+
 void
 Server::start()
 {
@@ -181,6 +222,11 @@ Server::start()
 
 	if (option(OPT_DAEMONIZE) == "true") {
 		daemonize();
+	}
+
+	if (!drop_privileges()) {
+		Log::get(Log::ERROR) << "Could not drop privileges" << endl;
+		return;
 	}
 
 	/* start http server */

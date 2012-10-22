@@ -30,6 +30,7 @@ private:
 	void register_connection(http::Connection *c, short event);
 	void resume_connection(http::Connection *c);
 	void daemonize();
+	bool drop_privileges();
 
 private:
 	std::string m_host;
