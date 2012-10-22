@@ -2,6 +2,8 @@
 #define SERVER_H
 
 #include <string>
+#include <sstream>
+#include <map>
 #include <event.h>
 
 #include <stutter/http/connection.h>
@@ -14,14 +16,20 @@ public:
 
 	Server(std::string host, short port);
 	void start();
-	PoolManager &pool_manager();
 
+	// options
+	typedef enum {OPT_DAEMONIZE, OPT_USER, OPT_GROUP} Option;
+	void option(Option o, std::string val);
+	const std::string option(Option o) const;
+
+	PoolManager &pool_manager();
 	Dispatcher &router();
 
 private:
 	int setup_socket() const;
 	void register_connection(http::Connection *c, short event);
 	void resume_connection(http::Connection *c);
+	void daemonize();
 
 private:
 	std::string m_host;
@@ -30,6 +38,8 @@ private:
 
 	PoolManager m_poolmgr;
 	Dispatcher  m_router;
+
+	std::map<Option, std::string> m_options;
 
 	// libevent
 	struct event_base *m_base;

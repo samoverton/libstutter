@@ -12,6 +12,7 @@
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <errno.h>
+#include <cstdlib>
 
 #include <iostream>
 
@@ -147,6 +148,25 @@ _on_possible_accept(int fd, short event, void *ptr)
 }
 
 void
+Server::daemonize()
+{
+	/* fork and stop parent process */
+	if (::fork() != 0)
+		::exit(0);
+	::setsid();
+
+	/* redirect all outputs to /dev/null */
+	int fd;
+	if ((fd = ::open("/dev/null", O_RDWR, 0)) != -1) {
+		::dup2(fd, STDIN_FILENO);
+		::dup2(fd, STDOUT_FILENO);
+		::dup2(fd, STDERR_FILENO);
+		if (fd > STDERR_FILENO)
+			::close(fd);
+	}
+}
+
+void
 Server::start()
 {
 	/* ignore sigpipe */
@@ -154,8 +174,14 @@ Server::start()
 	signal(SIGPIPE, SIG_IGN);
 #endif	
 	m_fd = setup_socket();
-	if (m_fd < 0)
+	if (m_fd < 0) {
+		Log::get(Log::ERROR) << "Could not create socket" << endl;
 		return;
+	}
+
+	if (option(OPT_DAEMONIZE) == "true") {
+		daemonize();
+	}
 
 	/* start http server */
 	event_set(&m_ev, m_fd, EV_READ | EV_PERSIST,
@@ -177,4 +203,19 @@ Dispatcher &
 Server::router()
 {
 	return m_router;
+}
+
+void
+Server::option(Option o, string val)
+{
+	m_options[o] = val;
+}
+
+const std::string
+Server::option(Option o) const
+{
+	map<Option, string>::const_iterator it;
+	if ((it = m_options.find(o)) == m_options.end())
+		return "";
+	return it->second;
 }
