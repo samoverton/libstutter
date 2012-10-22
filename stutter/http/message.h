@@ -4,8 +4,18 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <cstring>
 
 #include <stutter/http/body.h>
+
+struct nocase_less : std::binary_function <std::string,std::string,bool>
+{
+  bool operator() (const std::string& x, const std::string& y) const
+  {
+	  return ::strcasecmp(x.c_str(), y.c_str()) <= 0;
+  }
+};
+
 
 namespace http {
 
@@ -41,7 +51,7 @@ public:
 	static const std::string KeepAlive;
 
 protected:
-	std::map<std::string, std::string> m_headers;
+	std::map<std::string, std::string, nocase_less> m_headers;
 	std::vector<char> m_data;
 	Body m_body;
 
