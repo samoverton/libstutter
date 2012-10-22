@@ -17,7 +17,7 @@ HEADERS_HTTP=stutter/http/connection.h stutter/http/parser.h \
 			 stutter/http/request.h stutter/http/reply.h stutter/http/message.h \
 			 stutter/http/body.h stutter/http/proxy.h
 
-all: $(LIB) $(ARCHIVE) tests
+all: $(LIB) $(ARCHIVE)
 
 PREFIX ?= /usr
 INCLUDE_DIR=$(PREFIX)/include
