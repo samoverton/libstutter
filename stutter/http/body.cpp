@@ -1,5 +1,5 @@
 #include <stutter/http/body.h>
-#include <stutter/http/connection.h>
+#include <stutter/io/strategy.h>
 #include <stutter/log.h>
 
 #include <iostream>
@@ -12,7 +12,6 @@
 #define TMP_FILE_TEMPLATE "/tmp/body-XXXXXX"
 
 using http::Body;
-using http::Connection;
 using namespace std;
 
 Body::Body()
@@ -134,25 +133,14 @@ Body::buffer_end() const
 	return m_data.end();
 }
 
-// send
-
-bool
-Body::send_from_disk(Connection &cx) const
+int
+Body::disk_fd() const
 {
-	if (m_fd <= 0)
-		return true;
+	return m_fd;
+}
 
-	size_t remain = size() - m_data.size();
-	off_t offset = 0;
-	while (remain > 0) {
-		int sent = cx.safe_sendfile(m_fd, &offset, remain);
-		if (sent <= 0) {
-			Log::get(Log::DEBUG) << "Failed to sendfile() " << remain << " bytes" << endl;
-			return false;
-		}
-		offset += sent;
-		remain -= sent;
-	}
-
-	return true;
+size_t
+Body::size_on_disk() const
+{
+	return size() - m_data.size();
 }

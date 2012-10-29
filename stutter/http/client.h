@@ -1,21 +1,22 @@
-#ifndef HTTP_PROXY_H
-#define HTTP_PROXY_H
+#ifndef HTTP_CLIENT_H
+#define HTTP_CLIENT_H
 
 #include <string>
 
+class IOStrategy;
+
 namespace http {
 
-class Connection;
 class Request;
 class Reply;
 class Parser;
 
-class Proxy
+class Client
 {
 public:
-	Proxy(Connection &cx, const Request &req, const std::string &host, short port);
+	Client(IOStrategy &io, const std::string host, short port);
 
-	bool send(Reply &reply);
+	bool send(const Request &req, Reply &reply);
 
 	typedef enum {NOT_EXECUTED = -1, SUCCESS, SOCKET_ERROR,
 		DNS_ERROR, CONNECTION_ERROR, WRITE_ERROR, READ_ERROR} Error;
@@ -35,18 +36,17 @@ private:
 
 private:
 	int m_fd;
-	Connection &m_connection;
-	const Request &m_request;
+	IOStrategy &m_io;
 
 	Error m_error;
 	bool  m_done;
 
 	// target
-	const std::string &m_host;
+	const std::string m_host;
 	short m_port;
 
 friend void _done(void*);
 };
 }
 
-#endif // HTTP_PROXY_H
+#endif // HTTP_CLIENT_H

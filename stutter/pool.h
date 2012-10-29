@@ -25,7 +25,10 @@ private:
 
 class PoolManager {
 public:
-	SocketPool &get_pool(std::string host, short port);
+	static SocketPool &get_pool(std::string host, short port);
+
+private:
+	static PoolManager &instance();
 
 private:
 	typedef std::pair<std::string, short> HostPort;

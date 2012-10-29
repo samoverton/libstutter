@@ -4,9 +4,9 @@
 #include <string>
 #include <vector>
 
-namespace http {
+class IOStrategy;
 
-class Connection;
+namespace http {
 
 class Body {
 public:
@@ -23,7 +23,9 @@ public:
 	const iterator buffer_begin() const;
 	const iterator buffer_end() const;
 
-	bool send_from_disk(Connection &cx) const;
+	// used with sendfile()
+	int disk_fd() const;
+	size_t size_on_disk() const;
 
 private:
 	ssize_t buffer_in_memory(const char *p, size_t sz);

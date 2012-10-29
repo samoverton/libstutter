@@ -1,11 +1,11 @@
-TESTS=helloworld proxy upload
+TESTS=helloworld proxy upload blocking
 
 CXXFLAGS=
-LDFLAGS=-levent -lstutter
+LDFLAGS=-levent -lstutter -pthread
 
 all: $(TESTS)
 
-# FIXME: how can we factor these three together?
+# FIXME: how can we factor all these together?
 
 helloworld: helloworld.o
 	$(CXX) -o $@ $< $(LDFLAGS)
@@ -14,6 +14,9 @@ proxy: proxy.o
 	$(CXX) -o $@ $< $(LDFLAGS)
 
 upload: upload.o
+	$(CXX) -o $@ $< $(LDFLAGS)
+
+blocking: blocking.o
 	$(CXX) -o $@ $< $(LDFLAGS)
 	
 %.o: %.cpp

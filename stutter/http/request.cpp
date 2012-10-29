@@ -1,5 +1,4 @@
 #include <stutter/http/request.h>
-#include <stutter/http/connection.h>
 #include <stutter/server.h>
 
 #include <iostream>
@@ -18,11 +17,10 @@
 using namespace std;
 using http::Request;
 using http::Reply;
-using http::Connection;
 using http::Parser;
 
-Request::Request(Connection &cx)
-	: Message(cx)
+Request::Request()
+	: Message()
 	, m_verb(GET)
 	, m_require_100(false)
 {}
@@ -87,14 +85,6 @@ Request::verb_str() const
 		case DELETE: return "DELETE";
 		default:     return "";
 	}
-}
-
-bool
-Request::send_continue()
-{
-	char hdr[] = "HTTP/1.1 100 Continue\r\n\r\n";
-	return m_connection.send_raw(m_connection.watched_fd(),
-			hdr, sizeof(hdr)-1);
 }
 
 bool

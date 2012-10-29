@@ -1,6 +1,6 @@
 #include <stutter/http/reply.h>
-#include <stutter/http/connection.h>
 #include <stutter/log.h>
+#include <stutter/io/strategy.h>
 
 #include <sstream>
 #include <iostream>
@@ -11,10 +11,8 @@
 
 using namespace std;
 using http::Reply;
-using http::Connection;
 
-Reply::Reply(Connection &cx)
-	: Message(cx)
+Reply::Reply() : Message()
 {
 	reset();
 }
@@ -73,13 +71,10 @@ Reply::code() const
 	return m_code;
 }
 
-bool
-Reply::send()
+const string&
+Reply::status() const
 {
-	prepare();
-
-	return send_headers()
-		&& m_body.send_from_disk(m_connection);
+	return m_status;
 }
 
 bool
@@ -92,20 +87,3 @@ Reply::set_file(const std::string filename)
 	add_header(Message::ContentLength, m_body.size());
 	return true;
 }
-
-bool
-Reply::send_headers()
-{
-	iterator i;
-	for (i = begin(); i != end(); )
-	{
-		int sent = m_connection.safe_write(&(*i), distance(i, end()));
-		if (sent <= 0) {
-			Log::get(Log::DEBUG) << "Could not send response to client" << endl;
-			return false;
-		}
-		i += sent;
-	}
-	return true;
-}
-

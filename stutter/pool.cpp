@@ -103,15 +103,25 @@ SocketPool::connect(int &out_fd)
 
 ////////////////////////////////////////////////////////////////////////////////
 
+static PoolManager __PM;
+
+PoolManager &
+PoolManager::instance()
+{
+	return __PM;
+}
+
 SocketPool &
 PoolManager::get_pool(string host, short port)
 {
+	PoolManager &pm = instance();
+
 	// find or insert host
 	map<pair<string, short>, SocketPool>::iterator it;
-	it = m_pools.find(make_pair(host, port));
-	if (it == m_pools.end()) {
+	it = pm.m_pools.find(make_pair(host, port));
+	if (it == pm.m_pools.end()) {
 		HostPort hp = make_pair(host, port);
-		it = m_pools.insert(make_pair(hp, SocketPool(host, port))).first;
+		it = pm.m_pools.insert(make_pair(hp, SocketPool(host, port))).first;
 	}
 
 	return it->second;

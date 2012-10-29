@@ -22,6 +22,7 @@ public:
 	typedef enum {
 		PARSE_OK,
 		PARSE_FAILURE,
+		PARSE_NEED_100_CONTINUE,
 		PARSE_BODY_TOO_LARGE,
 		PARSE_URI_TOO_LONG} Error;
 

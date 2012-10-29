@@ -16,12 +16,11 @@ struct nocase_less : std::binary_function <std::string,std::string,bool>
   }
 };
 
-
 namespace http {
 
 class Message {
 public:
-	Message(Connection &cx);
+	Message();
 	Message(const Message &msg);
 	virtual ~Message();
 	void add_header(const std::string &key, const std::string &val);
@@ -54,9 +53,6 @@ protected:
 	std::map<std::string, std::string, nocase_less> m_headers;
 	std::vector<char> m_data;
 	Body m_body;
-
-protected:
-	http::Connection &m_connection;
 };
 }
 

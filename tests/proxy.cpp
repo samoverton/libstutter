@@ -1,7 +1,7 @@
 #include <stutter/server.h>
 #include <stutter/log.h>
 #include <stutter/handlers/base.h>
-#include <stutter/http/proxy.h>
+#include <stutter/http/client.h>
 
 #include <iostream>
 #include <unistd.h>
@@ -26,8 +26,8 @@ public:
 
 		// proxy
 		string target("localhost");
-		http::Proxy px(cx, fw, target, 8888);
-		px.send(reply);
+		http::Client px(cx, target, 8888);
+		px.send(fw, reply);
 	}
 };
 
@@ -41,9 +41,9 @@ public:
 
 		// proxy
 		string target("localhost");
-		http::Proxy px(cx, fw, target, 8888);
-		px.send(reply); // once...
-		px.send(reply); // twice. The response is now "pongpong"
+		http::Client px(cx, target, 8888);
+		px.send(fw, reply); // once...
+		px.send(fw, reply); // twice. The response is now "pongpong"
 	}
 };
 

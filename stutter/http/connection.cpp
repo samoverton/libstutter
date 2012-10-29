@@ -4,8 +4,6 @@
 
 #include <stutter/http/connection.h>
 #include <stutter/handlers/base.h>
-#include <stutter/handlers/hello.h>
-#include <stutter/handlers/file.h>
 #include <stutter/log.h>
 #include <stutter/server.h>
 
@@ -28,9 +26,6 @@ _process(void *self)
 Connection::Connection(Server &server, int fd)
 	: m_server(server)
 	, m_fd(fd)
-	, m_watched_fd(fd)
-	, m_request(*this)
-	, m_reply(*this)
 	, m_parser(Parser::REQUEST, &m_request,
 			_process, static_cast<void*>(this))
 {
@@ -72,7 +67,7 @@ Connection::process()
 	}
 
 	// respond to client
-	m_reply.send();
+	send(m_reply);
 
 	// reset objects for next request
 	m_request.reset();
@@ -80,40 +75,36 @@ Connection::process()
 	m_parser.reset();
 }
 
-
-int
-Connection::safe_read(int fd, char *p, size_t sz)
+bool
+Connection::send(Reply &r)
 {
-	watch_fd(fd);
-	yield((int)READ);
-	return read(fd, p, sz);
+	r.prepare();
+
+	return send_headers(r)
+		&& send_buffered_body(m_fd, r.body());
 }
 
-int
-Connection::safe_read (char *p, size_t sz)
+bool
+Connection::send_headers(Reply &r)
 {
-	return safe_read(m_fd, p, sz);
+	Reply::iterator i;
+	for (i = r.begin(); i != r.end(); )
+	{
+		int sent = safe_write(fd(), &(*i), distance(i, r.end()));
+		if (sent <= 0) {
+			Log::get(Log::DEBUG) << "Could not send response to client" << endl;
+			return false;
+		}
+		i += sent;
+	}
+	return true;
 }
 
-int
-Connection::safe_write(int fd, const char *p, size_t sz)
+bool
+Connection::send_100_continue()
 {
-	watch_fd(fd);
-	yield((int)WRITE);
-	return write(fd, p, sz);
-}
-
-int
-Connection::safe_write(const char *p, size_t sz)
-{
-	return safe_write(m_fd, p, sz);
-}
-
-int
-Connection::safe_sendfile(int in_fd, off_t *offset, size_t count)
-{
-	yield((int)WRITE);
-	return sendfile(m_watched_fd, in_fd, offset, count);
+	char hdr[] = "HTTP/1.1 100 Continue\r\n\r\n";
+	return send_raw(fd(), hdr, sizeof(hdr)-1);
 }
 
 int
@@ -127,8 +118,16 @@ Connection::exec()
 			return (int)HALT;
 
 		Parser::Error e = m_parser.add(buffer, (size_t)recvd);
-		if (e == Parser::PARSE_FAILURE) {
-			return (int)HALT;
+		switch (e) {
+			case Parser::PARSE_NEED_100_CONTINUE:
+				send_100_continue();
+				break;
+
+			case Parser::PARSE_FAILURE:
+				return (int)HALT;
+
+			default:
+				break;
 		}
 	}
 
@@ -136,44 +135,14 @@ Connection::exec()
 }
 
 int
-Connection::watched_fd() const
+Connection::fd() const
 {
-	return m_watched_fd;
-}
-
-void
-Connection::watch_fd(int fd)
-{
-	m_watched_fd = fd;
-}
-
-struct event *
-Connection::event()
-{
-	return &m_ev;
+	return m_fd;
 }
 
 Server &
 Connection::server()
 {
 	return m_server;
-}
-
-bool
-Connection::send_raw(int fd, const char *data, size_t sz)
-{
-	size_t done = 0;
-	while (done < sz)
-	{
-		int sent = safe_write(fd, data + done, sz - done);
-
-		if (sent <= 0) {
-			Log::get(Log::DEBUG) << "Failed to send " << (sz-done)
-								 << " bytes to fd " << fd << endl;
-			return false;
-		}
-		done += sent;
-	}
-	return true;
 }
 

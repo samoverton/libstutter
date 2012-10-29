@@ -1,5 +1,5 @@
 #include <stutter/http/message.h>
-#include <stutter/http/connection.h>
+#include <stutter/io/strategy.h>
 #include <stutter/log.h>
 
 #include <sstream>
@@ -17,16 +17,12 @@ const string Message::Connec = "Connection";
 const string Message::KeepAlive = "keep-alive";
 const string Message::OneHundredContinue = "100-continue";
 
-using http::Connection;
-
-Message::Message(Connection &cx)
-	: m_connection(cx)
+Message::Message()
 {
 }
 Message::Message(const Message &msg)
 	: m_headers(msg.m_headers)
 	, m_body(msg.m_body)
-	, m_connection(msg.m_connection)
 {
 }
 

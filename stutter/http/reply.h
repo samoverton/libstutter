@@ -4,16 +4,16 @@
 #include <stutter/http/message.h>
 
 namespace http {
-class Connection;
 
 class Reply : public virtual Message {
 
 public:
-	Reply(Connection &cx);
+	Reply();
 	virtual ~Reply();
 
 	void set_status(short code, std::string status);
 	short code() const;
+	const std::string& status() const;
 	bool send();
 	bool set_file(const std::string filename);
 

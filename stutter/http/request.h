@@ -3,14 +3,15 @@
 
 #include <stutter/http/message.h>
 
+class IOStrategy;
+
 namespace http {
 class Reply;
-class Connection;
 class Parser;
 
 class Request : public virtual Message {
 public:
-	Request(Connection &cx);
+	Request();
 	Request(const Request &request);
 	virtual ~Request();
 	const std::string &url() const;
@@ -45,8 +46,6 @@ private:
 
 	// upload
 	bool m_require_100;
-
-friend class Connection;
 };
 
 }

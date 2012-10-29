@@ -90,8 +90,10 @@ Parser::save_last_header()
 
 	// 100-continue
 	if (m_mode == REQUEST && m_request->get_header(Message::Expect)
-			== Message::OneHundredContinue)
-		m_request->send_continue();
+			== Message::OneHundredContinue) {
+		m_error = PARSE_NEED_100_CONTINUE;
+		return 0;
+	}
 
 	return 0;
 }
@@ -130,7 +132,8 @@ Parser::callback()
 			}
 			break;
 
-		case RESPONSE: // handle status
+		case RESPONSE: // handle status code
+			// TODO: handle status line
 			m_reply->set_status(m_parser->status_code, "");
 			break;
 	}
@@ -173,6 +176,8 @@ Parser::~Parser()
 Parser::Error
 Parser::add(const char *p, size_t sz)
 {
+	m_error = PARSE_OK; // reset error state
+
 	size_t nparsed = http_parser_execute(m_parser, m_parserconf, p, sz);
 	if (nparsed == sz)
 		return m_error;

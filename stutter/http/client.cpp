@@ -1,24 +1,22 @@
-#include <stutter/http/proxy.h>
-#include <stutter/http/connection.h>
+#include <stutter/http/client.h>
 #include <stutter/http/request.h>
 #include <stutter/http/reply.h>
 #include <stutter/http/parser.h>
 #include <stutter/pool.h>
 #include <stutter/server.h>
 #include <stutter/log.h>
+#include <stutter/io/strategy.h>
 
 #include <iostream>
 
 using namespace std;
 
-using http::Proxy;
-using http::Connection;
+using http::Client;
 using http::Reply;
 
-Proxy::Proxy(Connection &cx, const Request &req, const string &host, short port)
+Client::Client(IOStrategy &io, const string host, short port)
 	: m_fd(-1)
-	, m_connection(cx)
-	, m_request(req)
+	, m_io(io)
 	, m_error(NOT_EXECUTED)
 	, m_done(false)
 	, m_host(host)
@@ -28,7 +26,7 @@ Proxy::Proxy(Connection &cx, const Request &req, const string &host, short port)
 }
 
 bool
-Proxy::failure(Error e)
+Client::failure(Error e)
 {
 	m_error = e;
 	release_socket();
@@ -39,30 +37,30 @@ namespace http {
 void
 _done(void *self)
 {
-	Proxy *proxy = reinterpret_cast<Proxy*>(self);
-	proxy->on_msg_complete();
+	Client *c = reinterpret_cast<Client*>(self);
+	c->on_msg_complete();
 }
 }
 
 void
-Proxy::on_msg_complete()
+Client::on_msg_complete()
 {
 	m_done = true;
 }
 
 void
-Proxy::error(Error e)
+Client::error(Error e)
 {
 	m_error = e;
 }
 
 
 bool
-Proxy::send(Reply &reply)
+Client::send(const Request &req, Reply &reply)
 {
 	m_done = false;
 
-	Request r(m_request);
+	Request r(req);
 	r.add_header(Message::Host, m_host);
 
 	// build headers buffer
@@ -99,23 +97,23 @@ Proxy::send(Reply &reply)
 }
 
 bool
-Proxy::connect()
+Client::connect()
 {
-	SocketPool &pool = m_connection.server().pool_manager().get_pool(m_host, m_port);
+	SocketPool &pool = PoolManager::get_pool(m_host, m_port); // TODO: remove the singleton
 	return pool.get(m_fd);
 }
 
 bool
-Proxy::send_headers(Request &r)
+Client::send_headers(Request &r)
 {
 	const Message::iterator begin = r.begin(), end = r.end();
-	return m_connection.send_raw(m_fd, &(*begin), distance(begin, end));
+	return m_io.send_raw(m_fd, &(*begin), distance(begin, end));
 }
 
 bool
-Proxy::wait_for_100()
+Client::wait_for_100()
 {
-	Reply tmp(m_connection);
+	Reply tmp;
 	Parser parser(Parser::RESPONSE, &tmp,
 			_done, reinterpret_cast<void*>(this));
 
@@ -135,35 +133,35 @@ Proxy::wait_for_100()
 }
 
 bool
-Proxy::send_body(Request &r)
+Client::send_body(Request &r)
 {
 	const Body &body = r.body();
-	if (m_request.require_100_continue()) { // send first part of the body
+	if (r.require_100_continue()) { // send first part of the body
 		Body::iterator i = body.buffer_begin();
 		size_t sz = distance(i, body.buffer_end());
-		if (!m_connection.send_raw(m_fd, &(*i), sz))
+		if (!m_io.send_raw(m_fd, &(*i), sz))
 			return false;
 	}
 
 	// send disk-backed body
-	return body.send_from_disk(m_connection);
+	return m_io.send_buffered_body(m_fd, body);
 }
 
 bool
-Proxy::read_reply(Parser &parser)
+Client::read_reply(Parser &parser)
 {
 	m_done = false;
 	while(!m_done)
 	{
 		char buffer[1024];
-		int recvd = m_connection.safe_read(m_fd, buffer, sizeof(buffer));
+		int recvd = m_io.safe_read(m_fd, buffer, sizeof(buffer));
 		if (recvd <= 0) {
 			Log::get(Log::DEBUG) << "Error reading from fd " << m_fd << endl;
 			return false;
 		}
 
-		bool success = parser.add(buffer, (size_t)recvd);
-		if (!success) {
+		Parser::Error e = parser.add(buffer, (size_t)recvd);
+		if (e != Parser::PARSE_OK) {
 			Log::get(Log::DEBUG) << "Failed to add " << recvd
                                  << " bytes to HTTP parser" << endl;
 			return false;
@@ -174,9 +172,9 @@ Proxy::read_reply(Parser &parser)
 }
 
 void
-Proxy::release_socket()
+Client::release_socket()
 {
 	// put socket back in the pool
-	SocketPool &pool = m_connection.server().pool_manager().get_pool(m_host, m_port);
+	SocketPool &pool = PoolManager::get_pool(m_host, m_port); // TODO: remove the singleton
 	pool.put(m_fd);
 }
