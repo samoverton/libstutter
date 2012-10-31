@@ -12,7 +12,7 @@ struct nocase_less : std::binary_function <std::string,std::string,bool>
 {
   bool operator() (const std::string& x, const std::string& y) const
   {
-	  return ::strcasecmp(x.c_str(), y.c_str()) <= 0;
+	  return ::strcasecmp(x.c_str(), y.c_str()) < 0;
   }
 };
 
