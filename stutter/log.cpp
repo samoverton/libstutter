@@ -30,9 +30,9 @@ Log::close()
 }
 
 ostream &
-Log::get(Level l)
+Log::get(Level level)
 {
-	if (l >= m_log.level()) {
+	if (enabled(level)) {
 		return m_log.stream();
 	}
 	return m_null.stream();
@@ -57,4 +57,10 @@ Log::setup(std::string filename, Level level)
 	m_log.m_filename = filename;
 	m_log.m_level = level;
 	return m_log.open();
+}
+
+bool
+Log::enabled(Level level)
+{
+	return (level >= m_log.level());
 }

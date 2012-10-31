@@ -8,13 +8,14 @@
 class Log {
 public:
 	enum Level {
-		DEBUG, INFO, NOTICE, WARN,
+		TRACE, DEBUG, INFO, NOTICE, WARN,
 		ERROR, CRIT, ALERT, EMERG};
 
 	Log(std::string filename, Level level);
 	static std::ostream &get(Level l);
 
 	static bool setup(std::string filename, Level level);
+	static bool enabled(Level level);
 
 private:
 	bool open();
