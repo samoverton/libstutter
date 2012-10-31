@@ -34,11 +34,6 @@ void
 Message::add_header(const string &key, const string &val)
 {
 	m_headers[key] = val; // replace
-
-	if (Log::enabled(Log::TRACE)) {
-		Log::get(Log::TRACE) << "Add header [" << key << "] = ["
-			<< val << "] to message " << this << endl;
-	}
 }
 
 void
