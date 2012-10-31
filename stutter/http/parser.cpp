@@ -176,6 +176,8 @@ Parser::~Parser()
 Parser::Error
 Parser::add(const char *p, size_t sz)
 {
+	m_error = PARSE_OK; // reset error state
+
 	size_t nparsed = http_parser_execute(m_parser, m_parserconf, p, sz);
 	if (nparsed == sz)
 		return m_error;
