@@ -107,7 +107,8 @@ void
 Request::prepare()
 {
 	add_header(Message::Host, m_host);
-	add_header(Message::ContentLength, m_body.size());
+	if (m_verb != GET)
+		add_header(Message::ContentLength, m_body.size());
 
 	stringstream ss;
 	string crlf("\r\n");

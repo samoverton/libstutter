@@ -61,7 +61,7 @@ Client::send(const Request &req, Reply &reply)
 	m_done = false;
 
 	Request r(req);
-	r.add_header(Message::Host, m_host);
+	r.set_host(m_host);
 
 	// build headers buffer
 	r.prepare();
