@@ -12,7 +12,7 @@ FileHandler::~FileHandler()
 }
 
 void
-FileHandler::handle(http::Connection &cx, const http::Request &req, http::Reply &reply)
+FileHandler::handle(http::Connection &cx, http::Request &req, http::Reply &reply)
 {
 	(void)req;
 

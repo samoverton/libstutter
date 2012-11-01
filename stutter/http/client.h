@@ -16,7 +16,7 @@ class Client
 public:
 	Client(IOStrategy &io, const std::string host, short port);
 
-	bool send(const Request &req, Reply &reply);
+	bool send(Request &req, Reply &reply);
 
 	typedef enum {NOT_EXECUTED = -1, SUCCESS, SOCKET_ERROR,
 		DNS_ERROR, CONNECTION_ERROR, WRITE_ERROR, READ_ERROR} Error;

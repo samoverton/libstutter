@@ -12,7 +12,7 @@ HelloHandler::~HelloHandler()
 }
 
 void
-HelloHandler::handle(http::Connection &cx, const http::Request &req, http::Reply &reply)
+HelloHandler::handle(http::Connection &cx, http::Request &req, http::Reply &reply)
 {
 	(void)req;
 	char message[] = "hello, world\n";

@@ -56,30 +56,29 @@ Client::error(Error e)
 
 
 bool
-Client::send(const Request &req, Reply &reply)
+Client::send(Request &req, Reply &reply)
 {
 	m_done = false;
 
-	Request r(req);
-	r.set_host(m_host);
+	req.set_host(m_host);
 
 	// build headers buffer
-	r.prepare();
+	req.prepare();
 
 	// connect
 	if (!connect()) {
 		return failure(CONNECTION_ERROR);
 	}
 
-	if (!send_headers(r)) {
+	if (!send_headers(req)) {
 		return failure(WRITE_ERROR);
 	}
 
-	if (r.require_100_continue() && !wait_for_100()) {
+	if (req.require_100_continue() && !wait_for_100()) {
 		return failure(READ_ERROR);
 	}
 
-	if (!send_body(r)) {
+	if (!send_body(req)) {
 		return failure(WRITE_ERROR);
 	}
 

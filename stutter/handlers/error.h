@@ -9,7 +9,7 @@ public:
 	ErrorHandler(int status, std::string msg);
 	virtual ~ErrorHandler();
 	virtual void handle(http::Connection &cx,
-			const http::Request &req, http::Reply &reply);
+			http::Request &req, http::Reply &reply);
 
 private:
 	int m_status;

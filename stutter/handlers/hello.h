@@ -9,7 +9,7 @@ public:
 	HelloHandler();
 	virtual ~HelloHandler();
 	virtual void handle(http::Connection &cx,
-			const http::Request &req, http::Reply &reply);
+			http::Request &req, http::Reply &reply);
 
 };
 

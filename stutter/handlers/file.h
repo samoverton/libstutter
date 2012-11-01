@@ -8,7 +8,7 @@ class FileHandler : public virtual BaseHandler {
 public:
 	FileHandler();
 	virtual ~FileHandler();
-	virtual void handle(http::Connection &cx, const http::Request &req, http::Reply &reply);
+	virtual void handle(http::Connection &cx, http::Request &req, http::Reply &reply);
 
 };
 
