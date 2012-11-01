@@ -87,20 +87,20 @@ Server::setup_socket() const
 }
 
 void
-Server::resume_connection(Connection *c)
+Server::resume(YieldingIOStrategy *io)
 {
-	Connection::Need n = (Connection::Need)c->resume();
+	YieldingIOStrategy::Need n = (YieldingIOStrategy::Need)io->resume();
 	switch(n) {
-		case Connection::READ:
-			register_connection(c, EV_READ);
+		case YieldingIOStrategy::READ:
+			register_connection(io, EV_READ);
 			break;
 
-		case Connection::WRITE:
-			register_connection(c, EV_WRITE);
+		case YieldingIOStrategy::WRITE:
+			register_connection(io, EV_WRITE);
 			break;
 
-		case Connection::HALT:
-			delete c;
+		case YieldingIOStrategy::HALT:
+			delete io;
 			break;
 	}
 }
@@ -111,26 +111,40 @@ Server::pool_manager()
 	return m_poolmgr;
 }
 
+struct cx_event {
+	YieldingIOStrategy *io;
+	Server *server;
+};
+
 void
 _on_connection_event(int fd, short event, void *ptr)
 {
 	(void)fd;
 	(void)event;
-	Connection *c = reinterpret_cast<Connection*>(ptr);
-	Server &s = c->server();
 
-	s.resume_connection(c);
+	cx_event *cx = reinterpret_cast<cx_event*>(ptr);
+	Server *server = cx->server;
+	YieldingIOStrategy *io = cx->io;
+	delete cx;
+
+	server->resume(io);
 }
 
 void
-Server::register_connection(Connection *c, short event)
+Server::register_connection(YieldingIOStrategy *io, short event)
 {
-	struct event *ev = c->event();
-	event_set(ev, c->watched_fd(), event, _on_connection_event, c);
+	struct event *ev = io->event();
+
+	// prepare closure
+	cx_event *cx = new cx_event;
+	cx->io = io;
+	cx->server = this;
+
+	event_set(ev, io->watched_fd(), event, _on_connection_event, cx);
 	event_base_set(m_base, ev);
 	int added = event_add(ev, 0);
 	if (added != 0) {
-		c->resume(); // the blocking IO call will now fail
+		io->resume(); // the blocking IO call will now fail
 	}
 }
 
@@ -147,7 +161,7 @@ _on_possible_accept(int fd, short event, void *ptr)
 	Connection *c = new Connection(*s, client_fd);
 
 	// resume
-	s->resume_connection(c);
+	s->resume(c);
 }
 
 void

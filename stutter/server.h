@@ -24,11 +24,11 @@ public:
 
 	PoolManager &pool_manager();
 	Dispatcher &router();
+	void resume(YieldingIOStrategy *io);
 
 private:
 	int setup_socket() const;
-	void register_connection(http::Connection *c, short event);
-	void resume_connection(http::Connection *c);
+	void register_connection(YieldingIOStrategy *io, short event);
 	void daemonize();
 	bool drop_privileges();
 
