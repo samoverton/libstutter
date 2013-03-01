@@ -9,7 +9,7 @@ using namespace std;
 
 class UploadHandler : public BaseHandler {
 public:
-	virtual void handle(http::Connection &cx, const http::Request &req, http::Reply &reply)
+	virtual void handle(http::Connection &cx, http::Request &req, http::Reply &reply)
 	{
 		stringstream ss;
 		ss << "sz=" << req.body().size();
