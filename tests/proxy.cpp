@@ -10,15 +10,15 @@ using namespace std;
 
 class PongHandler : public BaseHandler {
 public:
-	virtual void handle(http::Connection &cx, const http::Request &req, http::Reply &reply)
+	virtual void handle(http::Connection &cx, http::Request &req, http::Reply &reply)
 	{
-		reply.add_body("pong", 4);
+		reply.add_body("pong\n", 5);
 	}
 };
 
 class ProxyHandler : public BaseHandler {
 public:
-	virtual void handle(http::Connection &cx, const http::Request &req, http::Reply &reply)
+	virtual void handle(http::Connection &cx, http::Request &req, http::Reply &reply)
 	{
 		// create new request
 		http::Request fw(req);
@@ -33,7 +33,7 @@ public:
 
 class DoubleProxyHandler : public BaseHandler {
 public:
-	virtual void handle(http::Connection &cx, const http::Request &req, http::Reply &reply)
+	virtual void handle(http::Connection &cx, http::Request &req, http::Reply &reply)
 	{
 		// create new request
 		http::Request fw(req);
@@ -43,7 +43,7 @@ public:
 		string target("localhost");
 		http::Client px(cx, target, 8888);
 		px.send(fw, reply); // once...
-		px.send(fw, reply); // twice. The response is now "pongpong"
+		px.send(fw, reply); // twice. The response is now "pong\npong\n"
 	}
 };
 
