@@ -3,7 +3,7 @@ ARCHIVE=libstutter.a
 
 # objects
 HTTP_PARSER_OBJS=stutter/http/joyent/http_parser.o
-HANDLER_OBJS=stutter/handlers/base.o stutter/handlers/hello.o stutter/handlers/file.o stutter/handlers/error.o
+HANDLER_OBJS=stutter/handlers/base.o stutter/handlers/file.o stutter/handlers/error.o
 HTTP_OBJS=stutter/http/connection.o stutter/http/request.o stutter/http/reply.o stutter/http/parser.o stutter/http/message.o stutter/http/body.o stutter/http/client.o
 CORE_OBJS=stutter/coroutine.o stutter/server.o stutter/pool.o stutter/log.o stutter/dispatcher.o
 IO_STRATEGY_OBJS=stutter/io/strategy.o stutter/io/blocking.o stutter/io/yielding.o
