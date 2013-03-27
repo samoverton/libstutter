@@ -19,7 +19,7 @@ using namespace std;
 
 class TestHandler : public BaseHandler {
 public:
-	virtual void handle(http::Connection &cx, const http::Request &req, http::Reply &reply)
+	virtual void handle(http::Connection &cx, http::Request &req, http::Reply &reply)
 	{
 		reply.set_status(STATUS_CODE, STATUS_MSG);
 		reply.add_body(BODY, sizeof(BODY)-1);

@@ -90,13 +90,13 @@ class StutterTest:
 		uri = "/" + ("A" * 8192)
 		return self.request("GET", uri)
 
-	@expect_body("pong")
+	@expect_body("pong\n")
 	@expect_status(200)
 	@with_server("proxy")
 	def test_proxy(self):
 		return self.request("GET", "/proxy") # proxying onto itself
 
-	@expect_body("pongpong")
+	@expect_body("pong\npong\n")
 	@expect_status(200)
 	@with_server("proxy")
 	def test_proxy(self):
