@@ -34,18 +34,19 @@ Client::failure(Error e)
 }
 
 namespace http {
-void
+bool
 _done(void *self)
 {
 	Client *c = reinterpret_cast<Client*>(self);
-	c->on_msg_complete();
+	return c->on_msg_complete();
 }
 }
 
-void
+bool
 Client::on_msg_complete()
 {
 	m_done = true;
+	return true;
 }
 
 void

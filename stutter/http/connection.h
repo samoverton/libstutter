@@ -25,7 +25,7 @@ public:
 	int fd() const;
 	Server &server();
 
-	void process(); // callback
+	bool process(); // callback
 
 private:
 	bool send(Reply &r);

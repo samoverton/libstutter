@@ -16,11 +16,11 @@ using http::Parser;
 
 #define READ_BUFFER_SIZE 4096
 
-void
+bool
 _process(void *self)
 {
 	Connection *cx = reinterpret_cast<Connection*>(self);
-	cx->process();
+	return cx->process();
 }
 
 Connection::Connection(Server &server, int fd)
@@ -54,7 +54,8 @@ Connection::process_error()
 	}
 }
 
-void
+// called by the parser when a request is ready to be processed
+bool
 Connection::process()
 {
 	// check for errors
@@ -67,12 +68,15 @@ Connection::process()
 	}
 
 	// respond to client
-	send(m_reply);
+	if (!send(m_reply)) { // TODO: handle this better
+		return false;
+	}
 
 	// reset objects for next request
 	m_request.reset();
 	m_reply.reset();
 	m_parser.reset();
+	return true;
 }
 
 bool
@@ -117,6 +121,7 @@ Connection::exec()
 		if (recvd <= 0)
 			return (int)HALT;
 
+		// add data to the parser and possibly handle a full request
 		Parser::Error e = m_parser.add(buffer, (size_t)recvd);
 		switch (e) {
 			case Parser::PARSE_NEED_100_CONTINUE:

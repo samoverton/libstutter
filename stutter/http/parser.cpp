@@ -138,10 +138,13 @@ Parser::callback()
 			break;
 	}
 
-	m_fun(m_fun_data);
+	// call back when a complete request is available
+	if (!m_fun(m_fun_data)) {
+		m_error = PARSE_HANDLER_FAILURE;
+	}
 }
 
-Parser::Parser(Mode m, http::Request *request, void (*fun)(void*), void *ptr)
+Parser::Parser(Mode m, http::Request *request, bool (*fun)(void*), void *ptr)
 	: m_mode(m)
 	, m_request(request)
 	, m_reply(0)
@@ -154,7 +157,7 @@ Parser::Parser(Mode m, http::Request *request, void (*fun)(void*), void *ptr)
 	reset();
 }
 
-Parser::Parser(Mode m, http::Reply *reply, void (*fun)(void*), void *ptr)
+Parser::Parser(Mode m, http::Reply *reply, bool (*fun)(void*), void *ptr)
 	: m_mode(m)
 	, m_request(0)
 	, m_reply(reply)

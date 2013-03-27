@@ -15,8 +15,8 @@ class Message;
 class Parser {
 public:
 	typedef enum {REQUEST, RESPONSE} Mode;
-	Parser(Mode m, http::Request *request, void (*fun)(void*), void *ptr);
-	Parser(Mode m, http::Reply *reply, void (*fun)(void*), void *ptr);
+	Parser(Mode m, http::Request *request, bool (*fun)(void*), void *ptr);
+	Parser(Mode m, http::Reply *reply, bool (*fun)(void*), void *ptr);
 	~Parser();
 
 	typedef enum {
@@ -24,7 +24,8 @@ public:
 		PARSE_FAILURE,
 		PARSE_NEED_100_CONTINUE,
 		PARSE_BODY_TOO_LARGE,
-		PARSE_URI_TOO_LONG} Error;
+		PARSE_URI_TOO_LONG,
+		PARSE_HANDLER_FAILURE} Error;
 
 	Error add(const char *p, size_t sz);
 	Error error() const;
@@ -45,7 +46,7 @@ private:
 	http::Message *m_msg;
 
 	// callback (TODO: use std::function?)
-	void (*m_fun)(void*);
+	bool (*m_fun)(void*);
 	void *m_fun_data;
 
 	struct http_parser *m_parser;

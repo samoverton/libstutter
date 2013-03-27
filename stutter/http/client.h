@@ -32,7 +32,7 @@ private:
 	void error(Error e);
 	bool read_reply(Parser &parser);
 	void release_socket();
-	void on_msg_complete();
+	bool on_msg_complete();
 
 private:
 	int m_fd;
@@ -45,7 +45,7 @@ private:
 	const std::string m_host;
 	short m_port;
 
-friend void _done(void*);
+friend bool _done(void*);
 };
 }
 
