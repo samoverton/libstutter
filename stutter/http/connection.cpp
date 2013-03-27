@@ -71,6 +71,8 @@ Connection::process()
 	if (!send(m_reply)) { // TODO: handle this better
 		return false;
 	}
+	// TODO: terminate connection after replying
+	// to either HTTP/1.0 or Connection: close
 
 	// reset objects for next request
 	m_request.reset();
@@ -129,6 +131,9 @@ Connection::exec()
 				break;
 
 			case Parser::PARSE_FAILURE:
+				return (int)HALT;
+
+			case Parser::PARSE_HANDLER_FAILURE:
 				return (int)HALT;
 
 			default:
