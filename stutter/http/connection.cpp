@@ -1,6 +1,12 @@
 #include <unistd.h>
 #include <string.h>
+#if __APPLE__
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/uio.h>
+#else
 #include <sys/sendfile.h>
+#endif
 
 #include <stutter/http/connection.h>
 #include <stutter/handlers/base.h>
