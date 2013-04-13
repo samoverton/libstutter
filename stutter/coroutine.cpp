@@ -1,4 +1,5 @@
 #include <stutter/coroutine.h>
+#include <stutter/log.h>
 
 #ifdef USE_VALGRIND
 #include <valgrind/valgrind.h>
@@ -23,8 +24,13 @@ Coroutine::Coroutine()
 {
 	// create new context based on current one:
 	create_stack();     // allocate stack for new context
-	getcontext(&m_ctx); // copy current context into m_ctx
-	makecontext(&m_ctx, (void (*)())entry_point, 1, this); // create
+	int gc = getcontext(&m_ctx); // copy current context into m_ctx
+	if (gc != 0) {
+		Log::get(Log::CRIT) << "Could not run getcontext"
+		<< endl;
+	} else {
+		makecontext(&m_ctx, (void (*)())entry_point, 1, this); // create
+	}
 }
 
 Coroutine::~Coroutine()
