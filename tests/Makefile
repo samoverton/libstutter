@@ -1,7 +1,7 @@
 TESTS=helloworld proxy upload blocking
 
-CXXFLAGS=
-LDFLAGS=-levent -lstutter -pthread
+CXXFLAGS=-D_XOPEN_SOURCE
+LDFLAGS=-levent -lstutter -pthread -L/usr/lib64
 
 all: $(TESTS)
 
