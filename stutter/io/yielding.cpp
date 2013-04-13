@@ -52,6 +52,14 @@ YieldingIOStrategy::safe_sendfile(int out_fd, int in_fd, off_t *offset, size_t c
 	watch_fd(out_fd);
 	yield((int)WRITE);
 
+#ifdef __APPLE__
+	off_t len = (off_t)count;
+	if (::sendfile(out_fd, in_fd, *offset, &len, 0, 0) == 0) {
+		return (int)len;
+	}
+	return -1;
+#else
 	return (int)::sendfile(out_fd, in_fd, offset, count);
+#endif
 }
 
