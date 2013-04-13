@@ -9,7 +9,7 @@ CORE_OBJS=stutter/coroutine.o stutter/server.o stutter/pool.o stutter/log.o stut
 IO_STRATEGY_OBJS=stutter/io/strategy.o stutter/io/blocking.o stutter/io/yielding.o
 OBJS=$(CORE_OBJS) $(HANDLER_OBJS) $(HTTP_PARSER_OBJS) $(HTTP_OBJS) $(IO_STRATEGY_OBJS)
 CXXFLAGS=-O0 -ggdb -Wall -Wextra -I. -fPIC -D_XOPEN_SOURCE
-LDFLAGS=-shared
+LDFLAGS=-shared -levent
 
 # install
 HEADERS_MAIN=stutter/server.h stutter/coroutine.h stutter/pool.h \
