@@ -48,6 +48,7 @@ public:
 	// public header values
 	static const std::string OneHundredContinue;
 	static const std::string KeepAlive;
+	static const std::string Close;
 
 protected:
 	std::map<std::string, std::string, nocase_less> m_headers;

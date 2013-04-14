@@ -16,6 +16,7 @@ const string Message::Connec = "Connection";
 
 const string Message::KeepAlive = "keep-alive";
 const string Message::OneHundredContinue = "100-continue";
+const string Message::Close = "Close";
 
 Message::Message()
 {
