@@ -31,6 +31,9 @@ public:
 	Error error() const;
 	void reset();
 
+	int http_major() const;
+	int http_minor() const;
+
 private:
 	void configure_http_parser();
 	int  save_last_header();

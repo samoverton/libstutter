@@ -214,3 +214,11 @@ Parser::reset()
 	m_error = PARSE_OK;
 }
 
+int
+Parser::http_major() const {
+	return m_parser->http_major;
+}
+int
+Parser::http_minor() const {
+	return m_parser->http_minor;
+}
