@@ -23,8 +23,8 @@ Coroutine::Coroutine()
 		, m_stack(0)
 {
 	// create new context based on current one:
-	create_stack();     // allocate stack for new context
 	int gc = getcontext(&m_ctx); // copy current context into m_ctx
+	create_stack();     // allocate stack for new context
 	if (gc != 0) {
 		Log::get(Log::CRIT) << "Could not run getcontext"
 		<< endl;
