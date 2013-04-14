@@ -21,6 +21,8 @@ main(int argc, char *argv[])
 	(void)argc;
 	(void)argv;
 
+	Log::setup("/dev/stderr", Log::TRACE);
+
 	Server s("127.0.0.1", 8888);
 	s.router().add("/hello", new HelloWorldHandler());
 
