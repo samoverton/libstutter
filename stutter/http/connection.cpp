@@ -75,9 +75,13 @@ Connection::process()
 		h->handle(*this, m_request, m_reply);
 	}
 
-	if ((m_parser.http_major() == 1 && m_parser.http_minor() == 0)
-	|| m_request.get_header(Message::Connec) == Message::Close) {
-		Log::get(Log::DEBUG) << "HTTP 1.0, closing" << endl;
+	// handle HTTP 1.0 and "Connection: Close"
+	if (m_parser.http_major() == 1 && m_parser.http_minor() == 0) {
+		m_state = ST_SHOULD_CLOSE;
+		m_reply.set_http_version(1,0);
+		m_reply.add_header(Message::Connec, Message::Close);
+	}
+	if (m_request.get_header(Message::Connec) == Message::Close) {
 		m_state = ST_SHOULD_CLOSE;
 		m_reply.add_header(Message::Connec, Message::Close);
 	}
@@ -87,9 +91,6 @@ Connection::process()
 		m_state = ST_IO_ERROR;
 		return false;
 	}
-
-	// TODO: terminate connection after replying
-	// to either HTTP/1.0 or Connection: close
 
 	// reset objects for next request
 	m_request.reset();

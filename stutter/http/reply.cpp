@@ -13,6 +13,8 @@ using namespace std;
 using http::Reply;
 
 Reply::Reply() : Message()
+	, m_http_major(1)
+	, m_http_minor(1)
 {
 	reset();
 }
@@ -29,6 +31,13 @@ Reply::set_status(short code, std::string status)
 }
 
 void
+Reply::set_http_version(int major, int minor)
+{
+	m_http_major = major;
+	m_http_minor = minor;
+}
+
+void
 Reply::prepare()
 {
 	// remove chunked header
@@ -39,7 +48,8 @@ Reply::prepare()
 
 	stringstream ss;
 	string crlf("\r\n");
-	ss << "HTTP/1.1 " << m_code << " " << m_status << crlf;
+	ss << "HTTP/" << m_http_major << '.' << m_http_minor
+	   << ' ' << m_code << " " << m_status << crlf;
 
 	map<string,string>::const_iterator hi;
 	for(hi = m_headers.begin(); hi != m_headers.end(); hi++) {
