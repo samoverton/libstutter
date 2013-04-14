@@ -34,6 +34,7 @@ Connection::Connection(Server &server, int fd)
 	, m_fd(fd)
 	, m_parser(Parser::REQUEST, &m_request,
 			_process, static_cast<void*>(this))
+	, m_state(ST_READY_FOR_DATA)
 {
 }
 
@@ -66,6 +67,7 @@ Connection::process()
 {
 	// check for errors
 	if (m_parser.error() != Parser::PARSE_OK) {
+		m_state = ST_PARSE_ERROR;
 		process_error();
 	} else {
 		// use custom handler to build reply
@@ -73,10 +75,19 @@ Connection::process()
 		h->handle(*this, m_request, m_reply);
 	}
 
+	if ((m_parser.http_major() == 1 && m_parser.http_minor() == 0)
+	|| m_request.get_header(Message::Connec) == Message::Close) {
+		Log::get(Log::DEBUG) << "HTTP 1.0, closing" << endl;
+		m_state = ST_SHOULD_CLOSE;
+		m_reply.add_header(Message::Connec, Message::Close);
+	}
+
 	// respond to client
 	if (!send(m_reply)) { // TODO: handle this better
+		m_state = ST_IO_ERROR;
 		return false;
 	}
+
 	// TODO: terminate connection after replying
 	// to either HTTP/1.0 or Connection: close
 
@@ -126,22 +137,36 @@ Connection::exec()
 	{
 		char buffer[READ_BUFFER_SIZE];
 		int recvd = safe_read(m_fd, buffer, sizeof(buffer));
-		if (recvd <= 0)
+		if (recvd <= 0) {
+			m_state = ST_IO_ERROR;
 			return (int)HALT;
+		}
 
 		// add data to the parser and possibly handle a full request
-		Parser::Error e = m_parser.add(buffer, (size_t)recvd);
-		switch (e) {
-			case Parser::PARSE_NEED_100_CONTINUE:
+		m_parser.add(buffer, (size_t)recvd);
+		switch (m_state) {
+			case ST_READY_FOR_DATA:
+				continue;
+
+			case ST_NEED_100_CONTINUE:
 				send_100_continue();
 				break;
 
-			case Parser::PARSE_FAILURE:
+			case ST_IO_ERROR:
+				Log::get(Log::DEBUG) << "IO error" << endl;
 				return (int)HALT;
 
+			case ST_PARSE_ERROR:
+				Log::get(Log::DEBUG) << "Parse error" << endl;
+				return (int)HALT;
+
+			case ST_SHOULD_CLOSE:
+				Log::get(Log::DEBUG) << "Closing connection" << endl;
+				return (int)HALT;
+/*
 			case Parser::PARSE_HANDLER_FAILURE:
 				return (int)HALT;
-
+*/
 			default:
 				break;
 		}
