@@ -28,10 +28,10 @@ The stability and code quality are currently at a “pre-alpha” level.
 * Make error handling better in `Connection`
 * Test support for custom headers in Reply object
 * Add support for regex routes
-** + test
+    * + test
 * Provide helper functions to extract query string parameters
 * Test stack overflows in coroutines, find a way to detect issues
 * Test backend pool
 * Measure performance
-** Benchmarks
-** Avoid copying so many strings
+    * Benchmarks
+    * Avoid copying so many strings
