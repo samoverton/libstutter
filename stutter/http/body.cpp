@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <cstdlib>
+#include <unistd.h>
 
 #define MAX_BUFFER_SIZE 8192
 #define TMP_FILE_TEMPLATE "/tmp/body-XXXXXX"
