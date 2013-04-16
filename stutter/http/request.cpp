@@ -52,7 +52,34 @@ Request::add_url_fragment(const char *at, size_t sz)
 void
 Request::extract_query_string()
 {
+	string::size_type first = m_url.find_first_of("?");
 
+	while(first != string::npos) {
+		string::size_type next = m_url.find_first_of("&", first+1);
+
+		size_t pair_sz = (next == string::npos ? m_url.size() : next) - first - 1;
+		bool is_pair = false;
+
+		// look for equal sign
+		for (string::size_type i = 0; i < pair_sz; ++i) {
+			if (m_url[first+1+i] == '=') {
+
+				if (i != 0) { // skip arg with empty name
+					m_querystring.insert(make_pair(
+							m_url.substr(first+1, i),
+							m_url.substr(first+1+i+1, pair_sz-i-1)));
+				}
+				is_pair = true;
+				break;
+			}
+		}
+		if (!is_pair) { // arg with empty value
+			m_querystring.insert(make_pair(m_url.substr(first+1, next-first-1), ""));
+		}
+
+		first = next;
+		continue;
+	}
 }
 
 void
@@ -93,6 +120,12 @@ Request::verb_str() const
 	}
 }
 
+const Request::QueryString &
+Request::query_string() const
+{
+	return m_querystring;
+}
+
 bool
 Request::require_100_continue() const
 {
@@ -107,6 +140,7 @@ Request::reset()
 	m_verb = GET;
 	m_url.clear();
 	m_host.clear();
+	m_querystring.clear();
 }
 
 void

@@ -23,13 +23,12 @@ The stability and code quality are currently at a “pre-alpha” level.
 # TODO
 
 * Add support for multiple handler threads at the event loop level
-** + stress test
+	* + stress test
 * Add test for pipelined requests (HTTP/1.1)
 * Make error handling better in `Connection`
 * Test support for custom headers in Reply object
 * Add support for regex routes
     * + test
-* Provide helper functions to extract query string parameters
 * Test stack overflows in coroutines, find a way to detect issues
 * Test backend pool
 * Measure performance

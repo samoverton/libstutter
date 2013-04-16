@@ -25,6 +25,9 @@ public:
 	Verb verb() const;
 	std::string verb_str() const;
 
+	typedef std::map<std::string, std::string> QueryString;
+	const QueryString &query_string() const;
+
 	bool send_continue();
 	bool require_100_continue() const;
 
@@ -44,6 +47,8 @@ private:
 	Verb m_verb;
 	std::string m_url;
 	std::string m_host;
+
+	QueryString m_querystring;
 
 	// upload
 	bool m_require_100;
