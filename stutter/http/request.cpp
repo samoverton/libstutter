@@ -50,6 +50,12 @@ Request::add_url_fragment(const char *at, size_t sz)
 }
 
 void
+Request::extract_query_string()
+{
+
+}
+
+void
 Request::set_url(string url)
 {
 	m_url = url;

@@ -16,6 +16,7 @@ public:
 	virtual ~Request();
 	const std::string &url() const;
 	void add_url_fragment(const char *at, size_t sz);
+	void extract_query_string();
 	void set_url(std::string s);
 	void set_host(std::string host);
 

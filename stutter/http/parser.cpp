@@ -29,6 +29,7 @@ int
 _http_on_message_complete_cb(http_parser *p)
 {
 	Parser *parser = reinterpret_cast<Parser*>(p->data);
+	parser->extract_query_string();
 	parser->callback();
 	return 0;
 }
@@ -109,7 +110,13 @@ Parser::add_url_fragment(const char *p, size_t sz)
 		}
 	}
 }
-
+void
+Parser::extract_query_string()
+{
+	if (m_mode == REQUEST) {
+		m_request->extract_query_string();
+	}
+}
 void
 Parser::add_body_fragment(const char *at, size_t sz)
 {

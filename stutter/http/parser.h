@@ -38,6 +38,7 @@ private:
 	void configure_http_parser();
 	int  save_last_header();
 	void add_url_fragment (const char *p, size_t sz);
+	void extract_query_string();
 	void add_body_fragment(const char *at, size_t sz);
 	void callback();
 
