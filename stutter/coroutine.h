@@ -6,37 +6,37 @@
 
 class Coroutine {
 public:
-	Coroutine();
-	virtual ~Coroutine();
+    Coroutine();
+    virtual ~Coroutine();
 
-	typedef enum {INIT, RUNNING, DONE} State;
-	State state() const;
-	int resume();
-	void yield(int value);
+    typedef enum {INIT, RUNNING, DONE} State;
+    State state() const;
+    int resume();
+    void yield(int value);
 
 protected:
-	virtual int exec() = 0;
-	void run();
+    virtual int exec() = 0;
+    void run();
 
 private:
-	void create_stack();
+    void create_stack();
 
-	struct Switcher {
-		ucontext_t caller;
-		ucontext_t callee;
-	};
+    struct Switcher {
+        ucontext_t caller;
+        ucontext_t callee;
+    };
 
 private:
-	int   m_value;
-	State m_state;
+    int   m_value;
+    State m_state;
 
-	// ucontext
-	Switcher m_switcher;
-	ucontext_t m_ctx;
-	char *m_stack;
+    // ucontext
+    Switcher m_switcher;
+    ucontext_t m_ctx;
+    char *m_stack;
 
 #ifdef USE_VALGRIND
-	int m_id;
+    int m_id;
 #endif
 friend void entry_point(void*);
 };

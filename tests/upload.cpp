@@ -9,26 +9,26 @@ using namespace std;
 
 class UploadHandler : public BaseHandler {
 public:
-	virtual void handle(http::Connection &cx, http::Request &req, http::Reply &reply)
-	{
-		stringstream ss;
-		ss << "sz=" << req.body().size();
+    virtual void handle(http::Connection &cx, http::Request &req, http::Reply &reply)
+    {
+        stringstream ss;
+        ss << "sz=" << req.body().size();
 
-		string body = ss.str();
-		reply.add_body(body.c_str(), body.size());
-	}
+        string body = ss.str();
+        reply.add_body(body.c_str(), body.size());
+    }
 };
 
 int
 main(int argc, char *argv[])
 {
-	(void)argc;
-	(void)argv;
+    (void)argc;
+    (void)argv;
 
-	Server s("127.0.0.1", 8888);
-	s.router().add("/upload", new UploadHandler());
+    Server s("127.0.0.1", 8888);
+    s.router().add("/upload", new UploadHandler());
 
-	s.start();
+    s.start();
 
-	return 0;
+    return 0;
 }

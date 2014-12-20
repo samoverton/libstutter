@@ -6,9 +6,9 @@
 
 class FileHandler : public virtual BaseHandler {
 public:
-	FileHandler();
-	virtual ~FileHandler();
-	virtual void handle(http::Connection &cx, http::Request &req, http::Reply &reply);
+    FileHandler();
+    virtual ~FileHandler();
+    virtual void handle(http::Connection &cx, http::Request &req, http::Reply &reply);
 
 };
 

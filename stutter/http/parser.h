@@ -14,50 +14,50 @@ class Message;
 
 class Parser {
 public:
-	typedef enum {REQUEST, RESPONSE} Mode;
-	Parser(Mode m, http::Request *request, bool (*fun)(void*), void *ptr);
-	Parser(Mode m, http::Reply *reply, bool (*fun)(void*), void *ptr);
-	~Parser();
+    typedef enum {REQUEST, RESPONSE} Mode;
+    Parser(Mode m, http::Request *request, bool (*fun)(void*), void *ptr);
+    Parser(Mode m, http::Reply *reply, bool (*fun)(void*), void *ptr);
+    ~Parser();
 
-	typedef enum {
-		PARSE_OK,
-		PARSE_FAILURE,
-		PARSE_NEED_100_CONTINUE,
-		PARSE_BODY_TOO_LARGE,
-		PARSE_URI_TOO_LONG,
-		PARSE_HANDLER_FAILURE} Error;
+    typedef enum {
+        PARSE_OK,
+        PARSE_FAILURE,
+        PARSE_NEED_100_CONTINUE,
+        PARSE_BODY_TOO_LARGE,
+        PARSE_URI_TOO_LONG,
+        PARSE_HANDLER_FAILURE} Error;
 
-	Error add(const char *p, size_t sz);
-	Error error() const;
-	void reset();
+    Error add(const char *p, size_t sz);
+    Error error() const;
+    void reset();
 
-	int http_major() const;
-	int http_minor() const;
-
-private:
-	void configure_http_parser();
-	int  save_last_header();
-	void add_url_fragment (const char *p, size_t sz);
-	void extract_query_string();
-	void add_body_fragment(const char *at, size_t sz);
-	void callback();
+    int http_major() const;
+    int http_minor() const;
 
 private:
-	Mode m_mode;
-	Error m_error;
-	http::Request *m_request;
-	http::Reply *m_reply;
-	http::Message *m_msg;
+    void configure_http_parser();
+    int  save_last_header();
+    void add_url_fragment (const char *p, size_t sz);
+    void extract_query_string();
+    void add_body_fragment(const char *at, size_t sz);
+    void callback();
 
-	// callback (TODO: use std::function?)
-	bool (*m_fun)(void*);
-	void *m_fun_data;
+private:
+    Mode m_mode;
+    Error m_error;
+    http::Request *m_request;
+    http::Reply *m_reply;
+    http::Message *m_msg;
 
-	struct http_parser *m_parser;
-	struct http_parser_settings *m_parserconf;
-	std::string m_header_key;
-	std::string m_header_val;
-	bool m_header_gotval;
+    // callback (TODO: use std::function?)
+    bool (*m_fun)(void*);
+    void *m_fun_data;
+
+    struct http_parser *m_parser;
+    struct http_parser_settings *m_parserconf;
+    std::string m_header_key;
+    std::string m_header_val;
+    bool m_header_gotval;
 
 friend int _http_on_url_cb(http_parser *p, const char *at, size_t sz);
 friend int _http_on_message_complete_cb(http_parser *p);

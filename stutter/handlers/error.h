@@ -6,14 +6,14 @@
 
 class ErrorHandler : public virtual BaseHandler {
 public:
-	ErrorHandler(int status, std::string msg);
-	virtual ~ErrorHandler();
-	virtual void handle(http::Connection &cx,
-			http::Request &req, http::Reply &reply);
+    ErrorHandler(int status, std::string msg);
+    virtual ~ErrorHandler();
+    virtual void handle(http::Connection &cx,
+            http::Request &req, http::Reply &reply);
 
 private:
-	int m_status;
-	std::string m_msg;
+    int m_status;
+    std::string m_msg;
 };
 
 #endif // HANDLER_ERROR_H

@@ -3,7 +3,7 @@
 using namespace std;
 
 FileHandler::FileHandler()
-	: BaseHandler()
+    : BaseHandler()
 {
 }
 
@@ -14,8 +14,8 @@ FileHandler::~FileHandler()
 void
 FileHandler::handle(http::Connection &cx, http::Request &req, http::Reply &reply)
 {
-	(void)req;
+    (void)req;
 
-	// example:
-	// reply.set_file("/tmp/reply.txt");
+    // example:
+    // reply.set_file("/tmp/reply.txt");
 }

@@ -16,19 +16,19 @@ class Body;
 
 class IOStrategy {
 public:
-	virtual ~IOStrategy();
+    virtual ~IOStrategy();
 
-	// read(2) and write(2) wrappers
-	virtual int safe_read (int fd, char *p, size_t sz) = 0;
-	virtual int safe_write(int fd, const char *p, size_t sz) = 0;
+    // read(2) and write(2) wrappers
+    virtual int safe_read (int fd, char *p, size_t sz) = 0;
+    virtual int safe_write(int fd, const char *p, size_t sz) = 0;
 
-	// sendfile wrapper
-	virtual int safe_sendfile(int out_fd, int in_fd, off_t *offset, size_t count) = 0;
+    // sendfile wrapper
+    virtual int safe_sendfile(int out_fd, int in_fd, off_t *offset, size_t count) = 0;
 
-	// send a whole block of data using `safe_write'
-	bool send_raw (int fd, const char *data, size_t sz);
+    // send a whole block of data using `safe_write'
+    bool send_raw (int fd, const char *data, size_t sz);
 
-	bool send_buffered_body(int out_fd, const http::Body &body);
+    bool send_buffered_body(int out_fd, const http::Body &body);
 };
 
 #endif // IO_STRATEGY_H
